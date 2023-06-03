@@ -1,0 +1,22 @@
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+eclipse.project.name = appName + '-core'
+
+dependencies {
+  api "com.badlogicgames.gdx:gdx:$gdxVersion"
+  api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+
+  // ktx
+  api group: 'io.github.libktx', name: 'ktx-app', version: '1.11.0-rc5'
+  api group: 'io.github.libktx', name: 'ktx-actors', version: '1.11.0-rc5'
+  api group: 'io.github.libktx', name: 'ktx-graphics', version: '1.11.0-rc5'
+  api group: 'io.github.libktx', name: 'ktx-scene2d', version: '1.11.0-rc5'
+  api group: 'io.github.libktx', name: 'ktx-preferences', version: '1.11.0-rc5'
+  api group: 'io.github.libktx', name: 'ktx-script', version: '1.11.0-rc5'
+  api group: 'io.github.libktx', name: 'ktx-style', version: '1.11.0-rc5'
+  api group: 'io.github.libktx', name: 'ktx-vis', version: '1.11.0-rc5'
+  api group: 'io.github.libktx', name: 'ktx-vis-style', version: '1.11.0-rc5'
+
+  implementation "com.github.tommyettinger:textratypist:0.8.3"
+  implementation "space.earlygrey:shapedrawer:2.6.0"
+  implementation "org.jetbrains.kotlin:kotlin-script-runtime:1.8.10"
+}
