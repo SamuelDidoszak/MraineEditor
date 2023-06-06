@@ -1,4 +1,4 @@
-package com.neutrino.util
+package com.neutrino.textures
 
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
@@ -8,8 +8,11 @@ import com.neutrino.entities.attributes.Animated
 class AnimatedTextureSprite(
     textureList: Array<AtlasRegion>,
     looping: Boolean = true,
-    val animationSpeed: Float = 0.16666667f
-): TextureSprite(textureList[0]) {
+    val animationSpeed: Float = 0.16666667f,
+    x: Float = 0f,
+    y: Float = 0f,
+    z: Int = 1
+): TextureSprite(textureList[0], x, y, z) {
     private val animation = Animation<AtlasRegion>(
         Animated.ANIMATION_SPEED, textureList,
         if (looping) Animation.PlayMode.LOOP else Animation.PlayMode.NORMAL

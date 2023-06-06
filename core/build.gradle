@@ -17,6 +17,7 @@ dependencies {
   api group: 'io.github.libktx', name: 'ktx-vis-style', version: '1.11.0-rc5'
 
   implementation "com.github.tommyettinger:textratypist:0.8.3"
+  api 'com.squidpony:squidlib-util:3.0.6'
   implementation "space.earlygrey:shapedrawer:2.6.0"
   implementation "org.jetbrains.kotlin:kotlin-script-runtime:1.8.10"
 }

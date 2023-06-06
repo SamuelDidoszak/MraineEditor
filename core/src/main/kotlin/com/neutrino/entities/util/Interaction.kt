@@ -3,7 +3,7 @@ package com.neutrino.entities.util
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.MapParamsAttribute
 import com.neutrino.entities.attributes.TextureAttribute
-import com.neutrino.util.Textures
+import com.neutrino.textures.Textures
 
 sealed class Interaction(var requiredDistance: Int, var isPrimary: Boolean, var actionIcon: String, var turnCost: Double = 0.0) {
 
