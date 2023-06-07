@@ -1,10 +1,10 @@
-package com.neutrino.util
+package com.neutrino.textures
 
 import com.badlogic.gdx.Gdx
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.TextureAttribute
 
-object Animations {
+class Animations {
     private val animations = ArrayList<AnimationData>(10)
 
     fun add(animation: AnimationData) {
@@ -12,7 +12,7 @@ object Animations {
     }
 
     fun remove(animation: AnimationData) {
-        animations.removeIf { it.entity == animation.entity && it.animation == animation.animation }
+        animations.remove(animation)
     }
 
     fun remove(entity: Entity) {
