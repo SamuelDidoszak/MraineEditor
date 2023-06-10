@@ -3,18 +3,17 @@ package com.neutrino.textures
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
 import com.badlogic.gdx.utils.Array
-import com.neutrino.entities.attributes.Animated
 
 class AnimatedTextureSprite(
     textureList: Array<AtlasRegion>,
-    looping: Boolean = true,
+    private val looping: Boolean = true,
     val animationSpeed: Float = 0.16666667f,
     x: Float = 0f,
     y: Float = 0f,
     z: Int = 1
 ): TextureSprite(textureList[0], x, y, z) {
     private val animation = Animation<AtlasRegion>(
-        Animated.ANIMATION_SPEED, textureList,
+        animationSpeed, textureList,
         if (looping) Animation.PlayMode.LOOP else Animation.PlayMode.NORMAL
     )
 
@@ -26,7 +25,7 @@ class AnimatedTextureSprite(
      */
     fun setFrame(deltaTime: Float): Boolean {
         stateTime += deltaTime
-        if (animation.isAnimationFinished(stateTime))
+        if (!looping && animation.isAnimationFinished(stateTime))
             return false
         texture = animation.getKeyFrame(stateTime) as AtlasRegion
         return true

@@ -24,8 +24,17 @@ open class TextureSprite(
     fun mirror() {
         mirrored = !mirrored
     }
+
     fun mirror(probability: Float, randomGenerator: Random) {
         if (randomGenerator.nextFloat() * 100 < probability)
             mirrored = !mirrored
+    }
+
+    fun width(): Int {
+        return texture.regionWidth
+    }
+
+    fun height(): Int {
+        return texture.regionHeight
     }
 }

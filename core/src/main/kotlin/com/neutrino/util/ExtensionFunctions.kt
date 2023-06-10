@@ -1,5 +1,6 @@
 package com.neutrino.util
 
+import com.badlogic.gdx.utils.Array
 import kotlin.math.abs
 import kotlin.math.roundToInt
 
@@ -23,3 +24,8 @@ else if (this.lessThanDelta(other)) -1 else 1
 /** Returns 0 if the values are the same. Returns -1 if the value is smaller than other and 1 if it's bigger */
 fun Double.compareDelta(other: Double) = if (this.equalsDelta(other)) 0
 else if (this.lessThanDelta(other)) -1 else 1
+
+fun <T> Array<T>.set(element: T): Array<T> {
+    add(element)
+    return this
+}
