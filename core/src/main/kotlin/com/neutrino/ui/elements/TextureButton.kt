@@ -90,10 +90,10 @@ class TextureButton(initTexture: TextureSprite): Actor() {
                     overlayColor.lerp(backgroundColor, 0.5f)
                 else
                     backgroundColor
-            batch?.draw(Constants.whitePixel, 0f, 0f, width, height)
+            batch?.draw(Constants.whitePixel, x, y, width, height)
         }
         batch?.color = getOverlayingColor()
-        batch?.draw(texture.texture, textureAttributes.offsetX, textureAttributes.offsetY,
+        batch?.draw(texture.texture, x + textureAttributes.offsetX, y + textureAttributes.offsetY,
             textureAttributes.width, textureAttributes.height)
         batch?.color = Color.WHITE
     }

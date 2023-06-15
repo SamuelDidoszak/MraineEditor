@@ -17,16 +17,22 @@ class AddNewEntityView: VisWindow("Add New Entity") {
         setSize(width, height)
         TableUtils.setSpacingDefaults(this)
         columnDefaults(0).left()
-        add(nameTextField).row()
+        top()
+        add(nameTextField).growX().padLeft(32f).padRight(32f).row()
         identityTable.columnDefaults(0).left()
         identityTable.left()
         identityTable.add(getAddButton())
-        add(identityTable).growX().row()
+        add(identityTable).growX().padTop(16f).row()
 
-        val attributeCheckBox = VisCheckBox("TextureAttribute")
+        val attributeTable = VisTable()
+        val attributeCheckBox = VisCheckBox("")
         val attributeView = TextureAttributeView()
+        attributeCheckBox.isChecked = true
         attributeCheckBox.addListener(attributeView.getCollapseListener())
-        add(attributeCheckBox).row()
+
+        attributeTable.add(VisLabel("TextureAttribute")).expandX().left()
+        attributeTable.add(attributeCheckBox).right()
+        add(attributeTable).growX().row()
         add(attributeView).growX().row()
     }
 
