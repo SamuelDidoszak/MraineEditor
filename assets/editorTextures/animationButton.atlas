@@ -1,0 +1,37 @@
+animationButton.png
+	size: 128, 256
+	repeat: none
+animationButton
+	bounds: 84, 168, 42, 42
+animationButtonForward#1
+	bounds: 42, 126, 42, 42
+animationButtonForward#10
+	bounds: 0, 84, 42, 42
+animationButtonForward#11
+	bounds: 0, 84, 42, 42
+animationButtonForward#12
+	bounds: 0, 84, 42, 42
+animationButtonForward#2
+	bounds: 0, 210, 42, 42
+animationButtonForward#3
+	bounds: 84, 126, 42, 42
+animationButtonForward#4
+	bounds: 0, 126, 42, 42
+animationButtonForward#5
+	bounds: 84, 84, 42, 42
+animationButtonForward#6
+	bounds: 0, 42, 42, 42
+animationButtonForward#7
+	bounds: 42, 210, 42, 42
+animationButtonForward#8
+	bounds: 0, 0, 42, 42
+animationButtonForward#9
+	bounds: 84, 210, 42, 42
+animationButtonLooping#1
+	bounds: 0, 168, 42, 42
+animationButtonLooping#2
+	bounds: 42, 84, 42, 42
+animationButtonLooping#3
+	bounds: 42, 168, 42, 42
+animationButtonLooping#4
+	bounds: 42, 42, 42, 42

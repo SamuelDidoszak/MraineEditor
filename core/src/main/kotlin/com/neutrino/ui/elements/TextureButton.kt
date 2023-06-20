@@ -13,7 +13,7 @@ import com.neutrino.textures.TextureSprite
 import com.neutrino.util.Constants
 import kotlin.math.min
 
-class TextureButton(initTexture: TextureSprite): Actor() {
+open class TextureButton(initTexture: TextureSprite): Actor() {
 
     var texture: TextureSprite = initTexture
         set(value) {

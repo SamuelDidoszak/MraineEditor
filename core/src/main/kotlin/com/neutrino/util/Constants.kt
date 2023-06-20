@@ -6,4 +6,6 @@ import com.badlogic.gdx.graphics.Texture
 object Constants {
 
     val whitePixel = Texture(Gdx.files.internal("whitePixel.png"))
+
+    val fileChooser = FileChooser()
 }

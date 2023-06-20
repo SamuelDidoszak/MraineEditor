@@ -16,14 +16,16 @@ class Main: ApplicationAdapter() {
     private lateinit var uiManager: UiManager
 
     override fun create() {
+        val scriptEngine = KotlinScriptEngine()
+        scriptEngine.evaluate(Gdx.files.internal("core/AddTextures.kts"))
+        scriptEngine.evaluate(Gdx.files.internal("core/AddEditorTextures.kts"))
+        scriptEngine.evaluate(Gdx.files.internal("core/AddEntities.kts"))
+
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("ui/uiskin.json"))
         VisUI.load(VisUI.SkinScale.X2)
         uiStage = Stage(FitViewport(1920f, 1080f))
         uiManager = UiManager(uiStage)
         Gdx.input.inputProcessor = uiStage
-
-        val scriptEngine = KotlinScriptEngine()
-        scriptEngine.evaluate(Gdx.files.internal("core/AddEntities.kts"))
     }
 
     override fun render() {
