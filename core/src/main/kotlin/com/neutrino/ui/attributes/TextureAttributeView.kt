@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
@@ -55,39 +56,71 @@ class TextureAttributeView: AttributeView(VisTable()) {
             return add(txt).left()
         }
 
+        val animationButton = object: TextureButton(Textures.get("animationButton")) {
+            var state = 0
+                private set
+            fun newState() {
+                state += 1
+                state %= 3
+                changeTexture()
+            }
+
+            fun setAnimated(animated: Boolean) {
+                state = if (animated) 1 else 0
+                changeTexture()
+            }
+
+            private fun changeTexture() {
+                texture = when (state) {
+                    0 -> Textures.get("animationButton")
+                    1 -> Textures.get("animationButtonLooping")
+                    2 -> Textures.get("animationButtonForward")
+                    else -> {texture}
+                }
+            }
+        }
+
         class AddListener(val textureParams: TextureParams): ChangeListener() {
             fun getFile(textureView: TextureButton) {
                 Constants.fileChooser.getFile(object: FileChooserCallback() {
                     override fun fileChosen(files: List<FileHandle>) {
+                        val x = textureParams.getFromPositionTable("x").textField.text.toFloat()
+                        val y = textureParams.getFromPositionTable("y").textField.text.toFloat()
+                        val z = textureParams.getFromPositionTable("z").textField.text.toInt()
+
                         for (file in files) {
                             val newFile = FileHandle(file.file())
-                            textureParams.textures[newFile.nameWithoutExtension()] = Texture(newFile)
+                            val texture = Texture(newFile)
+                            val region = AtlasRegion(texture, 0, 0, texture.width, texture.height)
+                            val textureSprite = TextureSprite(region, x, y, z)
+                            textureSprite.lights = getLightSources(texture)
+
+                            textureParams.textureSprites[newFile.nameWithoutExtension()] = textureSprite
                             texturesToAtlas.add(file)
                         }
 
-                        val x = textureParams.getFromPositionTable("x").textField.text.toInt()
-                        val y = textureParams.getFromPositionTable("y").textField.text.toInt()
+                        if (textureParams.textureSprites.size == 1) {
+                            textureView.texture = textureParams.textureSprites.values.first()
+                            return
+                        }
 
-                        val sprite: TextureSprite =
-                            if (textureParams.textures.size > 1) {
-                                val regions = Array<TextureAtlas.AtlasRegion>()
-                                textureParams.textures.forEach {
-                                    regions.add(
-                                        TextureAtlas.AtlasRegion(
-                                            it.value, x, y, it.value.width, it.value.height
-                                        )
-                                    )
-                                }
-                                AnimatedTextureSprite(regions)
-                            }
-                            else {
-                                val texture = textureParams.textures.values.first()
-                                TextureSprite(
-                                    TextureAtlas.AtlasRegion(texture, x, y, texture.width, texture.height)
-                                )
-                            }
+                        if (textureParams.textureSprites.keys.any { it.contains('#') }) {
+                            animationButton.setAnimated(true)
+                            textureParams.getFpsSpinner().isVisible = true
+                        }
+                        else
+                            animationButton.setAnimated(false)
 
-                        textureView.texture = sprite
+                        val regions = Array<AtlasRegion>()
+                        textureParams.textureSprites.forEach {
+                            regions.add(it.value.texture)
+                        }
+                        textureView.texture = AnimatedTextureSprite(
+                            regions,
+                            animationButton.state != 2,
+                            if (animationButton.state == 0) 1f else textureParams.getFps(),
+                            x, y, z
+                        )
                     }
                 })
             }
@@ -125,7 +158,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
         addButton.addListener(AddListener(textureParams))
 
         val positionTable = VisTable()
-        positionTable.name = "PositionTable"
+        positionTable.name = "positionTable"
         positionTable.isVisible = false
         val xSpinner = positionTable.addPosition("x", 0).actor
         xSpinner.addListener(object : ChangeListener() {
@@ -149,28 +182,10 @@ class TextureAttributeView: AttributeView(VisTable()) {
         textureTable.add(positionTable).padLeft(8f)
 
         val paramsTable = VisTable()
-        paramsTable.name = "ParametersTable"
+        paramsTable.name = "parametersTable"
         paramsTable.top()
         paramsTable.isVisible = false
 
-        val animationButton = object : TextureButton(Textures.get("animationButton")) {
-            var state = 0
-                private set
-            fun newState() {
-                state += 1
-                state %= 3
-                changeTexture()
-            }
-
-            private fun changeTexture() {
-                texture = when (state) {
-                    0 -> Textures.get("animationButton")
-                    1 -> Textures.get("animationButtonLooping")
-                    2 -> Textures.get("animationButtonForward")
-                    else -> {texture}
-                }
-            }
-        }
         animationButton.setSize(42f, 42f)
         val sizes = Sizes(VisUI.getSizes())
         sizes.spinnerFieldSize = 40f
@@ -180,6 +195,27 @@ class TextureAttributeView: AttributeView(VisTable()) {
         fps.name = "fps"
         fps.maxLength = 2
         fps.isVisible = false
+        fps.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                val textureButton = (textureContainer.actor as TextureButton)
+                if (textureButton.texture !is AnimatedTextureSprite || animationButton.state == 0)
+                    return
+
+                val x = textureParams.getFromPositionTable("x").textField.text.toFloat()
+                val y = textureParams.getFromPositionTable("y").textField.text.toFloat()
+                val z = textureParams.getFromPositionTable("z").textField.text.toInt()
+                val regions = Array<AtlasRegion>()
+                textureParams.textureSprites.forEach {
+                    regions.add(it.value.texture)
+                }
+                textureButton.texture = AnimatedTextureSprite(
+                    regions,
+                    animationButton.state != 2,
+                    if (animationButton.state == 0) 1f else textureParams.getFps(),
+                    x, y, z
+                )
+            }
+        })
         animationButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 animationButton.newState()
@@ -188,13 +224,13 @@ class TextureAttributeView: AttributeView(VisTable()) {
         })
 
         val animatedTable = VisTable()
-        animatedTable.name = "animated"
+        animatedTable.name = "animatedTable"
         animatedTable.top()
         animatedTable.add(animationButton).left()
         animatedTable.add(fps).left()
 
         val lightsTable = VisTable()
-        lightsTable.name = "LightsTable"
+        lightsTable.name = "lightsTable"
         lightsTable.top()
         lightsTable.add(VisLabel("Lights")).top().center().row()
 
@@ -204,6 +240,27 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
         textures.add(textureParams)
         table.add(textureParams.table).growX().row()
+    }
+
+    private fun getLightSources(texture: Texture): LightSources? {
+        val pixelData = PixelData(texture)
+        var pixel: Pixel
+        val lights: ArrayList<Light> = ArrayList()
+
+        for (y in 0 until texture.height) {
+            for (x in 0 until texture.width) {
+                pixel = pixelData.getPixel(x, y)
+                if (pixel.a() in 100..250)
+                    lights.add(Light(x.toFloat(), y.toFloat(), pixel.color()))
+            }
+        }
+
+        if (lights.isEmpty())
+            return null
+        if (lights.size == 1)
+            return LightSources(lights[0])
+        else
+            return LightSources(lights)
     }
 
     private fun updateLights(params: TextureParams, texture: Texture) {
@@ -235,7 +292,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
     }
 
     private class TextureParams(val table: VisTable) {
-        val textures = mutableMapOf<String, Texture>()
+        val textureSprites = mutableMapOf<String, TextureSprite>()
         var lights: LightSources? = null
 
         fun getLightsTable(): VisTable {
@@ -247,12 +304,22 @@ class TextureAttributeView: AttributeView(VisTable()) {
         }
 
         fun getFromPositionTable(positionName: String): Spinner {
-            return table.findActor<VisTable>("PositionTable").findActor(positionName)!!
+            return table.findActor<VisTable>("positionTable").findActor(positionName)!!
+        }
+
+        fun getFpsSpinner(): Spinner {
+            return table.findActor<VisTable>("parametersTable")
+                .findActor<VisTable>("animatedTable").findActor("fps")
+        }
+
+        fun getFps(): Float {
+            val fps = getFpsSpinner().textField.text.toInt()
+            return 1f / fps
         }
 
         fun setVisible() {
-            table.findActor<VisTable>("PositionTable").isVisible = true
-            table.findActor<VisTable>("ParametersTable").isVisible = true
+            table.findActor<VisTable>("positionTable").isVisible = true
+            table.findActor<VisTable>("parametersTable").isVisible = true
         }
     }
 }
