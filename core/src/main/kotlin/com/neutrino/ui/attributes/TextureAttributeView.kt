@@ -5,6 +5,7 @@ import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.Group
 import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.ui.Image
@@ -95,6 +96,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 val textureView = TextureButton(addImage)
                 textureView.setSize(128f, 128f)
                 textureView.setBackgroundColor()
+                textureView.centered = false
                 textureView.addListener(object : ChangeListener() {
                     override fun changed(event: ChangeEvent?, actor: Actor?) {
                         getFile(textureView)
@@ -125,8 +127,24 @@ class TextureAttributeView: AttributeView(VisTable()) {
         val positionTable = VisTable()
         positionTable.name = "PositionTable"
         positionTable.isVisible = false
-        positionTable.addPosition("x", 0).row()
-        positionTable.addPosition("y", 0).row()
+        val xSpinner = positionTable.addPosition("x", 0).actor
+        xSpinner.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                val textureButton = (textureContainer.actor as TextureButton)
+                textureButton.texture.x = (actor as Group?)?.children?.get(1).toString().toFloat()
+                textureButton.texture = textureButton.texture
+            }
+        })
+        positionTable.row()
+        val ySpinner = positionTable.addPosition("y", 0).actor
+        ySpinner.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                val textureButton = (textureContainer.actor as TextureButton)
+                textureButton.texture.y = (actor as Group?)?.children?.get(1).toString().toFloat()
+                textureButton.texture = textureButton.texture
+            }
+        })
+        positionTable.row()
         positionTable.addPosition("z", 1)
         textureTable.add(positionTable).padLeft(8f)
 

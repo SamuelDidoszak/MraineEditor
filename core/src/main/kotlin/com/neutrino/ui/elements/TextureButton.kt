@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Pools
 import com.neutrino.textures.AnimatedTextureSprite
 import com.neutrino.textures.TextureSprite
 import com.neutrino.util.Constants
+import kotlin.math.abs
 import kotlin.math.min
 
 open class TextureButton(initTexture: TextureSprite): Actor() {
@@ -22,6 +23,7 @@ open class TextureButton(initTexture: TextureSprite): Actor() {
         }
     private val textureAttributes = TextureAttributes()
 
+    var centered = true
     private var checked = false
     var disabled = false
         set(value) {
@@ -93,10 +95,14 @@ open class TextureButton(initTexture: TextureSprite): Actor() {
             batch?.draw(Constants.whitePixel, x, y, width, height)
         }
         batch?.color = getOverlayingColor()
-        batch?.draw(texture.texture, x + textureAttributes.offsetX, y + textureAttributes.offsetY,
+        batch?.draw(texture.texture,
+            x + textureAttributes.offsetX + texture.x.positiveOrZero(textureAttributes.offsetX) * textureAttributes.scale,
+            y + textureAttributes.offsetY + texture.y.positiveOrZero(textureAttributes.offsetY) * textureAttributes.scale,
             textureAttributes.width, textureAttributes.height)
         batch?.color = Color.WHITE
     }
+
+    private fun Float.positiveOrZero(offset: Float): Float = if (this + offset >= 0f) this else 0f
 
     override fun setSize(width: Float, height: Float) {
         super.setSize(width, height)
@@ -104,16 +110,25 @@ open class TextureButton(initTexture: TextureSprite): Actor() {
     }
 
     private fun updateScale() {
-        val wScale: Float = width / texture.texture.regionWidth
-        val hScale: Float = height / texture.texture.regionHeight
+        val wScale: Float = width / (texture.texture.regionWidth + abs(texture.x) * if(centered) 2 else 1)
+        val hScale: Float = height / (texture.texture.regionHeight + abs(texture.y) * if(centered) 2 else 1)
         val scale = min(wScale, hScale)
+        textureAttributes.scale = scale
         textureAttributes.width = texture.width() * scale
         textureAttributes.height = texture.height() * scale
+
+        if (!centered) {
+            textureAttributes.offsetX = 0f
+            textureAttributes.offsetY = 0f
+            return
+        }
+
         textureAttributes.offsetX = (width - textureAttributes.width) / 2
         textureAttributes.offsetY = (height - textureAttributes.height) / 2
     }
 
     private data class TextureAttributes(
+        var scale: Float = 1f,
         var width: Float = 0f,
         var height: Float = 0f,
         var offsetX: Float = 0f,
