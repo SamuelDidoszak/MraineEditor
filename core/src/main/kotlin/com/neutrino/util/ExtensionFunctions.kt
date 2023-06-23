@@ -25,7 +25,12 @@ else if (this.lessThanDelta(other)) -1 else 1
 fun Double.compareDelta(other: Double) = if (this.equalsDelta(other)) 0
 else if (this.lessThanDelta(other)) -1 else 1
 
-fun <T> Array<T>.set(element: T): Array<T> {
+fun <T> Array<T>.addInitial(element: T): Array<T> {
+    add(element)
+    return this
+}
+
+fun <T> ArrayList<T>.addInitial(element: T): ArrayList<T> {
     add(element)
     return this
 }

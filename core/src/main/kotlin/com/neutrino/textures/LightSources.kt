@@ -1,5 +1,7 @@
 package com.neutrino.textures
 
+import com.neutrino.util.addInitial
+
 class LightSources() {
 
     var isSingleLight = false
@@ -26,7 +28,7 @@ class LightSources() {
     }
 
     fun getLights(i: Int = 0): ArrayList<Light>? {
-        return lights!![i]
+        return lights?.get(i) ?: if (light != null) ArrayList<Light>().addInitial(light!!) else null
     }
 
 }
