@@ -1,6 +1,7 @@
 package com.neutrino.ui.elements
 
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.ui.Cell
 import com.badlogic.gdx.utils.SnapshotArray
 import com.kotcrab.vis.ui.widget.VisTable
 
@@ -23,7 +24,7 @@ class VisTableNested: VisTable() {
         }
     }
 
-    fun addNested(actor: Actor) {
+    fun addNested(actor: Actor): Cell<Actor> {
         val newRow = width <=
             tables.last().children.sumOf { it.width.toInt() } +
             actor.width
@@ -36,7 +37,7 @@ class VisTableNested: VisTable() {
             tables.add(newTable)
         }
 
-        tables.last().add(actor)
+        return tables.last().add(actor)
     }
 
     fun removeNested(actor: Actor) {
@@ -85,5 +86,9 @@ class VisTableNested: VisTable() {
         val elements = SnapshotArray<Actor?>()
         tables.forEach { elements.addAll(it.children) }
         return elements
+    }
+
+    override fun getPrefWidth(): Float {
+        return width
     }
 }
