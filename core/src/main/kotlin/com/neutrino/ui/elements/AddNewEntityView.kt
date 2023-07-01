@@ -7,14 +7,13 @@ import com.kotcrab.vis.ui.widget.*
 import com.neutrino.entities.attributes.Identity
 import com.neutrino.ui.attributes.TextureAttributeView
 
-class AddNewEntityView: VisWindow("Add New Entity") {
+class AddNewEntityView: VisTable() {
 
     private val nameTextField = VisTextField()
     private val identityTable = VisTableNested()
     private val identityList = Identity::class.nestedClasses.map { it.simpleName }
 
     init {
-        setSize(width, height)
         TableUtils.setSpacingDefaults(this)
         columnDefaults(0).left()
         top()
@@ -34,6 +33,11 @@ class AddNewEntityView: VisWindow("Add New Entity") {
         attributeTable.add(attributeCheckBox).right()
         add(attributeTable).growX().row()
         add(attributeView).growX().row()
+    }
+
+    override fun getPrefHeight(): Float {
+//        return children.sumOf { (it as Layout).prefHeight.toDouble() }.toFloat() + 128f
+        return children.sumOf { it.height.toDouble() }.toFloat() + 128f
     }
 
     private fun getIdentityList(): PopupMenu {

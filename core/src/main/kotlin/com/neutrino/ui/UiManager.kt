@@ -9,7 +9,7 @@ class UiManager(private val stage: Stage) {
 
     init {
         stage.addActor(leftTable)
-        leftTable.setSize(stage.width * 1/4f, stage.height)
+        leftTable.setSize(stage.width * 1/4f + 34f, stage.height)
         leftTable.setWindow(AddNewEntityView())
     }
 }
