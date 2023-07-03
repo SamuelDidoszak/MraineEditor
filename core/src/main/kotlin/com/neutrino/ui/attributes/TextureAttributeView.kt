@@ -22,6 +22,7 @@ import com.kotcrab.vis.ui.widget.*
 import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel
 import com.kotcrab.vis.ui.widget.spinner.Spinner
 import com.kotcrab.vis.ui.widget.spinner.Spinner.SpinnerStyle
+import com.neutrino.builders.TextureBuilder
 import com.neutrino.textures.*
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.elements.VisTableNested
@@ -33,6 +34,7 @@ import com.neutrino.util.PixelData
 class TextureAttributeView: AttributeView(VisTable()) {
 
     override val attributeName = "TextureAttribute"
+    private val ATLAS_NAME = "entities.atlas"
     private val addImage = TextureSprite(TextureAtlas.AtlasRegion(
         Texture(Gdx.files.internal("AddButton96.png")), 0, 0, 96, 96))
     private val textureTables = ArrayList<TextureTable>()
@@ -49,6 +51,61 @@ class TextureAttributeView: AttributeView(VisTable()) {
         table.add(textureTable).growX().row()
     }
 
+    override fun onSaveAction() {
+        val textureBuilder = TextureBuilder()
+        //TODO add textures to atlas
+        for (textureTable in textureTables) {
+            if (textureTable.getAnimationState() == 0) {
+                for (textureMap in textureTable.textures) {
+                    textureBuilder.build(
+                        textureMap.key,
+                        ATLAS_NAME,
+                        textureMap.value.x,
+                        textureMap.value.y,
+                        textureMap.value.z
+                    )
+                }
+            } else {
+                textureBuilder.buildAnimation(
+                    textureTable.textures.keys.toList(),
+                    ATLAS_NAME,
+                    textureTable.getAnimationState() == 1,
+                    textureTable.getFps(textureTable.findActor("main")),
+                    textureTable.animatedTextureSprite!!.x,
+                    textureTable.animatedTextureSprite!!.y,
+                    textureTable.animatedTextureSprite!!.z,
+                )
+            }
+        }
+    }
+
+    override fun generateString(): String {
+        val builder = StringBuilder(300)
+        fun addIndicedLine(indices: Int = 0) {
+            builder.append("\n\t\t")
+            for (i in 0 until indices)
+                builder.append("\t")
+        }
+        fun addTexture(textureName: String) {
+            builder.append("textures.add(Textures.get(\"$textureName\")")
+        }
+
+        builder.append("TextureAttribute { position, random, textures -> run {")
+        for (textureTable in textureTables) {
+            addIndicedLine(1)
+            if (textureTable.getAnimationState() == 0) {
+                //TODO random texture with probability from provided set
+                addTexture(textureTable.textures.keys.first())
+            } else {
+                addTexture(textureTable.textures.keys.first().substringBefore('#'))
+            }
+        }
+
+        addIndicedLine()
+        builder.append("}})")
+        return builder.toString()
+    }
+
     private inner class TextureTable(): VisTable() {
         val textures: MutableMap<String, TextureSprite> = object : LinkedHashMap<String, TextureSprite>() {
             override fun get(key: String): TextureSprite? {
@@ -59,7 +116,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
         }
         private var innerTables: Array<VisTable>? = null
         private var tableAnimation: TableAnimation? = null
-        private var animatedTextureSprite: AnimatedTextureSprite? = null
+        var animatedTextureSprite: AnimatedTextureSprite? = null
 
         private val animationButton = object: TextureButton(Textures.get("animationButton")) {
             var state = 0
@@ -358,16 +415,16 @@ class TextureAttributeView: AttributeView(VisTable()) {
         }
 
         // Helper classes
-        fun getTextureContainer(table: VisTable): Container<Actor> {
+        private fun getTextureContainer(table: VisTable): Container<Actor> {
             return table.findActor("textureContainer")
         }
-        fun getTextureButton(table: VisTable): TextureButton {
+        private fun getTextureButton(table: VisTable): TextureButton {
             return (table.findActor("textureContainer") as Container<Actor>).actor as TextureButton
         }
         fun getFromPositionTable(positionName: String, table: VisTable): Spinner {
             return table.findActor<VisTable>("positionTable").findActor(positionName)!!
         }
-        fun getFpsSpinner(table: VisTable): Spinner {
+        private fun getFpsSpinner(table: VisTable): Spinner {
             return table.findActor<VisTable>("parametersTable")
                 .findActor<VisTable>("animatedTable").findActor("fps")
         }
@@ -375,12 +432,15 @@ class TextureAttributeView: AttributeView(VisTable()) {
             val fps = getFpsSpinner(table).textField.text.toInt()
             return 1f / fps
         }
-        fun setVisible(table: VisTable, visible: Boolean) {
+        private fun setVisible(table: VisTable, visible: Boolean) {
             table.findActor<VisTable>("positionTable").isVisible = visible
             table.findActor<VisTable>("parametersTable").isVisible = visible
         }
+        fun getAnimationState(): Int {
+            return animationButton.state
+        }
 
-        fun getFile(table: VisTable, textureView: TextureButton) {
+        private fun getFile(table: VisTable, textureView: TextureButton) {
             Constants.fileChooser.getFile(object: FileChooserCallback() {
                 override fun fileChosen(files: List<FileHandle>) {
                     val x = getFromPositionTable("x", table).textField.text.toFloat()
@@ -436,7 +496,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             }
         }
 
-        inner class AddListener(val table: VisTable): ChangeListener() {
+        private inner class AddListener(val table: VisTable): ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 val textureView = TextureButton(addImage)
                 textureView.setSize(128f, 128f)

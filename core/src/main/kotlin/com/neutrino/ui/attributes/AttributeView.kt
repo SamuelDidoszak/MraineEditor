@@ -9,6 +9,9 @@ abstract class AttributeView(internal val table: Table): CollapsibleWidget(table
 
     abstract val attributeName: String
 
+    abstract fun generateString(): String
+    open fun onSaveAction() {}
+
     fun getCollapseListener(): ChangeListener {
         return object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
