@@ -51,16 +51,6 @@ class AddNewEntityView: VisTable() {
         }
 
         return menu
-
-//        menu.addItem(identityMenuItem("jeff"))
-//        menu.addItem(identityMenuItem("jeff2"))
-//        menu.addItem(identityMenuItem("ahtnahtniasrhtieranstarbs"))
-//        val subMenu = MenuItem("subMenu")
-//        subMenu.subMenu {
-//            MenuItem("sub1")
-//            MenuItem("uke")
-//        }
-//        menu.addItem(subMenu)
     }
 
     private fun identityMenuItem(name: String): MenuItem {

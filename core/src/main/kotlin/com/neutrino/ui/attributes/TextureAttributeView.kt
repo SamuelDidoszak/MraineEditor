@@ -3,6 +3,7 @@ package com.neutrino.ui.attributes
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -56,7 +57,9 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 return super.get(key)
             }
         }
-        private var innerTables: ArrayList<VisTable>? = null
+        private var innerTables: Array<VisTable>? = null
+        private var tableAnimation: TableAnimation? = null
+        private var animatedTextureSprite: AnimatedTextureSprite? = null
 
         private val animationButton = object: TextureButton(Textures.get("animationButton")) {
             var state = 0
@@ -143,11 +146,6 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 textureView.setSize(128f, 128f)
                 textureView.setBackgroundColor()
                 textureView.centered = false
-                textureView.addListener(object : ChangeListener() {
-                    override fun changed(event: ChangeEvent?, actor: Actor?) {
-                        getFile(table, textureView)
-                    }
-                })
                 textureContainer.actor = textureView
             }
             return textureContainer
@@ -158,24 +156,39 @@ class TextureAttributeView: AttributeView(VisTable()) {
             val xSpinner = positionTable.addPosition("x", 0).actor
             xSpinner.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    textures[table.name]!!.x = (actor as Group?)?.children?.get(1).toString().toFloat()
-                    getTextureButton(table).texture = textures[table.name]!!
+                    val texture =
+                        if (getTextureButton(table).texture is AnimatedTextureSprite)
+                            animatedTextureSprite
+                        else
+                            textures[table.name]
+                    texture!!.x = (actor as Group?)?.children?.get(1).toString().toFloat()
+                    getTextureButton(table).texture = texture
                 }
             })
             positionTable.row()
             val ySpinner = positionTable.addPosition("y", 0).actor
             ySpinner.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    textures[table.name]!!.y = (actor as Group?)?.children?.get(1).toString().toFloat()
-                    getTextureButton(table).texture = textures[table.name]!!
+                    val texture =
+                        if (getTextureButton(table).texture is AnimatedTextureSprite)
+                            animatedTextureSprite
+                        else
+                            textures[table.name]
+                    texture!!.y = (actor as Group?)?.children?.get(1).toString().toFloat()
+                    getTextureButton(table).texture = texture
                 }
             })
             positionTable.row()
             val zSpinner = positionTable.addPosition("z", 1).actor
             zSpinner.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    textures[table.name]!!.z = (actor as Group?)?.children?.get(1).toString().toInt()
-                    getTextureButton(table).texture = textures[table.name]!!
+                    val texture =
+                        if (getTextureButton(table).texture is AnimatedTextureSprite)
+                            animatedTextureSprite
+                        else
+                            textures[table.name]
+                    texture!!.z = (actor as Group?)?.children?.get(1).toString().toInt()
+                    getTextureButton(table).texture = texture
                 }
             })
             return positionTable
@@ -197,25 +210,14 @@ class TextureAttributeView: AttributeView(VisTable()) {
                         if (textureButton.texture !is AnimatedTextureSprite || animationButton.state == 0)
                             return
 
-                        val x = getFromPositionTable("x", table).textField.text.toFloat()
-                        val y = getFromPositionTable("y", table).textField.text.toFloat()
-                        val z = getFromPositionTable("z", table).textField.text.toInt()
-                        val regions = Array<AtlasRegion>()
-                        textures.forEach {
-                            regions.add(it.value.texture)
-                        }
-                        textureButton.texture = AnimatedTextureSprite(
-                            regions,
-                            animationButton.state != 2,
-                            if (animationButton.state == 0) 1f else getFps(table),
-                            x, y, z
-                        )
+                        setMainAnimationState(animationButton.state)
                     }
                 })
                 animationButton.addListener(object : ChangeListener() {
                     override fun changed(event: ChangeEvent?, actor: Actor?) {
                         animationButton.newState()
                         fps.isVisible = animationButton.state != 0
+                        setMainAnimationState(animationButton.state)
                     }
                 })
 
@@ -242,6 +244,93 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
             paramsTable.add(lightsTable).expandX().left()
             return paramsTable
+        }
+
+        override fun act(delta: Float) {
+            tableAnimation?.nextFrame(delta)
+            super.act(delta)
+        }
+
+        private fun setMainAnimationState(animationState: Int, textureView: TextureButton? = null) {
+            tableAnimation?.restoreMainTable()
+            if (animationState == 0) {
+                tableAnimation = TableAnimation()
+            } else {
+                val table = findActor<VisTable>("main")
+
+                if (animatedTextureSprite != null) {
+                    getFromPositionTable("x", table).textField.text = animatedTextureSprite!!.x.toInt().toString()
+                    getFromPositionTable("y", table).textField.text = animatedTextureSprite!!.y.toInt().toString()
+                    getFromPositionTable("z", table).textField.text = animatedTextureSprite!!.z.toString()
+                }
+
+                val x = getFromPositionTable("x", table).textField.text.toFloat()
+                val y = getFromPositionTable("y", table).textField.text.toFloat()
+                val z = getFromPositionTable("z", table).textField.text.toInt()
+                val regions = Array<AtlasRegion>()
+                textures.forEach {
+                    regions.add(it.value.texture)
+                }
+                animatedTextureSprite = AnimatedTextureSprite(
+                    regions,
+                    true,
+                    getFps(table),
+                    x, y, z
+                )
+                if (textureView != null)
+                    textureView.texture = animatedTextureSprite!!
+                else
+                    getTextureButton(table).texture = animatedTextureSprite!!
+                tableAnimation = TableAnimation(getFps(table), false, false, false)
+            }
+        }
+
+        private inner class TableAnimation(
+            frameDuration: Float = 1f,
+            disablePosition: Boolean = true,
+            val changeTexture: Boolean = true,
+            val changePosition: Boolean = true) {
+
+            private val mainTable = findActor<VisTable>("main")
+            private val mainX = getFromPositionTable("x", mainTable).textField.text
+            private val mainY = getFromPositionTable("y", mainTable).textField.text
+            private val mainZ = getFromPositionTable("z", mainTable).textField.text
+            private var stateTime = 0f
+            private val tableAnimation: Animation<VisTable> = Animation(frameDuration, innerTables, Animation.PlayMode.LOOP)
+
+            init {
+                if (disablePosition) {
+                    getFromPositionTable("x", mainTable).isDisabled = true
+                    getFromPositionTable("y", mainTable).isDisabled = true
+                    getFromPositionTable("z", mainTable).isDisabled = true
+                }
+            }
+
+            fun setFrameDuration(frameDuration: Float) {
+                tableAnimation.frameDuration = frameDuration
+            }
+
+            fun nextFrame(deltaTime: Float) {
+                stateTime += deltaTime
+                val nextTable = tableAnimation.getKeyFrame(stateTime)
+                fillLightsTable(getTextureButton(nextTable).texture, mainTable)
+                if (changeTexture)
+                    getTextureButton(mainTable).texture = getTextureButton(nextTable).texture
+                if (!changePosition)
+                    return
+                getFromPositionTable("x", mainTable).textField.text = getFromPositionTable("x", nextTable).textField.text
+                getFromPositionTable("y", mainTable).textField.text = getFromPositionTable("y", nextTable).textField.text
+                getFromPositionTable("z", mainTable).textField.text = getFromPositionTable("z", nextTable).textField.text
+            }
+
+            fun restoreMainTable() {
+                getFromPositionTable("x", mainTable).isDisabled = false
+                getFromPositionTable("y", mainTable).isDisabled = false
+                getFromPositionTable("z", mainTable).isDisabled = false
+                getFromPositionTable("x", mainTable).textField.text = mainX
+                getFromPositionTable("y", mainTable).textField.text = mainY
+                getFromPositionTable("z", mainTable).textField.text = mainZ
+            }
         }
 
         private fun getLightSources(texture: Texture): LightSources? {
@@ -305,14 +394,11 @@ class TextureAttributeView: AttributeView(VisTable()) {
                         textures[newFile.nameWithoutExtension()] = textureSprite
                         texturesToAtlas.add(file)
                         val innerTable = addInnerTable(newFile.nameWithoutExtension(), textureSprite)
+                        if (innerTables == null)
+                            innerTables = Array()
+                        innerTables!!.add(innerTable)
 
-                        textureSprite.lights?.getLights()?.forEach {
-                            val image = Image(VisUI.getSkin().getDrawable("white"))
-                            image.setSize(32f, 32f)
-                            image.color = it.color
-                            innerTable.findActor<VisTable>("parametersTable")
-                                .findActor<VisTableNested>("lightsTable").addNested(image).size(32f).left()
-                        }
+                        fillLightsTable(textureSprite, innerTable)
                     }
 
                     if (textures.size == 1) {
@@ -327,18 +413,23 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     else
                         animationButton.setAnimated(false)
 
-                    val regions = Array<AtlasRegion>()
-                    textures.forEach {
-                        regions.add(it.value.texture)
-                    }
-                    textureView.texture = AnimatedTextureSprite(
-                        regions,
-                        animationButton.state != 2,
-                        if (animationButton.state == 0) 1f else getFps(table),
-                        x, y, z
-                    )
+                    setMainAnimationState(animationButton.state, textureView)
                 }
             })
+        }
+
+        private fun fillLightsTable(textureSprite: TextureSprite, table: VisTable) {
+            val lightsTable = table.findActor<VisTable>("parametersTable")
+                .findActor<VisTableNested>("lightsTable")
+            lightsTable.removeAll()
+            lightsTable.left()
+
+            textureSprite.lights?.getLights()?.forEach {
+                val image = Image(VisUI.getSkin().getDrawable("white"))
+                image.setSize(32f, 32f)
+                image.color = it.color
+                lightsTable.addNested(image).size(32f).left()
+            }
         }
 
         inner class AddListener(val table: VisTable): ChangeListener() {

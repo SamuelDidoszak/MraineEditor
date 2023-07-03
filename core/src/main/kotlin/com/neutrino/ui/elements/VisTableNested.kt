@@ -57,11 +57,20 @@ class VisTableNested: VisTable() {
 
     fun removeLast() {
         val table = tables.last()
-        table.removeActorAt(table.children.size - 1, false)
+        val index = table.children.size - 1
+        if (index >= 0)
+            table.removeActorAt(index, false)
         if (table.children.size == 0 && tables.size != 1) {
             removeActor(table)
             tables.remove(table)
         }
+    }
+
+    fun removeAll() {
+        val actorSize = tables.sumOf { it.children.size }
+        for (i in 0..actorSize)
+            removeLast()
+        tables.first().clearChildren()
     }
 
     private fun refillTable() {
@@ -77,6 +86,7 @@ class VisTableNested: VisTable() {
                 tables.removeAt(i)
             }
         }
+        tables.first().clearChildren()
         for (actor in actors) {
             addNested(actor)
         }
