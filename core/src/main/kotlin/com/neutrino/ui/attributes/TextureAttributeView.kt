@@ -241,6 +241,9 @@ class TextureAttributeView: AttributeView(VisTable()) {
             lightsTable.name = "lightsTable"
             lightsTable.top()
             lightsTable.width = 112f
+            lightsTable.maxHeight = 43f
+            if (table.name != "main")
+                lightsTable.maxHeight = lightsTable.maxHeight!! * 2
 
             paramsTable.add(lightsTable).expandX().left()
             return paramsTable
@@ -403,6 +406,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
                     if (textures.size == 1) {
                         textureView.texture = textures.values.first()
+                        fillLightsTable(textureView.texture, table)
                         return
                     }
 

@@ -8,6 +8,15 @@ import com.kotcrab.vis.ui.widget.VisTable
 class VisTableNested: VisTable() {
 
     private val tables = ArrayList<VisTable>(2)
+    private var _maxHeight = maxHeight
+
+    fun setMaxHeight(maxHeight: Float) {
+        _maxHeight = maxHeight
+    }
+
+    override fun getMaxHeight(): Float {
+        return _maxHeight
+    }
 
     init {
         val newTable = VisTable()
@@ -30,6 +39,9 @@ class VisTableNested: VisTable() {
             actor.width
 
         if (newRow) {
+            if (_maxHeight != 0f && prefHeight + actor.height > _maxHeight) {
+                return Cell()
+            }
             val newTable = VisTable()
             newTable.width = width
             row()
@@ -100,5 +112,9 @@ class VisTableNested: VisTable() {
 
     override fun getPrefWidth(): Float {
         return width
+    }
+
+    override fun getPrefHeight(): Float {
+        return tables.sumOf { it.prefHeight.toDouble() }.toFloat()
     }
 }
