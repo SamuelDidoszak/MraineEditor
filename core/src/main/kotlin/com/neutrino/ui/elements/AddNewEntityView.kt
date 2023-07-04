@@ -2,37 +2,112 @@ package com.neutrino.ui.elements
 
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.util.TableUtils
+import com.kotcrab.vis.ui.util.dialog.Dialogs
+import com.kotcrab.vis.ui.util.dialog.OptionDialogAdapter
 import com.kotcrab.vis.ui.widget.*
 import com.neutrino.entities.attributes.Identity
+import com.neutrino.ui.attributes.AttributeView
 import com.neutrino.ui.attributes.TextureAttributeView
+import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 class AddNewEntityView: VisTable() {
 
+    private val saveButton = VisTextButton("save")
     private val nameTextField = VisTextField()
     private val identityTable = VisTableNested()
     private val identityList = Identity::class.nestedClasses.map { it.simpleName }
+    private val attributeTable = VisTable()
+    private val addedAttributes = mutableSetOf<AttributeView>()
+    private val attributeList = mapOf<String, KClass<out AttributeView>>(
+        "TextureAttribute" to TextureAttributeView::class,
+    )
 
     init {
         TableUtils.setSpacingDefaults(this)
         columnDefaults(0).left()
+        padTop(0f)
         top()
-        add(nameTextField).growX().padLeft(32f).padRight(32f).row()
+
+        val title = ViewTitle("Add new entity") {
+            println("BackButtonClicked")
+        }
+        saveButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                saveEntity()
+            }
+        })
+        saveButton.isDisabled = true
+        nameTextField.setTextFieldListener { _, _ -> validateSave() }
+        title.add(saveButton).right()
+        title.setDebug(true, true)
+
+        add(title).growX().padTop(16f).row()
+        add(nameTextField).growX().padLeft(32f).padRight(32f).padTop(32f).row()
         identityTable.columnDefaults(0).left()
         identityTable.left()
         identityTable.add(getAddButton())
-        add(identityTable).growX().padTop(16f).row()
+        add(identityTable).growX().padTop(16f).padLeft(32f).padRight(32f).row()
+        add(attributeTable).growX().padTop(16f).row()
 
-        val attributeTable = VisTable()
+        val attributeParamsTable = VisTable()
+        val addAttributeButton = VisTextButton("+")
+        attributeParamsTable.add(addAttributeButton).left().padLeft(32f)
+        attributeParamsTable.add(VisLabel("Add Attribute")).left().padLeft(32f)
+        add(attributeParamsTable).row()
+        addAttributeButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                val menu = PopupMenu()
+                println(attributeList.keys)
+                println("Names:")
+                println(addedAttributes.map { it.attributeName }.toSet())
+                val remainingAttributes = attributeList.keys.minus(addedAttributes.map { it.attributeName }.toSet())
+                remainingAttributes.forEach {
+                    menu.addItem(MenuItem(it.toString(), object : ChangeListener() {
+                        override fun changed(event: ChangeEvent?, actor: Actor?) {
+                            addAttribute(attributeList[it.toString()]!!)
+                            validateSave()
+                        }
+                    }))
+                }
+                menu.showMenu(stage, actor)
+            }
+        })
+    }
+
+    fun addAttribute(attribute: KClass<out AttributeView>) {
+        val attributeParamsTable = VisTable()
+        val attributeView = attribute.createInstance()
         val attributeCheckBox = VisCheckBox("")
-        val attributeView = TextureAttributeView()
+        attributeParamsTable.background = nameTextField.style.background
         attributeCheckBox.isChecked = true
         attributeCheckBox.addListener(attributeView.getCollapseListener())
+        val deleteButton = VisImageButton(VisUI.getSkin().getDrawable("icon-close"))
+        deleteButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                Dialogs.showOptionDialog(stage,
+                    "Delete ${attributeView.attributeName}?",
+                    "",
+                    Dialogs.OptionDialogType.YES_NO,
+                    object : OptionDialogAdapter() {
+                        override fun yes() {
+                            attributeTable.removeActor(attributeParamsTable)
+                            attributeTable.removeActor(attributeView)
+                            addedAttributes.remove(attributeView)
+                            validateSave()
+                        }
+                    })
+            }
+        })
 
-        attributeTable.add(VisLabel("TextureAttribute")).expandX().left()
-        attributeTable.add(attributeCheckBox).right()
-        add(attributeTable).growX().row()
-        add(attributeView).growX().row()
+        attributeParamsTable.add(VisLabel(attributeView.attributeName)).expandX().left().padLeft(32f)
+        attributeParamsTable.add(deleteButton).right().padRight(16f)
+        attributeParamsTable.add(attributeCheckBox).right()
+        attributeTable.add(attributeParamsTable).growX().row()
+        attributeTable.add(attributeView).growX().row()
+        addedAttributes.add(attributeView)
     }
 
     override fun getPrefHeight(): Float {
@@ -76,5 +151,24 @@ class AddNewEntityView: VisTable() {
                 getIdentityList().showMenu(stage, actor)
             }
         })
+    }
+
+    private fun validateSave() {
+        var enabled = true
+        if (nameTextField.text.isEmpty())
+            enabled = false
+        if (addedAttributes.size == 0)
+            enabled = false
+        for (attribute in addedAttributes) {
+            if (!attribute.validateAttribute()) {
+                enabled = false
+                return
+            }
+        }
+        saveButton.isDisabled = !enabled
+    }
+
+    private fun saveEntity() {
+
     }
 }

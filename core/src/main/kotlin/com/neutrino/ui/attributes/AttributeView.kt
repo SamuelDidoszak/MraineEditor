@@ -11,6 +11,9 @@ abstract class AttributeView(internal val table: Table): CollapsibleWidget(table
 
     abstract fun generateString(): String
     open fun onSaveAction() {}
+    open fun validateAttribute(): Boolean {
+        return true
+    }
 
     fun getCollapseListener(): ChangeListener {
         return object : ChangeListener() {
