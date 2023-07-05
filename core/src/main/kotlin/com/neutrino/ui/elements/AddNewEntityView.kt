@@ -42,7 +42,6 @@ class AddNewEntityView: VisTable() {
         saveButton.isDisabled = true
         nameTextField.setTextFieldListener { _, _ -> validateSave() }
         title.add(saveButton).right()
-        title.setDebug(true, true)
 
         add(title).growX().padTop(16f).row()
         add(nameTextField).growX().padLeft(32f).padRight(32f).padTop(32f).row()
@@ -169,6 +168,8 @@ class AddNewEntityView: VisTable() {
     }
 
     private fun saveEntity() {
-
+        for (attribute in addedAttributes) {
+            attribute.onSaveAction()
+        }
     }
 }

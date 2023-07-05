@@ -10,6 +10,10 @@ data class Light(
     val radius: Float = setRadius(intensity)
 ) {
 
+    override fun toString(): String {
+        return "Light($x, $y, Color($color), ${"%.3f".format(intensity)}, ${"%.3f".format(radius)})"
+    }
+
     companion object {
         private fun setRadius(intensity: Float): Float {
             return when (intensity.toInt()) {

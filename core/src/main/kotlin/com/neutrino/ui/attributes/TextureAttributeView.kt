@@ -60,6 +60,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     textureBuilder.build(
                         textureMap.key,
                         ATLAS_NAME,
+                        textureMap.value.lights,
                         textureMap.value.x,
                         textureMap.value.y,
                         textureMap.value.z
@@ -71,6 +72,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     ATLAS_NAME,
                     textureTable.getAnimationState() == 1,
                     textureTable.getFps(textureTable.findActor("main")),
+                    textureTable.animatedTextureSprite!!.lights,
                     textureTable.animatedTextureSprite!!.x,
                     textureTable.animatedTextureSprite!!.y,
                     textureTable.animatedTextureSprite!!.z,
@@ -328,13 +330,16 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 val y = getFromPositionTable("y", table).textField.text.toFloat()
                 val z = getFromPositionTable("z", table).textField.text.toInt()
                 val regions = Array<AtlasRegion>()
+                val lightSources = LightSources()
                 textures.forEach {
                     regions.add(it.value.texture)
+                    lightSources.add(it.value.lights?.getLights())
                 }
                 animatedTextureSprite = AnimatedTextureSprite(
                     regions,
                     true,
                     getFps(table),
+                    lightSources,
                     x, y, z
                 )
                 if (textureView != null)

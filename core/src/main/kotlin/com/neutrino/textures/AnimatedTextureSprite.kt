@@ -12,6 +12,19 @@ class AnimatedTextureSprite(
     y: Float = 0f,
     z: Int = 1
 ): TextureSprite(textureList[0], x, y, z) {
+
+    constructor(
+        textureList: Array<AtlasRegion>,
+        looping: Boolean = true,
+        animationSpeed: Float = 0.16666667f,
+        lightSources: LightSources,
+        x: Float = 0f,
+        y: Float = 0f,
+        z: Int = 1
+    ): this(textureList, looping, animationSpeed, x, y, z) {
+        this.lights = lightSources
+    }
+
     private val animation = Animation<AtlasRegion>(
         animationSpeed, textureList,
         if (looping) Animation.PlayMode.LOOP else Animation.PlayMode.NORMAL

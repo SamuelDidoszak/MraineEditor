@@ -1,6 +1,7 @@
 package com.neutrino.builders
 
 import com.badlogic.gdx.files.FileHandle
+import com.neutrino.textures.LightSources
 import ktx.script.KotlinScriptEngine
 
 class TextureBuilder {
@@ -9,26 +10,31 @@ class TextureBuilder {
     private val texturesFile = FileHandle("core/AddTextures.kts")
     private val stringBuilder = StringBuilder(300)
 
-    fun build(name: String, atlasName: String, x: Float = 0f, y: Float = 0f, z: Int = 1) {
+    fun build(name: String, atlasName: String, lightSources: LightSources?, x: Float = 0f, y: Float = 0f, z: Int = 1) {
         stringBuilder.setLength(0)
-        stringBuilder.append("Textures add TextureSprite(" +
-            "Textures.atlases[\"$atlasName\"]!!.findRegion(\"$name\")")
+        stringBuilder.append("Textures add TextureSprite(get(\"$atlasName\", \"$name\")")
+        if (lightSources != null)
+            stringBuilder.append(", $lightSources")
         addXYZ(x, y, z)
         stringBuilder.append(")")
 
-        addToFile(stringBuilder.toString())
+//        addToFile(stringBuilder.toString())
     }
 
-    fun buildAnimation(names: List<String>, atlasName: String, looping: Boolean, speed: Float,
+    fun buildAnimation(names: List<String>, atlasName: String, looping: Boolean, speed: Float, lightSources: LightSources?,
                        x: Float = 0f, y: Float = 0f, z: Int = 1) {
         stringBuilder.setLength(0)
         stringBuilder.append("Textures add AnimatedTextureSprite(getArray(\"$atlasName\", ")
-        stringBuilder.append(names.map { it -> "\"$it\", " })
+        for (name in names) {
+            stringBuilder.append("\"$name\", ")
+        }
         stringBuilder.append("), $looping, $speed")
+        if (lightSources != null)
+            stringBuilder.append(", $lightSources")
         addXYZ(x, y, z)
         stringBuilder.append(")")
 
-        addToFile(stringBuilder.toString())
+//        addToFile(stringBuilder.toString())
     }
 
     private fun addXYZ(x: Float, y: Float, z: Int) {
