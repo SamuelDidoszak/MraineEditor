@@ -1,13 +1,11 @@
 package com.neutrino.builders
 
-import com.badlogic.gdx.files.FileHandle
+import com.badlogic.gdx.Gdx
 import com.neutrino.textures.LightSources
-import ktx.script.KotlinScriptEngine
 
 class TextureBuilder {
-    val scriptEngine = KotlinScriptEngine()
 
-    private val texturesFile = FileHandle("core/AddTextures.kts")
+    private val texturesFile = Gdx.files.local("assets/core/AddTextures.kts")
     private val stringBuilder = StringBuilder(300)
 
     fun build(name: String, atlasName: String, lightSources: LightSources?, x: Float = 0f, y: Float = 0f, z: Int = 1) {

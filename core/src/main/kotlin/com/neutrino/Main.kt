@@ -17,9 +17,9 @@ class Main: ApplicationAdapter() {
 
     override fun create() {
         val scriptEngine = KotlinScriptEngine()
-        scriptEngine.evaluate(Gdx.files.internal("core/AddTextures.kts"))
-        scriptEngine.evaluate(Gdx.files.internal("core/AddEditorTextures.kts"))
-        scriptEngine.evaluate(Gdx.files.internal("core/AddEntities.kts"))
+        scriptEngine.evaluate(Gdx.files.local("assets/core/AddTextures.kts"))
+        scriptEngine.evaluate(Gdx.files.local("assets/core/AddEditorTextures.kts"))
+        scriptEngine.evaluate(Gdx.files.local("assets/core/AddEntities.kts"))
 
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("ui/uiskin.json"))
         VisUI.load(VisUI.SkinScale.X2)

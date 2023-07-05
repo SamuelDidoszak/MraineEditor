@@ -1,5 +1,6 @@
 package com.neutrino.ui.elements
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.kotcrab.vis.ui.VisUI
@@ -59,9 +60,6 @@ class AddNewEntityView: VisTable() {
         addAttributeButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 val menu = PopupMenu()
-                println(attributeList.keys)
-                println("Names:")
-                println(addedAttributes.map { it.attributeName }.toSet())
                 val remainingAttributes = attributeList.keys.minus(addedAttributes.map { it.attributeName }.toSet())
                 remainingAttributes.forEach {
                     menu.addItem(MenuItem(it.toString(), object : ChangeListener() {
@@ -168,8 +166,28 @@ class AddNewEntityView: VisTable() {
     }
 
     private fun saveEntity() {
+        val entitiesFile = Gdx.files.local("assets/core/AddEntities.kts")
+        val builder = StringBuilder(300)
+        builder.append("Entities.add(\"${nameTextField.text}\") {\n\tEntity()\n")
+
+        val identities = identityTable.getElements().map { (it as? VisTextButton)?.text.toString() }
+        if (identities.size > 1)
+            builder.append("\t\t")
+        for (i in 0 until identities.size - 1) {
+            builder.append(".addAttribute(Identity.${identities[i]}())")
+        }
+        if (identities.size > 1)
+            builder.append("\n")
+
         for (attribute in addedAttributes) {
             attribute.onSaveAction()
+            builder.append("\t\t.addAttribute(")
+            builder.append(attribute.generateString())
+            builder.append(")\n")
         }
+        builder.append("}")
+
+        entitiesFile.writeString(builder.toString(), true)
+        println(builder.toString())
     }
 }

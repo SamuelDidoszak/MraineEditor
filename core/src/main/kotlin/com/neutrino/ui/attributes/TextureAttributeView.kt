@@ -89,11 +89,13 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 builder.append("\t")
         }
         fun addTexture(textureName: String) {
-            builder.append("textures.add(Textures.get(\"$textureName\")")
+            builder.append("textures.add(Textures.get(\"$textureName\"))")
         }
 
         builder.append("TextureAttribute { position, random, textures -> run {")
         for (textureTable in textureTables) {
+            if (textureTable.textures.isEmpty())
+                continue
             addIndicedLine(1)
             if (textureTable.getAnimationState() == 0) {
                 //TODO random texture with probability from provided set
@@ -104,7 +106,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
         }
 
         addIndicedLine()
-        builder.append("}})")
+        builder.append("}}")
         return builder.toString()
     }
 
