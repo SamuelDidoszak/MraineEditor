@@ -9,7 +9,9 @@ class DestructableAttribute(var entityHp: Float): Attribute() {
     init {
         if (!(entity has InteractionAttribute::class))
             entity addAttribute InteractionAttribute(arrayListOf())
-        entity.get(InteractionAttribute::class)!!.interactionList.add(Interaction.DESTROY(entity))
+        val interaction = Interaction.DESTROY()
+        interaction.entity = entity
+        entity.get(InteractionAttribute::class)!!.interactionList.add(interaction)
     }
 
 //    fun getDamage(data: AttackData, coord: Coord) {

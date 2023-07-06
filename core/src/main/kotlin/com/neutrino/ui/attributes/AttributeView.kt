@@ -14,6 +14,13 @@ abstract class AttributeView(internal val table: Table): CollapsibleWidget(table
     open fun validateAttribute(): Boolean {
         return true
     }
+//
+//    override fun setWidth(width: Float) {
+//        println("called")
+//        super.setWidth(width)
+//        table.width = width
+//        println("table ${table.width}")
+//    }
 
     fun getCollapseListener(): ChangeListener {
         return object : ChangeListener() {

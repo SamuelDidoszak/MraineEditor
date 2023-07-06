@@ -10,6 +10,8 @@ import com.kotcrab.vis.ui.util.dialog.OptionDialogAdapter
 import com.kotcrab.vis.ui.widget.*
 import com.neutrino.entities.attributes.Identity
 import com.neutrino.ui.attributes.AttributeView
+import com.neutrino.ui.attributes.InteractionAttributeView
+import com.neutrino.ui.attributes.MapParamsAttributeView
 import com.neutrino.ui.attributes.TextureAttributeView
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -24,6 +26,8 @@ class AddNewEntityView: VisTable() {
     private val addedAttributes = mutableSetOf<AttributeView>()
     private val attributeList = mapOf<String, KClass<out AttributeView>>(
         "TextureAttribute" to TextureAttributeView::class,
+        "MapParamsAttribute" to MapParamsAttributeView::class,
+        "InteractionAttribute" to InteractionAttributeView::class,
     )
 
     init {
@@ -77,6 +81,7 @@ class AddNewEntityView: VisTable() {
     fun addAttribute(attribute: KClass<out AttributeView>) {
         val attributeParamsTable = VisTable()
         val attributeView = attribute.createInstance()
+//        attributeView.width = width
         val attributeCheckBox = VisCheckBox("")
         attributeParamsTable.background = nameTextField.style.background
         attributeCheckBox.isChecked = true
@@ -187,7 +192,7 @@ class AddNewEntityView: VisTable() {
         }
         builder.append("}")
 
-        entitiesFile.writeString(builder.toString(), true)
+//        entitiesFile.writeString(builder.toString(), true)
         println(builder.toString())
     }
 }
