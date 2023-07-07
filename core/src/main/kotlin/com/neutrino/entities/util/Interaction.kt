@@ -9,9 +9,9 @@ sealed class Interaction(var requiredDistance: Int, var isPrimary: Boolean, var 
 
     open fun act() {}
 
-    open class DOOR(): Interaction(1, true,"", turnCost = 1.0) {
+    open class DOOR(): Interaction(1, true,"", turnCost = 1.0), RequiresEntityParameter {
 
-        lateinit var entity: Entity
+        override lateinit var entity: Entity
         var open = false
         override fun act() {
             open = !open
@@ -27,8 +27,8 @@ sealed class Interaction(var requiredDistance: Int, var isPrimary: Boolean, var 
 
     class ITEM: Interaction(0, true, "", turnCost = 1.0)
 
-    class DESTROY(): Interaction(1, true, "", 1.0) {
-        lateinit var entity: Entity
+    class DESTROY(): Interaction(1, true, "", 1.0), RequiresEntityParameter {
+        override lateinit var entity: Entity
     }
 
     class OPEN: Interaction(1, true, "", 1.0)

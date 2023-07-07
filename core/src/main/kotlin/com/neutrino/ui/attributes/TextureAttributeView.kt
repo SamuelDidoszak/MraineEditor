@@ -26,10 +26,7 @@ import com.neutrino.builders.TextureBuilder
 import com.neutrino.textures.*
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.elements.VisTableNested
-import com.neutrino.util.Constants
-import com.neutrino.util.FileChooserCallback
-import com.neutrino.util.Pixel
-import com.neutrino.util.PixelData
+import com.neutrino.util.*
 
 class TextureAttributeView: AttributeView(VisTable()) {
 
@@ -52,8 +49,9 @@ class TextureAttributeView: AttributeView(VisTable()) {
     }
 
     override fun onSaveAction() {
+        val textureAtlasGenerator = TextureAtlasGenerator(ATLAS_NAME.substringBefore('.'))
+        textureAtlasGenerator.generate(texturesToAtlas)
         val textureBuilder = TextureBuilder()
-        //TODO add textures to atlas
         for (textureTable in textureTables) {
             if (textureTable.getAnimationState() == 0) {
                 for (textureMap in textureTable.textures) {
