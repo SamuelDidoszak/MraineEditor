@@ -9,16 +9,12 @@ import kotlin.random.Random
 
 class TextureAttribute(
     private val setTextures: (position: OnMapPosition?,
-                              random: Random?,
+                              random: Random,
                               textures: ArrayList<TextureSprite>) -> Unit
 ): Attribute() {
     val textures: TextureList = TextureList()
 
-    fun setTextures() {
-        setTextures(null, null)
-    }
-
-    fun setTextures(onMapPosition: OnMapPosition?, randomGenerator: Random?) {
+    fun setTextures(onMapPosition: OnMapPosition?, randomGenerator: Random) {
         setTextures.invoke(onMapPosition, randomGenerator, textures)
     }
 

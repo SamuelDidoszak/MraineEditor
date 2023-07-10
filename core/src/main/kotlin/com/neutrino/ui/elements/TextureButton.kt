@@ -10,20 +10,22 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.Pools
 import com.neutrino.textures.AnimatedTextureSprite
 import com.neutrino.textures.TextureSprite
+import com.neutrino.ui.elements.util.ScalableTexture
 import com.neutrino.util.Constants
-import kotlin.math.abs
-import kotlin.math.min
 
 open class TextureButton(initTexture: TextureSprite): Actor() {
 
-    var texture: TextureSprite = initTexture
-        set(value) {
-            field = value
-            updateScale()
-        }
-    private val textureAttributes = TextureAttributes()
+    private var scalableTexture: ScalableTexture = ScalableTexture(initTexture, width, height)
+
+    var texture: TextureSprite
+        set(value) {scalableTexture.texture = value}
+        get() = scalableTexture.texture
 
     var centered = true
+        set(value) {
+            field = value
+            scalableTexture.centered = value
+        }
     private var checked = false
     var disabled = false
         set(value) {
@@ -96,44 +98,22 @@ open class TextureButton(initTexture: TextureSprite): Actor() {
         }
         batch?.color = getOverlayingColor()
         batch?.draw(texture.texture,
-            x + textureAttributes.offsetX + texture.x.positiveOrZero(textureAttributes.offsetX) * textureAttributes.scale,
-            y + textureAttributes.offsetY + texture.y.positiveOrZero(textureAttributes.offsetY) * textureAttributes.scale,
-            textureAttributes.width, textureAttributes.height)
+            x + scalableTexture.offsetX + texture.x.positiveOrZero(scalableTexture.offsetX) * scalableTexture.scale,
+            y + scalableTexture.offsetY + texture.y.positiveOrZero(scalableTexture.offsetY) * scalableTexture.scale,
+            scalableTexture.width, scalableTexture.height)
+//        scalableTexture.draw(batch, parentAlpha, x, y)
+        additionalDrawCalls(batch, parentAlpha)
         batch?.color = Color.WHITE
     }
+
+    open fun additionalDrawCalls(batch: Batch?, parentAlpha: Float) {}
 
     private fun Float.positiveOrZero(offset: Float): Float = if (this + offset >= 0f) this else 0f
 
     override fun setSize(width: Float, height: Float) {
         super.setSize(width, height)
-        updateScale()
+        scalableTexture.updateScale(width, height)
     }
-
-    private fun updateScale() {
-        val wScale: Float = width / (texture.texture.regionWidth + abs(texture.x) * if(centered) 2 else 1)
-        val hScale: Float = height / (texture.texture.regionHeight + abs(texture.y) * if(centered) 2 else 1)
-        val scale = min(wScale, hScale)
-        textureAttributes.scale = scale
-        textureAttributes.width = texture.width() * scale
-        textureAttributes.height = texture.height() * scale
-
-        if (!centered) {
-            textureAttributes.offsetX = 0f
-            textureAttributes.offsetY = 0f
-            return
-        }
-
-        textureAttributes.offsetX = (width - textureAttributes.width) / 2
-        textureAttributes.offsetY = (height - textureAttributes.height) / 2
-    }
-
-    private data class TextureAttributes(
-        var scale: Float = 1f,
-        var width: Float = 0f,
-        var height: Float = 0f,
-        var offsetX: Float = 0f,
-        var offsetY: Float = 0f
-    )
 }
 
 

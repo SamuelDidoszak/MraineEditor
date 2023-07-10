@@ -17,6 +17,10 @@ class Main: ApplicationAdapter() {
 
     override fun create() {
         val scriptEngine = KotlinScriptEngine()
+        scriptEngine.importAll(listOf("com.neutrino.entities.*", "com.neutrino.entities.attributes.*",
+            "com.neutrino.entities.callables.*", "com.neutrino.entities.util.*",
+            "com.neutrino.textures.Textures", "com.neutrino.textures.TextureSprite",
+            "com.neutrino.textures.AnimatedTextureSprite"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddTextures.kts"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddEditorTextures.kts"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddEntities.kts"))

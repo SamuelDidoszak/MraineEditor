@@ -24,6 +24,7 @@ import com.kotcrab.vis.ui.widget.spinner.Spinner
 import com.kotcrab.vis.ui.widget.spinner.Spinner.SpinnerStyle
 import com.neutrino.builders.TextureBuilder
 import com.neutrino.textures.*
+import com.neutrino.ui.elements.RulePickerButton
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.elements.VisTableNested
 import com.neutrino.util.*
@@ -34,6 +35,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
     private val ATLAS_NAME = "entities.atlas"
     private val addImage = TextureSprite(TextureAtlas.AtlasRegion(
         Texture(Gdx.files.internal("AddButton96.png")), 0, 0, 96, 96))
+    private val rulePickerImage = TextureSprite(TextureAtlas.AtlasRegion(
+        Texture(Gdx.files.internal("rulePicker2.png")), 0, 0, 100, 100))
     private val textureTables = ArrayList<TextureTable>()
     private val texturesToAtlas = ArrayList<FileHandle>()
 
@@ -150,6 +153,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             mainTextureTable.add(addTextureContainer(mainTextureTable)).size(128f).left()
             mainTextureTable.add(addPositionTable(mainTextureTable)).padLeft(8f)
             mainTextureTable.add(addParametersTable(mainTextureTable)).growY().left()
+            mainTextureTable.add(addRulesTable(mainTextureTable)).growY().left()
             setVisible(mainTextureTable, false)
             add(mainTextureTable).growX().row()
 
@@ -306,6 +310,17 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
             paramsTable.add(lightsTable).expandX().left()
             return paramsTable
+        }
+        private fun addRulesTable(table: VisTable): VisTable {
+            val rulesTable = VisTable()
+            rulesTable.name = "rulesTable"
+            rulesTable.top()
+
+            val rulePickerButton = RulePickerButton(rulePickerImage)
+            rulePickerButton.setSize(100f, 100f)
+            rulesTable.add(rulePickerButton).row()
+
+            return rulesTable
         }
 
         override fun act(delta: Float) {
@@ -516,6 +531,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 getTextureContainer(table).actor = textureView
                 setVisible(table, true)
                 addTextureTable()
+                println("Table name: ${table.name}")
+                println("Height: ${table.height}")
             }
         }
     }
