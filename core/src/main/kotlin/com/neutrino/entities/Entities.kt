@@ -1,5 +1,8 @@
 package com.neutrino.entities
 
+import java.util.*
+import kotlin.random.Random
+
 
 object Entities {
     private val entityIds: HashMap<String, Int> = HashMap()
@@ -48,5 +51,38 @@ object Entities {
             println("Entity with id: $id ${if (id < entityNames.size) "name: ${entityNames[id]} " else ""}does not exist!")
         }
         throw Exception()
+    }
+
+    /**
+     * Picks one texture name from provided with and equal probability
+     * Returns null if $to value was higher than value
+     */
+    fun getRandomTexture(randomValue: Float, until: Float = 100f, textures: List<String>): String? {
+        val increment = until / textures.size
+        var max = increment
+        for (texture in textures) {
+            if (randomValue < max)
+                return texture
+            max += increment
+        }
+        return null
+    }
+
+    /**
+     * Picks one texture name from provided with and equal probability
+     * Returns the first texture if wrong data was provided
+     */
+    fun getRandomTexture(random: Random, texturesPercent: SortedMap<Float, List<String>>): String? {
+        val randVal = random.nextFloat() * 100f
+        var texture: String? = null
+        var from = 0f
+        for (textureMap in texturesPercent) {
+            val step = (textureMap.key - from) / textureMap.value.size
+            if (randVal <= textureMap.key)
+                texture = textureMap.value[(randVal / step).toInt()]
+
+            from = textureMap.key
+        }
+        return texture
     }
 }

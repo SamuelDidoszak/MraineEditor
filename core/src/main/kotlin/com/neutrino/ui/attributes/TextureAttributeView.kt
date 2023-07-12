@@ -91,19 +91,88 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 builder.append("\t")
         }
         fun addTexture(textureName: String) {
-            builder.append("textures.add(Textures.get(\"$textureName\"))")
+            builder.append("textures add Textures.get(\"$textureName\")")
+        }
+
+        fun addBlock() {
+            builder.append(" ?: return@run")
+        }
+        var randValAdded = false
+        fun addRandValOnce() {
+            if (randValAdded)
+                return
+            builder.append("val randVal = random.nextFloat() * 100")
+            addIndicedLine(1)
+            randValAdded = true
+        }
+        fun addTextureListString(textureTable: TextureTable) {
+            builder.append("listOf(")
+            for (texture in textureTable.textures.keys) {
+                builder.append("\"$texture\", ")
+            }
+            builder.delete(builder.length - 2, builder.length)
+            builder.removeRange(builder.length - 2, builder.length)
+            builder.append(")")
+        }
+        fun addSingleRandomTexture(textureTable: TextureTable) {
+            builder.append("textures add Textures.getOrNull(Entities.getRandomTexture(randVal, 100f, ")
+            addTextureListString(textureTable)
+            builder.append(")")
+            if (textureTable.isBlock())
+                addBlock()
+            builder.append(")")
+        }
+        fun addMultipleRandomTextures(textureTable: TextureTable) {
+            builder.append("${textureTable.getProbability().toInt()}f to ")
+            addTextureListString(textureTable)
+            builder.append(",")
+        }
+        fun addBlockAlt() {
+            builder.append(".also { if (it != null) return@run }!!")
         }
 
         builder.append("TextureAttribute { position, random, textures -> run {")
-        for (textureTable in textureTables) {
+
+        var block = false
+        var chained = false
+        for (i in 0 until textureTables.size - 1) {
+            val textureTable = textureTables[i]
             if (textureTable.textures.isEmpty())
                 continue
             addIndicedLine(1)
-            if (textureTable.getAnimationState() == 0) {
-                //TODO random texture with probability from provided set
-                addTexture(textureTable.textures.keys.first())
+
+            if (textureTable.isChained()) {
+                if (!block && textureTable.isBlock())
+                    block = true
+
+                if (!chained && (i in textureTables.indices && !textureTables[i + 1].isChained()) ||
+                    i == textureTables.size - 1) {
+                    addRandValOnce()
+                    addSingleRandomTexture(textureTable)
+                    continue
+                }
+                if (!chained) {
+                    builder.append("textures add Textures.getOrNull(Entities.getRandomTexture(random, sortedMapOf(")
+                    addIndicedLine(1)
+                }
+                builder.append("\t")
+                chained = true
+                addMultipleRandomTextures(textureTable)
             } else {
-                addTexture(textureTable.textures.keys.first().substringBefore('#'))
+                if (chained) {
+                    builder.append("))")
+                    if (block)
+                        addBlock()
+                    builder.append(")")
+                    addIndicedLine(1)
+                }
+                chained = false
+                block = textureTable.isBlock()
+                if (textureTable.getAnimationState() == 0) {
+                    addTexture(textureTable.textures.keys.first())
+                } else {
+                    addTexture(textureTable.textures.keys.first().substringBefore('#'))
+                }
             }
         }
 
@@ -555,6 +624,12 @@ class TextureAttributeView: AttributeView(VisTable()) {
         }
         fun getTextureLinkState(): Int {
             return textureLinkButton.state
+        }
+        fun isChained(): Boolean {
+            return textureLinkButton.state == 0 || textureLinkButton.state == 3
+        }
+        fun isBlock(): Boolean {
+            return textureLinkButton.state == 2 || textureLinkButton.state == 3
         }
 
         private fun getFile(table: VisTable, textureView: TextureButton) {

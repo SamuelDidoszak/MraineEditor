@@ -37,6 +37,7 @@ Textures.add(AnimatedTextureSprite(getArray("animationButton",
 Textures add TextureSprite(get("icons", "addTexture"))
 Textures add TextureSprite(get("icons", "chainTexture"))
 Textures add TextureSprite(get("icons", "stopTexture"))
+Textures add TextureSprite(get("icons", "chainStopTexture"))
 
 
 

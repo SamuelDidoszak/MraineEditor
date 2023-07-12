@@ -22,4 +22,10 @@ object Textures {
     infix fun get(name: String): TextureSprite {
         return textures[name]!!
     }
+
+    infix fun getOrNull(name: String?): TextureSprite? {
+        if (name == null)
+            return null
+        return textures[name]
+    }
 }

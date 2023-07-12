@@ -37,7 +37,9 @@ fun <T> ArrayList<T>.addInitial(element: T): ArrayList<T> {
     return this
 }
 
-infix fun <T> ArrayList<T>.add(element: T): Boolean {
+infix fun <T> ArrayList<T>.add(element: T?): Boolean {
+    if (element == null)
+        return false
     return add(element)
 }
 

@@ -1,7 +1,9 @@
 icons.png
-	size: 64, 32
+	size: 128, 32
 	repeat: none
 addTexture
+	bounds: 64, 1, 20, 20
+chainStopTexture
 	bounds: 43, 1, 20, 20
 chainTexture
 	bounds: 1, 1, 20, 20
