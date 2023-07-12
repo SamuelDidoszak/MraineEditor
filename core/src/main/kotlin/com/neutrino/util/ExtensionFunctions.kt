@@ -1,5 +1,7 @@
 package com.neutrino.util
 
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -33,4 +35,16 @@ fun <T> Array<T>.addInitial(element: T): Array<T> {
 fun <T> ArrayList<T>.addInitial(element: T): ArrayList<T> {
     add(element)
     return this
+}
+
+infix fun <T> ArrayList<T>.add(element: T): Boolean {
+    return add(element)
+}
+
+fun getChangeListener(method: (event: ChangeListener.ChangeEvent?, actor: Actor?) -> Unit): ChangeListener {
+    return object : ChangeListener() {
+        override fun changed(event: ChangeEvent?, actor: Actor?) {
+            method.invoke(event, actor)
+        }
+    }
 }

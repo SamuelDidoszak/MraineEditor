@@ -25,6 +25,7 @@ import com.kotcrab.vis.ui.widget.spinner.Spinner.SpinnerStyle
 import com.neutrino.builders.TextureBuilder
 import com.neutrino.textures.*
 import com.neutrino.ui.elements.RulePickerButton
+import com.neutrino.ui.elements.TextField
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.elements.VisTableNested
 import com.neutrino.util.*
@@ -142,6 +143,25 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     0 -> Textures.get("animationButton")
                     1 -> Textures.get("animationButtonLooping")
                     2 -> Textures.get("animationButtonForward")
+                    else -> {texture}
+                }
+            }
+        }
+
+        private val textureLinkButton = object: TextureButton(Textures.get("chainTexture")) {
+            var state = 0
+                private set
+            fun newState() {
+                state += 1
+                state %= 3
+                changeTexture()
+            }
+
+            private fun changeTexture() {
+                texture = when (state) {
+                    0 -> Textures.get("chainTexture")
+                    1 -> Textures.get("addTexture")
+                    2 -> Textures.get("stopTexture")
                     else -> {texture}
                 }
             }
@@ -303,12 +323,12 @@ class TextureAttributeView: AttributeView(VisTable()) {
             val lightsTable = VisTableNested()
             lightsTable.name = "lightsTable"
             lightsTable.top()
-            lightsTable.width = 112f
+            lightsTable.width = 97f
             lightsTable.maxHeight = 43f
             if (table.name != "main")
                 lightsTable.maxHeight = lightsTable.maxHeight!! * 2
 
-            paramsTable.add(lightsTable).expandX().left()
+            paramsTable.add(lightsTable).expandX().center()
             return paramsTable
         }
         private fun addRulesTable(table: VisTable): VisTable {
@@ -318,9 +338,83 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
             val rulePickerButton = RulePickerButton(rulePickerImage)
             rulePickerButton.setSize(100f, 100f)
+            val sprite = TextureSprite(TextureAtlas.AtlasRegion(
+                Texture(Gdx.files.internal("barrel.png")), 0, 0, 16, 16))
+            val sprite2 = TextureSprite(TextureAtlas.AtlasRegion(
+                Texture(Gdx.files.internal("standingTorch\$2#1.png")), 0, 0, 16, 32))
+            rulePickerButton.setTopLeft(sprite)
+            rulePickerButton.setRight(sprite)
+            rulePickerButton.setLeft(sprite2)
+
+            val percentageTable = VisTable()
+            percentageTable.height = 28f
+            val probabilityText = TextField(getChainedProbability().toInt().toString())
+            probabilityText.name = "probability"
+            probabilityText.width = 55f // 75
+            probabilityText.height = 28f
+            textureLinkButton.setSize(36f, 36f)
+            textureLinkButton.addListener(getChangeListener { _, _ ->
+                textureLinkButton.newState()
+                updateProbabilities()
+            })
+            percentageTable.add(textureLinkButton).padRight(4f)
+            percentageTable.add(probabilityText).expandX()
+            percentageTable.add(VisLabel("%"))
+
             rulesTable.add(rulePickerButton).row()
+            rulesTable.add(percentageTable).expandX()
 
             return rulesTable
+        }
+        fun getProbability(): Float {
+            return (children.get(0) as VisTable).findActor<TextField>("probability").text.toFloat()
+        }
+        fun setProbability(probability: Float) {
+            (children.get(0) as VisTable).findActor<TextField>("probability")
+                .text = probability.toInt().toString()
+        }
+        fun getChainedProbability(): Float {
+            var probabilitySum = 100f
+            if (textureTables.isEmpty())
+                return probabilitySum
+
+            var index = textureTables.size
+            if (!children.isEmpty)
+                index = textureTables.indexOf(this)
+            if (index == -1)
+                index = textureTables.size
+
+            for (i in (0 until index).reversed()) {
+                if (textureTables[i].getTextureLinkState() != 0)
+                    break
+                probabilitySum -= textureTables[i].getProbability()
+            }
+            return probabilitySum
+        }
+        private var previousChainedProbability = 100f
+        fun updateProbabilities() {
+            var endIndex = textureTables.size
+            if (!children.isEmpty)
+                endIndex = textureTables.indexOf(this)
+            if (endIndex == -1)
+                endIndex = textureTables.size
+
+            if (getTextureLinkState() == 0) {
+                (children.get(0) as VisTable).findActor<TextField>("probability").text =
+                    previousChainedProbability.toInt().toString()
+                if (endIndex != 0 && textureTables[endIndex - 1].getTextureLinkState() == 0)
+                    textureTables[endIndex - 1].setProbability(
+                        textureTables[endIndex - 1].getProbability() - previousChainedProbability)
+
+            }
+            if (getTextureLinkState() == 1) {
+                previousChainedProbability = getProbability()
+                (children.get(0) as VisTable).findActor<TextField>("probability").text = "100"
+                if (endIndex != 0 && textureTables[endIndex - 1].getTextureLinkState() == 0)
+                    textureTables[endIndex - 1].setProbability(
+                        textureTables[endIndex - 1].getProbability() + previousChainedProbability
+                    )
+            }
         }
 
         override fun act(delta: Float) {
@@ -458,6 +552,9 @@ class TextureAttributeView: AttributeView(VisTable()) {
         }
         fun getAnimationState(): Int {
             return animationButton.state
+        }
+        fun getTextureLinkState(): Int {
+            return textureLinkButton.state
         }
 
         private fun getFile(table: VisTable, textureView: TextureButton) {

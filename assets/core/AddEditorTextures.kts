@@ -34,6 +34,9 @@ Textures.add(AnimatedTextureSprite(getArray("animationButton",
     "animationButtonForward#7", "animationButtonForward#8",
     "animationButtonForward#9", "animationButtonForward#10",
     "animationButtonForward#11", "animationButtonForward#12", ), animationSpeed = 0.125f))
+Textures add TextureSprite(get("icons", "addTexture"))
+Textures add TextureSprite(get("icons", "chainTexture"))
+Textures add TextureSprite(get("icons", "stopTexture"))
 
 
 
