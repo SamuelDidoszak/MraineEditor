@@ -53,7 +53,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
     }
 
     override fun onSaveAction() {
-        val textureAtlasGenerator = TextureAtlasGenerator(ATLAS_NAME.substringBefore('.'))
+        val atlasSubstring = ATLAS_NAME.substringBefore('.')
+        val textureAtlasGenerator = TextureAtlasGenerator(atlasSubstring)
         textureAtlasGenerator.generate(texturesToAtlas)
         val textureBuilder = TextureBuilder()
         for (textureTable in textureTables) {
@@ -61,7 +62,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 for (textureMap in textureTable.textures) {
                     textureBuilder.build(
                         textureMap.key,
-                        ATLAS_NAME,
+                        atlasSubstring,
                         textureMap.value.lights,
                         textureMap.value.x,
                         textureMap.value.y,
@@ -71,7 +72,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             } else {
                 textureBuilder.buildAnimation(
                     textureTable.textures.keys.toList(),
-                    ATLAS_NAME,
+                    atlasSubstring,
                     textureTable.getAnimationState() == 1,
                     textureTable.getFps(textureTable.findActor("main")),
                     textureTable.animatedTextureSprite!!.lights,
@@ -176,7 +177,11 @@ class TextureAttributeView: AttributeView(VisTable()) {
             }
         }
 
-        addIndicedLine()
+        if (chained) {
+            addIndicedLine()
+            builder.append(")))")
+        } else
+            addIndicedLine()
         builder.append("}}")
         return builder.toString()
     }
@@ -269,6 +274,13 @@ class TextureAttributeView: AttributeView(VisTable()) {
             innerTable.add(addParametersTable(innerTable, false)).growY().left()
             findActor<CollapsibleWidget>("collapsibleTextures")
                 .findActor<VisTable>("innerTextures").add(innerTable).growX().padTop(8f).row()
+
+            (getFromPositionTable("x", innerTable).model as IntSpinnerModel)
+                .setValue(textureSprite.x.toInt(), false)
+            (getFromPositionTable("y", innerTable).model as IntSpinnerModel)
+                .setValue(textureSprite.y.toInt(), false)
+            (getFromPositionTable("z", innerTable).model as IntSpinnerModel)
+                .setValue(textureSprite.z, false)
             return innerTable
         }
 
@@ -303,6 +315,18 @@ class TextureAttributeView: AttributeView(VisTable()) {
             return textureContainer
         }
         private fun addPositionTable(table: VisTable): VisTable {
+            fun refreshMainTexture(newTexture: TextureSprite, position: String, value: Int) {
+                if (table.name == "main") {
+                    getTextureButton(innerTables!!.first()).texture = newTexture
+                    (getFromPositionTable(position, innerTables!!.first()).model as IntSpinnerModel)
+                        .setValue(value, false)
+                } else {
+                    val mainTable = findActor<VisTable>("main")
+                    getTextureButton(mainTable).texture = newTexture
+                    (getFromPositionTable(position, mainTable).model as IntSpinnerModel)
+                        .setValue(value, false)
+                }
+            }
             val positionTable = VisTable()
             positionTable.name = "positionTable"
             val xSpinner = positionTable.addPosition("x", 0).actor
@@ -315,6 +339,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
                             textures[table.name]
                     texture!!.x = (actor as Group?)?.children?.get(1).toString().toFloat()
                     getTextureButton(table).texture = texture
+                    if (textures.size == 1)
+                        refreshMainTexture(texture, "x", texture.x.toInt())
                 }
             })
             positionTable.row()
@@ -328,6 +354,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
                             textures[table.name]
                     texture!!.y = (actor as Group?)?.children?.get(1).toString().toFloat()
                     getTextureButton(table).texture = texture
+                    if (textures.size == 1)
+                        refreshMainTexture(texture, "y", texture.y.toInt())
                 }
             })
             positionTable.row()
@@ -341,6 +369,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
                             textures[table.name]
                     texture!!.z = (actor as Group?)?.children?.get(1).toString().toInt()
                     getTextureButton(table).texture = texture
+                    if (textures.size == 1)
+                        refreshMainTexture(texture, "z", texture.z)
                 }
             })
             return positionTable
@@ -407,13 +437,6 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
             val rulePickerButton = RulePickerButton(rulePickerImage)
             rulePickerButton.setSize(100f, 100f)
-            val sprite = TextureSprite(TextureAtlas.AtlasRegion(
-                Texture(Gdx.files.internal("barrel.png")), 0, 0, 16, 16))
-            val sprite2 = TextureSprite(TextureAtlas.AtlasRegion(
-                Texture(Gdx.files.internal("standingTorch\$2#1.png")), 0, 0, 16, 32))
-            rulePickerButton.setTopLeft(sprite)
-            rulePickerButton.setRight(sprite)
-            rulePickerButton.setLeft(sprite2)
 
             val percentageTable = VisTable()
             percentageTable.height = 28f
@@ -709,11 +732,3 @@ class TextureAttributeView: AttributeView(VisTable()) {
         }
     }
 }
-
-
-
-
-
-
-
-

@@ -37,7 +37,9 @@ class AddNewEntityView: VisTable() {
         top()
 
         val title = ViewTitle("Add new entity") {
-            println("BackButtonClicked")
+            nameTextField.text = ""
+            attributeTable.clearChildren()
+            addedAttributes.clear()
         }
         saveButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -173,6 +175,8 @@ class AddNewEntityView: VisTable() {
     private fun saveEntity() {
         val entitiesFile = Gdx.files.local("assets/core/AddEntities.kts")
         val builder = StringBuilder(300)
+        if (entitiesFile.file().readText().last() == '}')
+            builder.append("\n")
         builder.append("Entities.add(\"${nameTextField.text}\") {\n\tEntity()\n")
 
         val identities = identityTable.getElements().map { (it as? VisTextButton)?.text.toString() }
@@ -192,7 +196,6 @@ class AddNewEntityView: VisTable() {
         }
         builder.append("}")
 
-//        entitiesFile.writeString(builder.toString(), true)
-        println(builder.toString())
+        entitiesFile.writeString(builder.toString(), true)
     }
 }

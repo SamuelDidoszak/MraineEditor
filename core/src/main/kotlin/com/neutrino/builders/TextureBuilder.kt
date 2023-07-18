@@ -14,9 +14,9 @@ class TextureBuilder {
         if (lightSources != null)
             stringBuilder.append(", $lightSources")
         addXYZ(x, y, z)
-        stringBuilder.append(")")
+        stringBuilder.append(")\n")
 
-//        addToFile(stringBuilder.toString())
+        addToFile(stringBuilder.toString())
     }
 
     fun buildAnimation(names: List<String>, atlasName: String, looping: Boolean, speed: Float, lightSources: LightSources?,
@@ -30,16 +30,20 @@ class TextureBuilder {
         if (lightSources != null)
             stringBuilder.append(", $lightSources")
         addXYZ(x, y, z)
-        stringBuilder.append(")")
+        stringBuilder.append(")\n")
 
-//        addToFile(stringBuilder.toString())
+        addToFile(stringBuilder.toString())
     }
 
     private fun addXYZ(x: Float, y: Float, z: Int) {
+        if (x == 0f && y == 0f && z != 1) {
+            stringBuilder.append(", z = $z")
+            return
+        }
         if (x != 0f || y != 0f || z != 1)
-            stringBuilder.append(", $x")
+            stringBuilder.append(", ${x.toInt()}f")
         if (y != 0f || z != 1)
-            stringBuilder.append(", $y")
+            stringBuilder.append(", ${y.toInt()}f")
         if (z != 1)
             stringBuilder.append(", $z")
     }
