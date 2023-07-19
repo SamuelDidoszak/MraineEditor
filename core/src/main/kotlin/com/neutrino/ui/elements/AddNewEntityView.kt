@@ -9,10 +9,7 @@ import com.kotcrab.vis.ui.util.dialog.Dialogs
 import com.kotcrab.vis.ui.util.dialog.OptionDialogAdapter
 import com.kotcrab.vis.ui.widget.*
 import com.neutrino.entities.attributes.Identity
-import com.neutrino.ui.attributes.AttributeView
-import com.neutrino.ui.attributes.InteractionAttributeView
-import com.neutrino.ui.attributes.MapParamsAttributeView
-import com.neutrino.ui.attributes.TextureAttributeView
+import com.neutrino.ui.attributes.*
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
@@ -28,6 +25,7 @@ class AddNewEntityView: VisTable() {
         "TextureAttribute" to TextureAttributeView::class,
         "MapParamsAttribute" to MapParamsAttributeView::class,
         "InteractionAttribute" to InteractionAttributeView::class,
+        "ChangesImpassableAttrib" to ChangesImpassableAttributeView::class,
     )
 
     init {

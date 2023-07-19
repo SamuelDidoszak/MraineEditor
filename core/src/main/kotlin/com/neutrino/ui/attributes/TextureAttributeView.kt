@@ -194,7 +194,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 return super.get(key)
             }
         }
-        private var innerTables: Array<VisTable>? = null
+        private var innerTables: Array<VisTable> = Array()
         private var tableAnimation: TableAnimation? = null
         var animatedTextureSprite: AnimatedTextureSprite? = null
 
@@ -248,7 +248,6 @@ class TextureAttributeView: AttributeView(VisTable()) {
             mainTextureTable.add(addPositionTable(mainTextureTable)).padLeft(8f)
             mainTextureTable.add(addParametersTable(mainTextureTable)).growY().left()
             mainTextureTable.add(addRulesTable(mainTextureTable)).growY().left()
-            setVisible(mainTextureTable, false)
             add(mainTextureTable).growX().row()
 
             val innerTextures = VisTable()
@@ -256,14 +255,27 @@ class TextureAttributeView: AttributeView(VisTable()) {
             val collapsibleInnerTextures = CollapsibleWidget(innerTextures)
             collapsibleInnerTextures.name = "collapsibleTextures"
             collapsibleInnerTextures.isCollapsed = false
+            add(collapsibleInnerTextures)
+
+            val buttonsTable = VisTable()
+            buttonsTable.name = "buttonsTable"
+            val deleteButton = VisCheckBox("")
+            deleteButton.addListener(getChangeListener {_, _ ->
+                textureTables.remove(this)
+                table.removeActor(this)
+            })
+
             val expandButton = VisCheckBox("")
             expandButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     collapsibleInnerTextures.isCollapsed = !collapsibleInnerTextures.isCollapsed
                 }
             })
-            add(collapsibleInnerTextures)
-            mainTextureTable.add(expandButton).grow().right().bottom()
+            buttonsTable.add(deleteButton).top().row()
+            buttonsTable.add(expandButton).bottom().expandY()
+            mainTextureTable.add(buttonsTable).growY()
+
+            setVisible(mainTextureTable, false)
         }
 
         private fun addInnerTable(name: String, textureSprite: TextureSprite): VisTable {
@@ -272,6 +284,25 @@ class TextureAttributeView: AttributeView(VisTable()) {
             innerTable.add(addTextureContainer(innerTable, textureSprite)).size(128f).left().padLeft(60f)
             innerTable.add(addPositionTable(innerTable)).padLeft(8f)
             innerTable.add(addParametersTable(innerTable, false)).growY().left()
+
+            val buttonsTable = VisTable()
+            val deleteButton = VisCheckBox("")
+            deleteButton.addListener(getChangeListener { _, _ ->
+                texturesToAtlas.removeIf { it.file().nameWithoutExtension == name }
+                if (innerTables.size == 1) {
+                    textureTables.remove(this)
+                    table.removeActor(this)
+                    return@getChangeListener
+                }
+                textures.remove(name)
+                innerTables.removeValue(innerTable, true)
+                findActor<CollapsibleWidget>("collapsibleTextures")
+                    .findActor<VisTable>("innerTextures").removeActor(innerTable)
+                setMainAnimationState(animationButton.state)
+            })
+            buttonsTable.add(deleteButton).expandY().top()
+            innerTable.add(buttonsTable).growY()
+
             findActor<CollapsibleWidget>("collapsibleTextures")
                 .findActor<VisTable>("innerTextures").add(innerTable).growX().padTop(8f).row()
 
@@ -317,8 +348,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
         private fun addPositionTable(table: VisTable): VisTable {
             fun refreshMainTexture(newTexture: TextureSprite, position: String, value: Int) {
                 if (table.name == "main") {
-                    getTextureButton(innerTables!!.first()).texture = newTexture
-                    (getFromPositionTable(position, innerTables!!.first()).model as IntSpinnerModel)
+                    getTextureButton(innerTables.first()).texture = newTexture
+                    (getFromPositionTable(position, innerTables.first()).model as IntSpinnerModel)
                         .setValue(value, false)
                 } else {
                     val mainTable = findActor<VisTable>("main")
@@ -641,6 +672,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
         private fun setVisible(table: VisTable, visible: Boolean) {
             table.findActor<VisTable>("positionTable").isVisible = visible
             table.findActor<VisTable>("parametersTable").isVisible = visible
+            table.findActor<VisTable>("rulesTable").isVisible = visible
+            table.findActor<VisTable>("buttonsTable").isVisible = visible
         }
         fun getAnimationState(): Int {
             return animationButton.state
@@ -672,9 +705,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                         textures[newFile.nameWithoutExtension()] = textureSprite
                         texturesToAtlas.add(file)
                         val innerTable = addInnerTable(newFile.nameWithoutExtension(), textureSprite)
-                        if (innerTables == null)
-                            innerTables = Array()
-                        innerTables!!.add(innerTable)
+                        innerTables.add(innerTable)
 
                         fillLightsTable(textureSprite, innerTable)
                     }
@@ -726,8 +757,6 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 getTextureContainer(table).actor = textureView
                 setVisible(table, true)
                 addTextureTable()
-                println("Table name: ${table.name}")
-                println("Height: ${table.height}")
             }
         }
     }
