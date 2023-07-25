@@ -7,25 +7,27 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.OnMapPositionAttribute
 import com.neutrino.entities.attributes.TextureAttribute
+import com.neutrino.util.Constants.SCALE
+import com.neutrino.util.Optimize
 import java.util.*
 
-class LevelDrawer: Group() {
+open class LevelDrawer: EntityDrawer, Group() {
 
-    val animations: Animations = Animations()
-    val lights: ArrayList<Pair<Entity, Light>> = ArrayList()
+    override val animations: Animations = Animations()
+    override val lights: ArrayList<Pair<Entity, Light>> = ArrayList()
     private val textureLayers: SortedMap<Int, LayeredTextureList> = sortedMapOf()
 
-    fun addTexture(entity: Entity, texture: TextureSprite) {
+    override fun addTexture(entity: Entity, texture: TextureSprite) {
         if (textureLayers[texture.z] == null)
             textureLayers[texture.z] = LayeredTextureList()
         textureLayers[texture.z]!!.add(LayeredTexture(entity, texture))
     }
 
-    fun removeTexture(entity: Entity, texture: TextureSprite) {
+    override fun removeTexture(entity: Entity, texture: TextureSprite) {
         textureLayers[texture.z]!!.removeIf { it.entity == entity && it.texture == texture }
     }
 
-    lateinit var map: List<List<MutableList<Entity>>>
+    override lateinit var map: List<List<MutableList<Entity>>>
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val gameCamera = parent.stage.camera as OrthographicCamera
@@ -44,14 +46,18 @@ class LevelDrawer: Group() {
         var screenX = xLeft * 48f
         var screenY = height - (yTop * 48f)
 
+        @Optimize // Draw textures into framebuffer once.
         for (y in yTop until yBottom) {
             for (x in xLeft until xRight) {
                 for (entity in map[y][x]) {
                     val textures = entity.get(TextureAttribute::class)!!.textures
                     for (texture in textures) {
                         if (texture.z == 0)
-                            batch!!.draw(texture.texture, if (!texture.mirrored) screenX else screenX + texture.texture.regionWidth * 3f, screenY,
-                                texture.texture.regionWidth * if (!texture.mirrored) 3f else -3f, texture.texture.regionHeight * 3f)
+                            batch!!.draw(
+                                texture.texture, if (!texture.mirrored) screenX else screenX + texture.texture.regionWidth * SCALE,
+                                screenY,
+                                texture.texture.regionWidth * if (!texture.mirrored) SCALE else -1 * SCALE,
+                                texture.texture.regionHeight * SCALE)
                     }
                 }
                 screenX += 48
@@ -74,8 +80,11 @@ class LevelDrawer: Group() {
                     textureX + textureWidth >= xLeft && textureX <= xRight) {
 
                     texture = layeredTexture.texture
-                    batch!!.draw(texture.texture, if (!texture.mirrored) x else x + textureWidth * 3f, y,
-                        textureWidth * if (!texture.mirrored) 3f else -3f, layeredTexture.getHeight() * 3f)
+                    batch!!.draw(texture.texture,
+                        if (!texture.mirrored) x + textureX else x + textureWidth + textureX,
+                        y + textureY,
+                        textureWidth * if (!texture.mirrored) 1f else -1f,
+                        layeredTexture.getHeight() * 1f)
                 }
             }
         }

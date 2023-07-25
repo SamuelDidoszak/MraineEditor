@@ -58,5 +58,4 @@ class ScalableTexture(
     }
 
     private fun Float.positiveOrZero(offset: Float): Float = if (this + offset >= 0f) this else 0f
-
 }

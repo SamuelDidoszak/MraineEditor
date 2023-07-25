@@ -1,4 +1,4 @@
-package com.neutrino.ui.elements
+package com.neutrino.ui.views
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -10,6 +10,8 @@ import com.kotcrab.vis.ui.util.dialog.OptionDialogAdapter
 import com.kotcrab.vis.ui.widget.*
 import com.neutrino.entities.attributes.Identity
 import com.neutrino.ui.attributes.*
+import com.neutrino.ui.elements.ViewTitle
+import com.neutrino.ui.elements.VisTableNested
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 

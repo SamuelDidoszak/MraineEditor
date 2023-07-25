@@ -7,7 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.kotcrab.vis.ui.VisUI
+import com.neutrino.entities.Entities
 import com.neutrino.ui.UiManager
+import com.neutrino.util.Constants.entityList
 import ktx.scene2d.Scene2DSkin
 import ktx.script.KotlinScriptEngine
 
@@ -18,18 +20,30 @@ class Main: ApplicationAdapter() {
     override fun create() {
         val scriptEngine = KotlinScriptEngine()
         scriptEngine.importAll(listOf("com.neutrino.entities.*", "com.neutrino.entities.attributes.*",
-            "com.neutrino.entities.callables.*", "com.neutrino.entities.util.*",
+//            "com.neutrino.entities.callables.*", "com.neutrino.entities.util.*",
             "com.neutrino.textures.Textures", "com.neutrino.textures.TextureSprite",
             "com.neutrino.textures.AnimatedTextureSprite"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddTextures.kts"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddEditorTextures.kts"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddEntities.kts"))
 
+        initializeEntities()
+
         Scene2DSkin.defaultSkin = Skin(Gdx.files.internal("ui/uiskin.json"))
         VisUI.load(VisUI.SkinScale.X2)
         uiStage = Stage(FitViewport(1920f, 1080f))
         uiManager = UiManager(uiStage)
         Gdx.input.inputProcessor = uiStage
+    }
+
+    private fun initializeEntities() {
+        try {
+            var id = 0
+            while (true) {
+                entityList.add(Entities.new(id))
+                id++
+            }
+        } catch (_: Exception) {}
     }
 
     override fun render() {
