@@ -1,21 +1,23 @@
 package com.neutrino.entities.attributes
 
 import attributes.Attribute
-import com.neutrino.entities.util.OnMapPosition
 import com.neutrino.textures.AnimatedTextureSprite
 import com.neutrino.textures.AnimationData
 import com.neutrino.textures.TextureSprite
 import kotlin.random.Random
 
 class TextureAttribute(
-    private val setTextures: (position: OnMapPosition?,
+    private val setTextures: (position: OnMapPositionAttribute?,
                               random: Random,
                               textures: ArrayList<TextureSprite>) -> Unit
 ): Attribute() {
     val textures: TextureList = TextureList()
 
-    fun setTextures(onMapPosition: OnMapPosition?, randomGenerator: Random) {
-        setTextures.invoke(onMapPosition, randomGenerator, textures)
+    fun setTextures(onMapPosition: OnMapPositionAttribute?, randomGenerator: Random) {
+        setTextures.invoke(
+            onMapPosition ?: (entity get OnMapPositionAttribute::class),
+            randomGenerator,
+            textures)
     }
 
     /**

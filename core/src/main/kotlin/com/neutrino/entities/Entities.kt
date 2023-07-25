@@ -77,11 +77,14 @@ object Entities {
         var texture: String? = null
         var from = 0f
         for (textureMap in texturesPercent) {
-            val step = (textureMap.key - from) / textureMap.value.size
-            if (randVal <= textureMap.key)
-                texture = textureMap.value[(randVal / step).toInt()]
+            val step = textureMap.key / textureMap.value.size
+            println("Random: $randVal, <=? ${textureMap.key}, from $from")
+            if (randVal <= from + textureMap.key) {
+                texture = textureMap.value[((randVal - from) / step).toInt()]
+                break
+            }
 
-            from = textureMap.key
+            from += textureMap.key
         }
         return texture
     }
