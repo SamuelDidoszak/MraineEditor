@@ -1,6 +1,5 @@
 package com.neutrino.entities
 
-import java.util.*
 import kotlin.random.Random
 
 
@@ -72,19 +71,20 @@ object Entities {
      * Picks one texture name from provided with and equal probability
      * Returns the first texture if wrong data was provided
      */
-    fun getRandomTexture(random: Random, texturesPercent: SortedMap<Float, List<String>>): String? {
+    fun getRandomTexture(random: Random, texturesPercent: List<Pair<Float, List<String>>>): String? {
+        val texturesPercent = texturesPercent.sortedBy { it.first }
         val randVal = random.nextFloat() * 100f
         var texture: String? = null
         var from = 0f
+        texturesPercent.forEach {println(it.first)}
         for (textureMap in texturesPercent) {
-            val step = textureMap.key / textureMap.value.size
-            println("Random: $randVal, <=? ${textureMap.key}, from $from")
-            if (randVal <= from + textureMap.key) {
-                texture = textureMap.value[((randVal - from) / step).toInt()]
+            val step = textureMap.first / textureMap.second.size
+            if (randVal <= from + textureMap.first) {
+                texture = textureMap.second[((randVal - from) / step).toInt()]
                 break
             }
 
-            from += textureMap.key
+            from += textureMap.first
         }
         return texture
     }

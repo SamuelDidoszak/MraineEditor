@@ -11,6 +11,7 @@ import com.neutrino.textures.TextureSprite
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.views.util.EntityButton
 import com.neutrino.util.Constants.entityList
+import com.neutrino.util.UiManagerFactory
 import ktx.scene2d.container
 import ktx.scene2d.scene2d
 import ktx.scene2d.vis.visTable
@@ -20,7 +21,11 @@ class EntitiesView: VisTable() {
     private val addImage = TextureSprite(
         TextureAtlas.AtlasRegion(
         Texture(Gdx.files.internal("AddButton96.png")), 0, 0, 96, 96))
-    private val BUTTON_SIZE = 128f
+
+    private val nameX1Size = true
+    private val nameHeight = (if (nameX1Size) 25 else 43) * 2
+    private val BUTTON_WIDTH = 128f
+    private val BUTTON_HEIGHT = BUTTON_WIDTH + nameHeight
 
     init {
         fun addAddButtonContainer() {
@@ -32,8 +37,9 @@ class EntitiesView: VisTable() {
                 }
             })
             container.actor = addButton
-            container.actor.setSize(BUTTON_SIZE, BUTTON_SIZE)
-            add(container).size(BUTTON_SIZE, BUTTON_SIZE).space(0f).pad(0f)
+            container.actor.setSize(BUTTON_WIDTH, BUTTON_WIDTH)
+            container.top()
+            add(container).size(BUTTON_WIDTH, BUTTON_HEIGHT).space(0f).pad(0f).top()
         }
 
         var rows = entityList.size / 4 + if (entityList.size % 4 != 0) 1 else 0
@@ -51,7 +57,7 @@ class EntitiesView: VisTable() {
                 }
                 val container = Container<Actor>()
                 container.name = (cellNumber).toString()
-                add(container).size(BUTTON_SIZE, BUTTON_SIZE).space(0f).pad(0f)
+                add(container).size(BUTTON_WIDTH, BUTTON_HEIGHT).space(0f).pad(0f)
             }
             row()
         }
@@ -70,7 +76,7 @@ class EntitiesView: VisTable() {
     private fun fillEntityListTable() {
         for (i in 0 until entityList.size) {
             val container = (children[i] as Container<*>)
-            val entityButton = EntityButton(entityList[i])
+            val entityButton = EntityButton(entityList[i], nameX1Size)
             entityButton.setSize(container.width, container.height)
             container.actor = entityButton
             entityButton.addListener(object : ChangeListener() {
@@ -104,22 +110,22 @@ class EntitiesView: VisTable() {
                     if (cellNumber == entityList.size) {
                         add(container {
                             actor = getAddButton()
-                            actor.setSize(BUTTON_SIZE, BUTTON_SIZE)
-                        }).size(BUTTON_SIZE, BUTTON_SIZE).space(0f).pad(0f)
+                            actor.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+                        }).size(BUTTON_WIDTH, BUTTON_HEIGHT).space(0f).pad(0f)
                         buttonAdded = true
                         break
                     }
                     add(container {
                         name = (cellNumber).toString()
-                    }).size(BUTTON_SIZE, BUTTON_SIZE).space(0f).pad(0f)
+                    }).size(BUTTON_WIDTH, BUTTON_HEIGHT).space(0f).pad(0f)
                 }
                 row()
             }
             if (!buttonAdded) {
                 add(container {
                     actor = getAddButton()
-                    actor.setSize(BUTTON_SIZE, BUTTON_SIZE)
-                }).size(BUTTON_SIZE, BUTTON_SIZE).space(0f).pad(0f)
+                    actor.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+                }).size(BUTTON_WIDTH, BUTTON_HEIGHT).space(0f).pad(0f)
                 buttonAdded = true
             }
         }
@@ -131,6 +137,6 @@ class EntitiesView: VisTable() {
     }
 
     private fun addNewEntityView() {
-
+        UiManagerFactory.getUI().setLeftPanel(AddNewEntityView())
     }
 }

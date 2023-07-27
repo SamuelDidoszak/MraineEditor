@@ -2,6 +2,8 @@ package com.neutrino.util
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.scenes.scene2d.ui.Skin
+import com.kotcrab.vis.ui.VisUI
 import com.neutrino.entities.Entity
 
 object Constants {
@@ -14,4 +16,6 @@ object Constants {
 
     val SCALE = 3f
     val SCALE_INT = SCALE.toInt()
+
+    val VisUIX1Skin = Skin(VisUI.SkinScale.X1.skinFile)
 }

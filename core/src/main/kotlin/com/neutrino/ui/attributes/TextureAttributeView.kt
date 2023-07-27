@@ -153,7 +153,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     continue
                 }
                 if (!chained) {
-                    builder.append("textures add Textures.getOrNull(Entities.getRandomTexture(random, sortedMapOf(")
+                    builder.append("textures add Textures.getOrNull(Entities.getRandomTexture(random, listOf(")
                     addIndicedLine(1)
                 }
                 builder.append("\t")
