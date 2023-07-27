@@ -10,6 +10,7 @@ import com.kotcrab.vis.ui.VisUI
 import com.neutrino.entities.Entities
 import com.neutrino.ui.UiManager
 import com.neutrino.util.Constants.entityList
+import com.neutrino.util.UiManagerFactory
 import ktx.scene2d.Scene2DSkin
 import ktx.script.KotlinScriptEngine
 
@@ -33,6 +34,7 @@ class Main: ApplicationAdapter() {
         VisUI.load(VisUI.SkinScale.X2)
         uiStage = Stage(FitViewport(1920f, 1080f))
         uiManager = UiManager(uiStage)
+        UiManagerFactory.registerUiManager(uiManager)
         Gdx.input.inputProcessor = uiStage
     }
 

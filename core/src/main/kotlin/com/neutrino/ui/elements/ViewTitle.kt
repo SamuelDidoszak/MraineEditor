@@ -6,8 +6,11 @@ import com.kotcrab.vis.ui.VisUI
 import com.kotcrab.vis.ui.widget.VisImageButton
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
+import com.neutrino.util.UiManagerFactory
 
-class ViewTitle(title: String, onBackButtonClick: () -> Unit): VisTable() {
+class ViewTitle(title: String, onBackButtonClick: () -> Unit = {
+    UiManagerFactory.getUI().previousPanel()
+}): VisTable() {
 
     init {
         val backButton = VisImageButton(VisUI.getSkin().getDrawable("icon-arrow-left"))

@@ -36,11 +36,7 @@ class AddNewEntityView: VisTable() {
         padTop(0f)
         top()
 
-        val title = ViewTitle("Add new entity") {
-            nameTextField.text = ""
-            attributeTable.clearChildren()
-            addedAttributes.clear()
-        }
+        val title = ViewTitle("Add new entity")
         saveButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 saveEntity()
