@@ -1,6 +1,5 @@
 package com.neutrino.textures
 
-import com.badlogic.gdx.Gdx
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.TextureAttribute
 
@@ -19,11 +18,15 @@ class Animations {
         animations.removeIf { it.entity == entity }
     }
 
-    fun play() {
+    fun update(deltaTime: Float) {
+        play(deltaTime)
+    }
+
+    fun play(deltaTime: Float) {
         val iterator = animations.listIterator()
         while (iterator.hasNext()) {
             val animation = iterator.next()
-            val remove = !animation.animation.setFrame(Gdx.graphics.deltaTime)
+            val remove = !animation.animation.setFrame(deltaTime)
             if (remove) {
                 iterator.remove()
                 if (animation.nextAnimation == null)

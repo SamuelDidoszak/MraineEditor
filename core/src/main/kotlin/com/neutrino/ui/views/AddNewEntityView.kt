@@ -8,14 +8,20 @@ import com.kotcrab.vis.ui.util.TableUtils
 import com.kotcrab.vis.ui.util.dialog.Dialogs
 import com.kotcrab.vis.ui.util.dialog.OptionDialogAdapter
 import com.kotcrab.vis.ui.widget.*
+import com.neutrino.entities.Entities
 import com.neutrino.entities.attributes.Identity
 import com.neutrino.ui.attributes.*
 import com.neutrino.ui.elements.ViewTitle
 import com.neutrino.ui.elements.VisTableNested
+import com.neutrino.ui.views.util.Callback
+import com.neutrino.util.Constants
+import com.neutrino.util.UiManagerFactory
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
-class AddNewEntityView: VisTable() {
+class AddNewEntityView(
+    override val callback: (data: Any) -> Unit = {}
+): VisTable(), Callback {
 
     private val saveButton = VisTextButton("save")
     private val nameTextField = VisTextField()
@@ -39,7 +45,10 @@ class AddNewEntityView: VisTable() {
         val title = ViewTitle("Add new entity")
         saveButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                saveEntity()
+                val newEntity = saveEntity()
+                Constants.scriptEngine.evaluate(newEntity)
+                callback.invoke(Entities.new(nameTextField.text))
+                UiManagerFactory.getUI().previousPanel()
             }
         })
         saveButton.isDisabled = true
@@ -168,7 +177,7 @@ class AddNewEntityView: VisTable() {
         saveButton.isDisabled = !enabled
     }
 
-    private fun saveEntity() {
+    private fun saveEntity(): String {
         val entitiesFile = Gdx.files.local("assets/core/AddEntities.kts")
         val builder = StringBuilder(300)
         if (entitiesFile.file().readText().last() == '}')
@@ -193,5 +202,6 @@ class AddNewEntityView: VisTable() {
         builder.append("}")
 
         entitiesFile.writeString(builder.toString(), true)
+        return builder.toString()
     }
 }

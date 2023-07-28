@@ -90,6 +90,11 @@ open class LevelDrawer: EntityDrawer, Group() {
         }
     }
 
+    override fun act(delta: Float) {
+        super.act(delta)
+        animations.play(delta)
+    }
+
     fun initializeTextures() {
         for (y in map.indices) {
             for (x in map[0].indices) {

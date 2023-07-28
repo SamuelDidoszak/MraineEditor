@@ -56,6 +56,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
         val atlasSubstring = ATLAS_NAME.substringBefore('.')
         val textureAtlasGenerator = TextureAtlasGenerator(atlasSubstring)
         textureAtlasGenerator.generate(texturesToAtlas)
+        val atlas = TextureAtlas(
+            Gdx.files.absolute("${Gdx.files.localStoragePath}/assets/textures/$ATLAS_NAME"))
         val textureBuilder = TextureBuilder()
         for (textureTable in textureTables) {
             if (textureTable.getAnimationState() == 0) {
@@ -68,6 +70,13 @@ class TextureAttributeView: AttributeView(VisTable()) {
                         textureMap.value.y,
                         textureMap.value.z
                     )
+                    val newTextureSprite = TextureSprite(
+                        atlas.findRegion(textureMap.key),
+                        textureMap.value.x,
+                        textureMap.value.y,
+                        textureMap.value.z)
+                    newTextureSprite.lights = textureMap.value.lights
+                    Textures add newTextureSprite
                 }
             } else {
                 textureBuilder.buildAnimation(
@@ -80,6 +89,18 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     textureTable.animatedTextureSprite!!.y,
                     textureTable.animatedTextureSprite!!.z,
                 )
+                val regionArray = Array<AtlasRegion>()
+                textureTable.textures.keys.forEach { regionArray.add(atlas.findRegion(it)) }
+                val newTextureSprite = AnimatedTextureSprite(
+                    regionArray,
+                    textureTable.getAnimationState() == 1,
+                    textureTable.getFps(textureTable.findActor("main")),
+                    textureTable.animatedTextureSprite!!.x,
+                    textureTable.animatedTextureSprite!!.y,
+                    textureTable.animatedTextureSprite!!.z,
+                )
+                newTextureSprite.lights = textureTable.animatedTextureSprite!!.lights
+                Textures add newTextureSprite
             }
         }
     }
@@ -91,13 +112,13 @@ class TextureAttributeView: AttributeView(VisTable()) {
             for (i in 0 until indices)
                 builder.append("\t")
         }
-        fun addTexture(textureName: String) {
-            builder.append("textures add Textures.get(\"$textureName\")")
-        }
-
         fun addBlock() {
             builder.append(" ?: return@run")
         }
+        fun addBlockAlt() {
+            builder.append(".also { if (it != null) return@run }!!")
+        }
+
         var randValAdded = false
         fun addRandValOnce() {
             if (randValAdded)
@@ -106,7 +127,15 @@ class TextureAttributeView: AttributeView(VisTable()) {
             addIndicedLine(1)
             randValAdded = true
         }
+
+        fun getAnimationName(textureTable: TextureTable): String {
+            return textureTable.textures.keys.first().substringBefore('#')
+        }
         fun addTextureListString(textureTable: TextureTable) {
+            if (textureTable.getAnimationState() != 0) {
+                builder.append("listOf(\"${getAnimationName(textureTable)}\")")
+                return
+            }
             builder.append("listOf(")
             for (texture in textureTable.textures.keys) {
                 builder.append("\"$texture\", ")
@@ -114,6 +143,12 @@ class TextureAttributeView: AttributeView(VisTable()) {
             builder.delete(builder.length - 2, builder.length)
             builder.removeRange(builder.length - 2, builder.length)
             builder.append(")")
+        }
+        fun addSingleTexture(textureTable: TextureTable) {
+            if (textureTable.getAnimationState() == 0)
+                builder.append("textures add Textures.get(\"${textureTable.textures.keys.first()}\")")
+            else
+                builder.append("textures add Textures.get(\"${getAnimationName(textureTable)}\")")
         }
         fun addSingleRandomTexture(textureTable: TextureTable) {
             builder.append("textures add Textures.getOrNull(Entities.getRandomTexture(randVal, 100f, ")
@@ -127,9 +162,6 @@ class TextureAttributeView: AttributeView(VisTable()) {
             builder.append("${textureTable.getProbability().toInt()}f to ")
             addTextureListString(textureTable)
             builder.append(",")
-        }
-        fun addBlockAlt() {
-            builder.append(".also { if (it != null) return@run }!!")
         }
 
         builder.append("TextureAttribute { position, random, textures -> run {")
@@ -146,8 +178,13 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 if (!block && textureTable.isBlock())
                     block = true
 
+                // it's a single texture out of a chain group
                 if (!chained && (i in textureTables.indices && !textureTables[i + 1].isChained()) ||
-                    i == textureTables.size - 1) {
+                    i == textureTables.size - 2) {
+                    if (textureTable.textures.size == 1 || textureTable.getAnimationState() != 0) {
+                        addSingleTexture(textureTable)
+                        continue
+                    }
                     addRandValOnce()
                     addSingleRandomTexture(textureTable)
                     continue
@@ -169,11 +206,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 }
                 chained = false
                 block = textureTable.isBlock()
-                if (textureTable.getAnimationState() == 0) {
-                    addTexture(textureTable.textures.keys.first())
-                } else {
-                    addTexture(textureTable.textures.keys.first().substringBefore('#'))
-                }
+                addSingleTexture(textureTable)
             }
         }
 

@@ -58,7 +58,5 @@ class EntityButton(entity: Entity, private val x1Size: Boolean = false): Group()
         textureButton.y = nameHeight
         entityDrawer.y = nameHeight
         entityNameLabel.width = width
-        println("Width: $width, Height: $height, NameHeight: $nameHeight")
-        println("${entityDrawer.width}, ${entityDrawer.height}")
     }
 }

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.scenes.scene2d.ui.Skin
 import com.kotcrab.vis.ui.VisUI
 import com.neutrino.entities.Entity
+import ktx.script.KotlinScriptEngine
 
 object Constants {
 
@@ -18,4 +19,5 @@ object Constants {
     val SCALE_INT = SCALE.toInt()
 
     val VisUIX1Skin = Skin(VisUI.SkinScale.X1.skinFile)
+    val scriptEngine = KotlinScriptEngine()
 }
