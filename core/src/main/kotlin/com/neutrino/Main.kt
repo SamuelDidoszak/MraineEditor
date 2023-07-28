@@ -10,20 +10,16 @@ import com.kotcrab.vis.ui.VisUI
 import com.neutrino.entities.Entities
 import com.neutrino.ui.UiManager
 import com.neutrino.util.Constants.entityList
+import com.neutrino.util.Constants.scriptEngine
 import com.neutrino.util.UiManagerFactory
 import ktx.scene2d.Scene2DSkin
-import ktx.script.KotlinScriptEngine
 
 class Main: ApplicationAdapter() {
     private lateinit var uiStage: Stage
     private lateinit var uiManager: UiManager
 
     override fun create() {
-        val scriptEngine = KotlinScriptEngine()
-        scriptEngine.importAll(listOf("com.neutrino.entities.*", "com.neutrino.entities.attributes.*",
-//            "com.neutrino.entities.callables.*", "com.neutrino.entities.util.*",
-            "com.neutrino.textures.Textures", "com.neutrino.textures.TextureSprite",
-            "com.neutrino.textures.AnimatedTextureSprite"))
+        scriptEngine.importAll(getImportList())
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddTextures.kts"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddEditorTextures.kts"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddEntities.kts"))
@@ -36,6 +32,18 @@ class Main: ApplicationAdapter() {
         uiManager = UiManager(uiStage)
         UiManagerFactory.registerUiManager(uiManager)
         Gdx.input.inputProcessor = uiStage
+    }
+
+    private fun getImportList(): List<String> {
+        return listOf("com.neutrino.entities.*", "com.neutrino.entities.attributes.*",
+//            "com.neutrino.entities.callables.*", "com.neutrino.entities.util.*",
+            "com.neutrino.textures.Textures", "com.neutrino.textures.TextureSprite",
+            "com.neutrino.textures.AnimatedTextureSprite",
+//            "com.neutrino.textures.Light", "com.neutrino.textures.LightSources",
+//            "com.badlogic.gdx.graphics.Color", "com.badlogic.gdx.graphics.g2d.TextureAtlas",
+//            "com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion", "com.badlogic.gdx.utils.Array",
+
+            )
     }
 
     private fun initializeEntities() {

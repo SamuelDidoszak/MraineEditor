@@ -11,7 +11,11 @@ data class Light(
 ) {
 
     override fun toString(): String {
-        return "Light($x, $y, Color($color), ${"%.3f".format(intensity)}, ${"%.3f".format(radius)})"
+        fun format(num: Float): String {
+            val i = num.toInt()
+            return if (num.compareTo(i) == 0) i.toString() else num.toString()
+        }
+        return "Light(${format(x)}f, ${format(y)}f, Color.valueOf(\"$color\"), ${format(intensity)}f, ${format(radius)}f)"
     }
 
     companion object {

@@ -51,9 +51,9 @@ class LightSources() {
                 builder.append("null,")
                 return
             }
-            builder.append("listOf(")
+            builder.append("arrayListOf(")
             for (light in array) {
-                builder.append("\n\t${tabs}$light")
+                builder.append("\n\t${tabs}$light,")
             }
             if (array.isNotEmpty())
                 builder.append("\n$tabs")

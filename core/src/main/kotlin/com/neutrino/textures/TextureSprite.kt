@@ -37,4 +37,10 @@ open class TextureSprite(
     fun height(): Int {
         return texture.regionHeight
     }
+
+    fun xy(x: Float, y: Float): TextureSprite {
+        this.x = x
+        this.y = y
+        return this
+    }
 }

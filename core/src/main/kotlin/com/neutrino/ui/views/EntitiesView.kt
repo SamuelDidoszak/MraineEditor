@@ -7,16 +7,16 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.kotcrab.vis.ui.widget.VisTable
+import com.neutrino.entities.Entity
 import com.neutrino.textures.TextureSprite
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.views.util.EntityButton
 import com.neutrino.util.Constants.entityList
 import com.neutrino.util.UiManagerFactory
-import ktx.scene2d.container
-import ktx.scene2d.scene2d
-import ktx.scene2d.vis.visTable
 
 class EntitiesView: VisTable() {
+
+    private val entityButtonList = ArrayList<EntityButton>()
 
     private val addImage = TextureSprite(
         TextureAtlas.AtlasRegion(
@@ -28,6 +28,20 @@ class EntitiesView: VisTable() {
     private val BUTTON_HEIGHT = BUTTON_WIDTH + nameHeight
 
     init {
+        this.setFillParent(false)
+        clip(true)
+        initializeTable()
+        initializeEntityButtons()
+        fillEntityListTable()
+    }
+
+    private fun refreshTable(containerCount: Int = entityList.size) {
+        clearChildren()
+        initializeTable(containerCount)
+        fillEntityListTable()
+    }
+
+    private fun initializeTable(containerCount: Int = entityList.size) {
         fun addAddButtonContainer() {
             val container = Container<Actor>()
             val addButton = TextureButton(addImage)
@@ -42,15 +56,13 @@ class EntitiesView: VisTable() {
             add(container).size(BUTTON_WIDTH, BUTTON_HEIGHT).space(0f).pad(0f).top()
         }
 
-        var rows = entityList.size / 4 + if (entityList.size % 4 != 0) 1 else 0
+        var rows = containerCount / 4 + if (containerCount % 4 != 0) 1 else 0
         var buttonAdded = false
-        this.setFillParent(false)
-        clip(true)
 
         inner@ for (n in 0 until rows) {
             for (i in 0 until 4) {
                 val cellNumber = n * 4 + i
-                if (cellNumber == entityList.size) {
+                if (cellNumber == containerCount) {
                     addAddButtonContainer()
                     buttonAdded = true
                     break
@@ -61,82 +73,50 @@ class EntitiesView: VisTable() {
             }
             row()
         }
-        if (!buttonAdded) {
+        if (!buttonAdded)
             addAddButtonContainer()
-            buttonAdded = true
-        }
 
         top()
         pack()
         layout()
+    }
 
-        fillEntityListTable()
+    private fun initializeEntityButtons() {
+        for (i in 0 until entityList.size) {
+            addEntityButton(entityList[i])
+        }
+    }
+
+    private fun addEntityButton(entity: Entity): EntityButton {
+        val entityButton = EntityButton(entity, nameX1Size)
+        entityButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+        entityButton.addListener(object : ChangeListener() {
+            override fun changed(event: ChangeEvent?, actor: Actor?) {
+                println(entity.name)
+            }
+        })
+        entityButtonList.add(entityButton)
+        return entityButton
     }
 
     private fun fillEntityListTable() {
-        for (i in 0 until entityList.size) {
+        for (i in 0 until entityButtonList.size) {
             val container = (children[i] as Container<*>)
-            val entityButton = EntityButton(entityList[i], nameX1Size)
-            entityButton.setSize(container.width, container.height)
+            val entityButton = entityButtonList[i]
             container.actor = entityButton
-            entityButton.addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    println(entityList[i].name)
-                }
-            })
         }
-    }
-
-    private fun getEntityListTable(): VisTable {
-        fun getAddButton(): TextureButton {
-            val addButton = TextureButton(addImage)
-            addButton.addListener(object : ChangeListener() {
-                override fun changed(event: ChangeEvent?, actor: Actor?) {
-                    addNewEntityView()
-                }
-            })
-            return addButton
-        }
-        var buttonAdded = false
-
-        var rows = entityList.size / 4 + if (entityList.size % 4 != 0) 1 else 0
-
-        val table = scene2d.visTable {
-            this.setFillParent(false)
-            clip(true)
-            inner@ for (n in 0 until rows) {
-                for (i in 0 until 4) {
-                    val cellNumber = n * 4 + i
-                    if (cellNumber == entityList.size) {
-                        add(container {
-                            actor = getAddButton()
-                            actor.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
-                        }).size(BUTTON_WIDTH, BUTTON_HEIGHT).space(0f).pad(0f)
-                        buttonAdded = true
-                        break
-                    }
-                    add(container {
-                        name = (cellNumber).toString()
-                    }).size(BUTTON_WIDTH, BUTTON_HEIGHT).space(0f).pad(0f)
-                }
-                row()
-            }
-            if (!buttonAdded) {
-                add(container {
-                    actor = getAddButton()
-                    actor.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
-                }).size(BUTTON_WIDTH, BUTTON_HEIGHT).space(0f).pad(0f)
-                buttonAdded = true
-            }
-        }
-        table.top()
-        table.pack()
-        table.layout()
-
-        return table
     }
 
     private fun addNewEntityView() {
-        UiManagerFactory.getUI().setLeftPanel(AddNewEntityView())
+        UiManagerFactory.getUI().setLeftPanel(AddNewEntityView() {
+            assert(it is Entity)
+            newEntityAdded(it as Entity)
+        })
+    }
+
+    private fun newEntityAdded(entity: Entity) {
+        entityList.add(entity)
+        addEntityButton(entity)
+        refreshTable()
     }
 }

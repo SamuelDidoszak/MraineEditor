@@ -26,7 +26,7 @@ class TextureBuilder {
         for (name in names) {
             stringBuilder.append("\"$name\", ")
         }
-        stringBuilder.append("), $looping, $speed")
+        stringBuilder.append("), $looping, ${speed}f")
         if (lightSources != null)
             stringBuilder.append(", $lightSources")
         addXYZ(x, y, z)

@@ -85,6 +85,11 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
         }
     }
 
+    override fun act(delta: Float) {
+        super.act(delta)
+        animations.play(delta)
+    }
+
     override fun setSize(width: Float, height: Float) {
         super.setSize(width, height)
         updateScale()
