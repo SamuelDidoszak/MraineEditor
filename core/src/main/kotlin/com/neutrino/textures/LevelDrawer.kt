@@ -10,6 +10,7 @@ import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.util.Constants.SCALE
 import com.neutrino.util.Optimize
 import java.util.*
+import kotlin.random.Random
 
 open class LevelDrawer: EntityDrawer, Group() {
 
@@ -27,7 +28,12 @@ open class LevelDrawer: EntityDrawer, Group() {
         textureLayers[texture.z]!!.removeIf { it.entity == entity && it.texture == texture }
     }
 
-    override lateinit var map: List<List<MutableList<Entity>>>
+    override var map: List<List<MutableList<Entity>>> = initializeMap()
+
+    init {
+        width = map[0].size * 48f
+        height = map.size * 48f
+    }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val gameCamera = parent.stage.camera as OrthographicCamera
@@ -96,10 +102,12 @@ open class LevelDrawer: EntityDrawer, Group() {
     }
 
     fun initializeTextures() {
+        val rng = Random(Random.nextInt())
         for (y in map.indices) {
             for (x in map[0].indices) {
                 for (entity in map[y][x]) {
                     entity addAttribute OnMapPositionAttribute(x, y, this)
+                    entity.get(TextureAttribute::class)?.setTextures(null, rng)
                 }
             }
         }

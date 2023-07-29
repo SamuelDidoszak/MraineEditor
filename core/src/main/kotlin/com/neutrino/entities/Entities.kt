@@ -76,7 +76,6 @@ object Entities {
         val randVal = random.nextFloat() * 100f
         var texture: String? = null
         var from = 0f
-        texturesPercent.forEach {println(it.first)}
         for (textureMap in texturesPercent) {
             val step = textureMap.first / textureMap.second.size
             if (randVal <= from + textureMap.first) {
