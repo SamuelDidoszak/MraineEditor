@@ -20,4 +20,6 @@ object Constants {
 
     val VisUIX1Skin = Skin(VisUI.SkinScale.X1.skinFile)
     val scriptEngine = KotlinScriptEngine()
+
+    val seed = 2137
 }

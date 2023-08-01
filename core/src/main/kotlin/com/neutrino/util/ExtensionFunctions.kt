@@ -3,8 +3,12 @@ package com.neutrino.util
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
+import com.neutrino.entities.Entities
+import com.neutrino.entities.Entity
+import com.neutrino.entities.attributes.Identity
 import kotlin.math.abs
 import kotlin.math.roundToInt
+import kotlin.reflect.KClass
 
 fun Double.equalsDelta(other: Double) = abs(this - other) <= 0.005
 fun Double.lessThanDelta(other: Double) = (this - other) < -0.0000001
@@ -50,3 +54,17 @@ fun getChangeListener(method: (event: ChangeListener.ChangeEvent?, actor: Actor?
         }
     }
 }
+
+infix fun Entity.hasIdentity(identity: KClass<out Identity>): Boolean {
+    return get(identity) != null
+}
+
+infix fun MutableList<Entity>.hasIdentity(identity: KClass<out Identity>): Boolean {
+    for (i in indices) {
+        if (get(i).get(identity) != null)
+            return true
+    }
+    return false
+}
+
+fun EntityName.id(): Int = Entities.getId(this)
