@@ -19,9 +19,8 @@ class UiManager() {
         uiStage.addActor(leftTable)
         leftTable.setSize(uiStage.width * 1/4f + 34f, uiStage.height)
         editor.setPosition(leftTable.width, 0f)
-        setLeftPanel(EntitiesView())
+        setLeftPanel(EntitiesView(true) {})
         setInputMultiplexer()
-        editor.setDebug(true, true)
     }
 
     fun setLeftPanel(window: VisTable) {

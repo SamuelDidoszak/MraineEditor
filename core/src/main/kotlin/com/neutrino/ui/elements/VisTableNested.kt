@@ -9,6 +9,16 @@ class VisTableNested: VisTable() {
 
     private val tables = ArrayList<VisTable>(2)
     private var _maxHeight = maxHeight
+    var padL: Float = 0f
+    var padR: Float = 0f
+    var padT: Float = 0f
+    var padB: Float = 0f
+    fun padLRTB(left: Float, right: Float, top: Float, bottom: Float) {
+        padL = left
+        padR = right
+        padT = top
+        padB = bottom
+    }
 
     fun setMaxHeight(maxHeight: Float) {
         _maxHeight = maxHeight
@@ -36,10 +46,10 @@ class VisTableNested: VisTable() {
     fun addNested(actor: Actor): Cell<Actor> {
         val newRow = width <=
             tables.last().children.sumOf { it.width.toInt() } +
-            actor.width
+            actor.width + padL + padR
 
         if (newRow) {
-            if (_maxHeight != 0f && prefHeight + actor.height > _maxHeight) {
+            if (_maxHeight != 0f && prefHeight + actor.height + padT + padB > _maxHeight) {
                 return Cell()
             }
             val newTable = VisTable()
@@ -49,7 +59,7 @@ class VisTableNested: VisTable() {
             tables.add(newTable)
         }
 
-        return tables.last().add(actor)
+        return tables.last().add(actor).padLeft(padL).padRight(padR).padTop(padT).padBottom(padB)
     }
 
     fun removeNested(actor: Actor) {

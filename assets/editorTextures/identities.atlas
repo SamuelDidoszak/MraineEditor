@@ -1,0 +1,7 @@
+identities.png
+	size: 137, 16
+	repeat: none
+wallIdentity
+    bounds: 0, 0, 32, 16
+floorIdentity
+    bounds: 32, 0, 32, 16

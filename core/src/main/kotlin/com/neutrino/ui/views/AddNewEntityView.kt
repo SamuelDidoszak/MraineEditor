@@ -9,6 +9,7 @@ import com.kotcrab.vis.ui.util.dialog.Dialogs
 import com.kotcrab.vis.ui.util.dialog.OptionDialogAdapter
 import com.kotcrab.vis.ui.widget.*
 import com.neutrino.entities.Entities
+import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.Identity
 import com.neutrino.ui.attributes.*
 import com.neutrino.ui.elements.ViewTitle
@@ -20,8 +21,8 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 class AddNewEntityView(
-    override val callback: (data: Any) -> Unit = {}
-): VisTable(), Callback {
+    override val callback: (data: Entity) -> Unit = {}
+): VisTable(), Callback<Entity> {
 
     private val saveButton = VisTextButton("save")
     private val nameTextField = VisTextField()
@@ -60,6 +61,7 @@ class AddNewEntityView(
         identityTable.columnDefaults(0).left()
         identityTable.left()
         identityTable.add(getAddButton())
+        identityTable.padR = 8f
         add(identityTable).growX().padTop(16f).padLeft(32f).padRight(32f).row()
         add(attributeTable).growX().padTop(16f).row()
 

@@ -23,11 +23,13 @@ import com.kotcrab.vis.ui.widget.spinner.IntSpinnerModel
 import com.kotcrab.vis.ui.widget.spinner.Spinner
 import com.kotcrab.vis.ui.widget.spinner.Spinner.SpinnerStyle
 import com.neutrino.builders.TextureBuilder
+import com.neutrino.generation.NameOrIdentity
 import com.neutrino.textures.*
 import com.neutrino.ui.elements.RulePickerButton
 import com.neutrino.ui.elements.TextField
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.elements.VisTableNested
+import com.neutrino.ui.views.AddRulesView
 import com.neutrino.util.*
 
 class TextureAttributeView: AttributeView(VisTable()) {
@@ -230,6 +232,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
         private var innerTables: Array<VisTable> = Array()
         private var tableAnimation: TableAnimation? = null
         var animatedTextureSprite: AnimatedTextureSprite? = null
+        var rules: List<NameOrIdentity?>? = null
 
         private val animationButton = object: TextureButton(Textures.get("animationButton")) {
             var state = 0
@@ -501,6 +504,11 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
             val rulePickerButton = RulePickerButton(rulePickerImage)
             rulePickerButton.setSize(100f, 100f)
+            rulePickerButton.addListener(getChangeListener { _, actor ->
+                stage.addActor(AddRulesView(rules?.toMutableList()) {
+                    addRules(it.first, it.second, actor as RulePickerButton)
+                })
+            })
 
             val percentageTable = VisTable()
             percentageTable.height = 28f
@@ -571,6 +579,25 @@ class TextureAttributeView: AttributeView(VisTable()) {
                         textureTables[endIndex - 1].getProbability() + previousChainedProbability
                     )
             }
+        }
+        private fun addRules(
+            ruleList: List<NameOrIdentity?>,
+            newRulePickerButton: RulePickerButton,
+            rulePickerButton: RulePickerButton) {
+            var isEmpty = true
+            for (rule in ruleList) {
+                if (rule != null) {
+                    isEmpty = false
+                    break
+                }
+            }
+            for (i in newRulePickerButton.textureList.indices) {
+                rulePickerButton.setTexture(i, newRulePickerButton.textureList[i])
+            }
+            if (isEmpty)
+                rules = null
+            else
+                rules = ruleList
         }
 
         override fun act(delta: Float) {

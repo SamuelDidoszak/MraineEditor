@@ -14,7 +14,10 @@ import com.neutrino.ui.views.AddNewEntityView
 import com.neutrino.util.Constants.entityList
 import com.neutrino.util.UiManagerFactory
 
-class EntitiesTable(private val search: Search<EntityButton>? = null): VisTable() {
+class EntitiesTable(
+    private val allowEntityAddition: Boolean,
+    private val search: Search<EntityButton>? = null,
+    override val callback: (data: String) -> Unit): VisTable(), Callback<String> {
 
     private val entityButtonList = ArrayList<EntityButton>()
 
@@ -63,12 +66,12 @@ class EntitiesTable(private val search: Search<EntityButton>? = null): VisTable(
         }
 
         var rows = containerCount / 4 + if (containerCount % 4 != 0) 1 else 0
-        var buttonAdded = false
+        var buttonAdded = !allowEntityAddition
 
         inner@ for (n in 0 until rows) {
             for (i in 0 until 4) {
                 val cellNumber = n * 4 + i
-                if (cellNumber == containerCount) {
+                if (cellNumber == containerCount && !buttonAdded) {
                     addAddButtonContainer()
                     buttonAdded = true
                     break
@@ -99,7 +102,7 @@ class EntitiesTable(private val search: Search<EntityButton>? = null): VisTable(
         entityButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
         entityButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                println(entity.name)
+                callback.invoke(entity.name)
             }
         })
         entityButtonList.add(entityButton)
@@ -117,9 +120,8 @@ class EntitiesTable(private val search: Search<EntityButton>? = null): VisTable(
     }
 
     private fun addNewEntityView() {
-        UiManagerFactory.getUI().setLeftPanel(AddNewEntityView() {
-            assert(it is Entity)
-            newEntityAdded(it as Entity)
+        UiManagerFactory.getUI().setLeftPanel(AddNewEntityView {
+            newEntityAdded(it)
         })
     }
 

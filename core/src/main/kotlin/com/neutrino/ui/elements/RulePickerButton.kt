@@ -6,16 +6,16 @@ import com.neutrino.ui.elements.util.ScalableTexture
 
 class RulePickerButton(initTexture: TextureSprite): TextureButton(initTexture) {
 
-    private val textureList = MutableList<ScalableTexture?>(9) {null}
+    val textureList = MutableList<ScalableTexture?>(9) {null}
 
-    private val pad: Float = 2f
+    var pad: Float = 2f
 
     override fun additionalDrawCalls(batch: Batch?, parentAlpha: Float) {
         for (y in 0 until 3) {
             for (x in 0 until 3) {
                 textureList[y * 3 + x]?.draw(batch, parentAlpha,
-                    this.x + pad + x * (32f + pad),
-                    this.y + pad + y * (32f + pad))
+                    this.x + x * (width / 3),
+                    this.y + y * (height / 3))
 //                if (textureList[y * 3 + x] != null)
 //                    batch?.draw(textureList[y * 3 + x]?.texture?.texture,
 //                        this.x + 8 + x * 40f,
@@ -26,7 +26,7 @@ class RulePickerButton(initTexture: TextureSprite): TextureButton(initTexture) {
 
     override fun setSize(width: Float, height: Float) {
         super.setSize(width, height)
-        textureList.forEach { it?.updateScale() }
+        textureList.forEach { it?.updateScale(width, height) }
     }
 
     fun setTopLeft(texture: TextureSprite?) {
@@ -61,9 +61,18 @@ class RulePickerButton(initTexture: TextureSprite): TextureButton(initTexture) {
         setTexture(2, texture)
     }
 
-    private fun setTexture(index: Int, texture: TextureSprite?) {
+    fun setTexture(index: Int, texture: TextureSprite?) {
         if (texture == null)
             textureList[index] = null
-        textureList[index] = ScalableTexture(texture!!, 32f, 32f)
+        textureList[index] = ScalableTexture(texture!!, width / 3 - pad , height / 3 + pad)
+    }
+
+    fun setTexture(index: Int, texture: ScalableTexture?) {
+        if (texture == null) {
+            textureList[index] = null
+            return
+        }
+        texture.updateScale(width / 3 - pad, height / 3 - pad)
+        textureList[index] = texture
     }
 }
