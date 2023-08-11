@@ -1,14 +1,11 @@
 package com.neutrino.ui.views.util
 
-import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.kotcrab.vis.ui.widget.VisTable
 import com.neutrino.entities.Entity
-import com.neutrino.textures.TextureSprite
+import com.neutrino.textures.Textures
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.views.AddNewEntityView
 import com.neutrino.util.Constants.entityList
@@ -20,10 +17,6 @@ class EntitiesTable(
     override val callback: (data: String) -> Unit): VisTable(), Callback<String> {
 
     private val entityButtonList = ArrayList<EntityButton>()
-
-    private val addImage = TextureSprite(
-        TextureAtlas.AtlasRegion(
-        Texture(Gdx.files.internal("AddButton96.png")), 0, 0, 96, 96))
 
     private val nameX1Size = true
     private val nameHeight = (if (nameX1Size) 25 else 43) * 2
@@ -53,7 +46,7 @@ class EntitiesTable(
     private fun initializeTable(containerCount: Int = entityList.size) {
         fun addAddButtonContainer() {
             val container = Container<Actor>()
-            val addButton = TextureButton(addImage)
+            val addButton = TextureButton(Textures.get("addButtonTexture"))
             addButton.addListener(object : ChangeListener() {
                 override fun changed(event: ChangeEvent?, actor: Actor?) {
                     addNewEntityView()

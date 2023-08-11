@@ -5,3 +5,5 @@ wallIdentity
     bounds: 0, 0, 32, 16
 floorIdentity
     bounds: 32, 0, 32, 16
+anyIdentity
+    bounds: 64, 0, 16, 16

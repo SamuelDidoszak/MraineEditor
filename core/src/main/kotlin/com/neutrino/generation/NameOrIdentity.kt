@@ -9,21 +9,22 @@ import com.neutrino.util.hasIdentity
 import com.neutrino.util.id
 import kotlin.reflect.KClass
 
-class NameOrIdentity(name: EntityName? = null, val identity: KClass<out Identity>? = null) {
-    constructor(identity: KClass<out Identity>) : this(null, identity)
+class NameOrIdentity(name: EntityName? = null, val identity: KClass<out Identity>? = null, val not: Boolean = false) {
+    constructor(identity: KClass<out Identity>, not: Boolean = false) : this(null, identity, not)
+    constructor(name: EntityName?, not: Boolean = false) : this(name, null, not)
 
     val id = name?.id()
 
     fun isSame(entity: Entity): Boolean {
-        return entity.id == id || (identity != null && entity hasIdentity identity)
+        return (entity.id == id || (identity != null && entity hasIdentity identity)) && !not
     }
 
     fun isSame(name: EntityName): Boolean {
-        return id != null && Entities.getName(id) == name
+        return (id != null && Entities.getName(id) == name) && !not
     }
 
     fun isSame(id: EntityId): Boolean {
-        return this.id == id
+        return (this.id == id) && !not
     }
 
     fun getEntityName(): String? {

@@ -2,11 +2,14 @@ package com.neutrino.ui.elements
 
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.neutrino.textures.TextureSprite
+import com.neutrino.textures.Textures
 import com.neutrino.ui.elements.util.ScalableTexture
 
 class RulePickerButton(initTexture: TextureSprite): TextureButton(initTexture) {
 
     val textureList = MutableList<ScalableTexture?>(9) {null}
+    private val notList = MutableList(9) {false}
+    private val notTexture = ScalableTexture(Textures.get("notTexture"), width / 3, height / 3)
 
     var pad: Float = 2f
 
@@ -16,6 +19,10 @@ class RulePickerButton(initTexture: TextureSprite): TextureButton(initTexture) {
                 textureList[y * 3 + x]?.draw(batch, parentAlpha,
                     this.x + x * (width / 3),
                     this.y + y * (height / 3))
+                if (notList[y * 3 + x])
+                    notTexture.draw(batch, parentAlpha,
+                        this.x + x * (width / 3),
+                        this.y + y * (height / 3))
 //                if (textureList[y * 3 + x] != null)
 //                    batch?.draw(textureList[y * 3 + x]?.texture?.texture,
 //                        this.x + 8 + x * 40f,
@@ -26,7 +33,8 @@ class RulePickerButton(initTexture: TextureSprite): TextureButton(initTexture) {
 
     override fun setSize(width: Float, height: Float) {
         super.setSize(width, height)
-        textureList.forEach { it?.updateScale(width, height) }
+        textureList.forEach { it?.updateScale(width / 3, height / 3) }
+        notTexture.updateScale(width / 3, height / 3)
     }
 
     fun setTopLeft(texture: TextureSprite?) {
@@ -74,5 +82,9 @@ class RulePickerButton(initTexture: TextureSprite): TextureButton(initTexture) {
         }
         texture.updateScale(width / 3 - pad, height / 3 - pad)
         textureList[index] = texture
+    }
+
+    fun setNot(index: Int, not: Boolean) {
+        notList[index] = not
     }
 }

@@ -27,7 +27,7 @@ class AddNewEntityView(
     private val saveButton = VisTextButton("save")
     private val nameTextField = VisTextField()
     private val identityTable = VisTableNested()
-    private val identityList = Identity::class.nestedClasses.map { it.simpleName }
+    private val identityList = Identity::class.nestedClasses.map { it.simpleName }.minus("Any")
     private val attributeTable = VisTable()
     private val addedAttributes = mutableSetOf<AttributeView>()
     private val attributeList = mapOf<String, KClass<out AttributeView>>(

@@ -38,6 +38,14 @@ Textures add TextureSprite(get("icons", "addTexture"))
 Textures add TextureSprite(get("icons", "chainTexture"))
 Textures add TextureSprite(get("icons", "stopTexture"))
 Textures add TextureSprite(get("icons", "chainStopTexture"))
+Textures add TextureSprite(get("icons", "backgroundTexture"))
+Textures add TextureSprite(get("icons", "addButtonTexture"))
+Textures add TextureSprite(get("icons", "rulesTexture"))
+Textures add TextureSprite(get("icons", "notTexture"))
+Textures add TextureSprite(get("icons", "notActiveTexture"))
+Textures add TextureSprite(get("identities", "wallIdentity"))
+Textures add TextureSprite(get("identities", "floorIdentity"))
+Textures add TextureSprite(get("identities", "anyIdentity"))
 
 
 

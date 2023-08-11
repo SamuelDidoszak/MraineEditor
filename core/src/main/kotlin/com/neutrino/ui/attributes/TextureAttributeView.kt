@@ -36,10 +36,6 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
     override val attributeName = "TextureAttribute"
     private val ATLAS_NAME = "entities.atlas"
-    private val addImage = TextureSprite(TextureAtlas.AtlasRegion(
-        Texture(Gdx.files.internal("AddButton96.png")), 0, 0, 96, 96))
-    private val rulePickerImage = TextureSprite(TextureAtlas.AtlasRegion(
-        Texture(Gdx.files.internal("rulePicker2.png")), 0, 0, 100, 100))
     private val textureTables = ArrayList<TextureTable>()
     private val texturesToAtlas = ArrayList<FileHandle>()
 
@@ -502,7 +498,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             rulesTable.name = "rulesTable"
             rulesTable.top()
 
-            val rulePickerButton = RulePickerButton(rulePickerImage)
+            val rulePickerButton = RulePickerButton(Textures.get("rulesTexture"))
             rulePickerButton.setSize(100f, 100f)
             rulePickerButton.addListener(getChangeListener { _, actor ->
                 stage.addActor(AddRulesView(rules?.toMutableList()) {
@@ -593,6 +589,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             }
             for (i in newRulePickerButton.textureList.indices) {
                 rulePickerButton.setTexture(i, newRulePickerButton.textureList[i])
+                rulePickerButton.setNot(i, ruleList[i]?.not == true)
             }
             if (isEmpty)
                 rules = null
@@ -804,7 +801,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
         private inner class AddListener(val table: VisTable): ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                val textureView = TextureButton(addImage)
+                val textureView = TextureButton(Textures.get("addButtonTexture"))
                 textureView.setSize(128f, 128f)
                 textureView.setBackgroundColor()
                 textureView.centered = false

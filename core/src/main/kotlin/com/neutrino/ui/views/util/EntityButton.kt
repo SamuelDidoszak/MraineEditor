@@ -22,7 +22,7 @@ class EntityButton(entity: Entity, private val x1Size: Boolean = false): Group()
         else
             VisUI.getSkin().get(LabelStyle::class.java)
     )
-    private val textureButton = object : TextureButton(Textures.get("emptyTexture")) {
+    private val textureButton = object : TextureButton(Textures.get("backgroundTexture")) {
 
         override fun additionalDrawCalls(batch: Batch?, parentAlpha: Float) {
             entityDrawer.draw(batch, parentAlpha)

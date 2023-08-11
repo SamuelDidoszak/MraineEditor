@@ -13,7 +13,7 @@ class IdentityButtonTable(override val callback: (data: String) -> Unit): VisTab
     private val identityTable = VisTableNested()
 
     init {
-        identityTable.width = 420f
+        identityTable.width = 356f
         identityTable.padLRTB(4f, 4f, 2f, 2f)
         add(identityTable).expandX()
         identityList.forEach { identityTable.addNested(getIdentityButton(it!!)) }

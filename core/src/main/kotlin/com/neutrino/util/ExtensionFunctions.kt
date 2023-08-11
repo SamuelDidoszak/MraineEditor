@@ -56,12 +56,12 @@ fun getChangeListener(method: (event: ChangeListener.ChangeEvent?, actor: Actor?
 }
 
 infix fun Entity.hasIdentity(identity: KClass<out Identity>): Boolean {
-    return get(identity) != null
+    return get(identity) != null || identity == Identity.Any::class
 }
 
 infix fun MutableList<Entity>.hasIdentity(identity: KClass<out Identity>): Boolean {
     for (i in indices) {
-        if (get(i).get(identity) != null)
+        if (get(i).get(identity) != null || identity == Identity.Any::class)
             return true
     }
     return false

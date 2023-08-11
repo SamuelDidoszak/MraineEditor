@@ -1,15 +1,24 @@
 package com.neutrino.ui.views
 
-import com.kotcrab.vis.ui.building.StandardTableBuilder
+import com.badlogic.gdx.scenes.scene2d.ui.Container
+import com.kotcrab.vis.ui.widget.Separator
+import com.kotcrab.vis.ui.widget.VisScrollPane
+import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisWindow
-import com.neutrino.ui.views.util.IdentityButtonTable
+import com.neutrino.textures.Textures
+import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.views.util.Callback
+import com.neutrino.ui.views.util.IdentityButtonTable
+import com.neutrino.util.getChangeListener
+import ktx.actors.setScrollFocus
 
 class GetEntityOrIdentityView(
-    override val callback: (data: Pair<EntityOrIdentity, String>) -> Unit
-): VisWindow(""), Callback<Pair<GetEntityOrIdentityView.EntityOrIdentity, String>> {
+    override val callback: (data: Triple<EntityOrIdentity, String, Boolean>) -> Unit
+): VisWindow(""), Callback<Triple<GetEntityOrIdentityView.EntityOrIdentity, String, Boolean>> {
 
-    val builder = StandardTableBuilder()
+//    val builder = StandardTableBuilder()
+    private var notButtonChecked = false
+    private val notButton = TextureButton(Textures.get("notTexture"))
     private val identityButtonTable = IdentityButtonTable() { returnIdentity(it) }
     private val entitiesView = EntitiesView(false) { returnEntity(it) }
 
@@ -17,23 +26,46 @@ class GetEntityOrIdentityView(
         isModal = true
         closeOnEscape()
         addCloseButton()
-        builder.append(identityButtonTable).row()
-        // TODO add breakline
-        builder.append(entitiesView)
+        notButton.setSize(64f, 64f)
+        notButton.addListener(getChangeListener { _, _ ->
+            notButtonChecked = !notButtonChecked
+            if (!notButtonChecked)
+                notButton.texture = Textures.get("notTexture")
+            else
+                notButton.texture = Textures.get("notActiveTexture")
+        })
+        val topTable = VisTable()
+        topTable.add(notButton).left().padRight(16f)
+        topTable.add(identityButtonTable)
+        add(topTable).row()
+        add(Separator()).padTop(16f).growX().row()
+        val container = Container<VisScrollPane>()
+        container.actor = getScrollPane(entitiesView)
+        add(container).expandX().padTop(16f)
 
-        add(builder.build()).expand().fill()
         pack()
+        height = 1080 * 3/4f
         centerWindow()
+    }
+
+    private fun getScrollPane(table: VisTable): VisScrollPane {
+        val entitiesScrollPane = VisScrollPane(table)
+        entitiesScrollPane.setScrollFocus(true)
+        entitiesScrollPane.setScrollingDisabled(true, false)
+        entitiesScrollPane.setOverscroll(false, false)
+        entitiesScrollPane.setScrollbarsVisible(true)
+        entitiesScrollPane.setScrollbarsOnTop(true)
+        return entitiesScrollPane
     }
 
     fun returnEntity(name: String) {
         close()
-        callback.invoke(EntityOrIdentity.ENTITY to name)
+        callback.invoke(Triple(EntityOrIdentity.ENTITY, name, notButtonChecked))
     }
 
     fun returnIdentity(name: String) {
         close()
-        callback.invoke(EntityOrIdentity.IDENTITY to name)
+        callback.invoke(Triple(EntityOrIdentity.IDENTITY, name, notButtonChecked))
     }
 
     enum class EntityOrIdentity {

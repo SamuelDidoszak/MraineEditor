@@ -13,7 +13,7 @@ import com.neutrino.textures.TextureSprite
 import com.neutrino.ui.elements.util.ScalableTexture
 import com.neutrino.util.Constants
 
-open class TextureButton(initTexture: TextureSprite): Actor() {
+open class TextureButton(initTexture: TextureSprite, var canBeActivated: Boolean = false): Actor() {
 
     private var scalableTexture: ScalableTexture = ScalableTexture(initTexture, width, height)
 
@@ -42,9 +42,10 @@ open class TextureButton(initTexture: TextureSprite): Actor() {
     }
 
     private companion object {
-        var COLOR_DOWN: Color = Color.BLACK
+        var COLOR_DOWN: Color = Color.DARK_GRAY
         var COLOR_OVER: Color = Color.GRAY
         var COLOR_DISABLED: Color = Color.PURPLE
+        var COLOR_ACTIVE: Color = Color.ROYAL
     }
     private var backgroundColor: Color? = null
 
@@ -78,6 +79,8 @@ open class TextureButton(initTexture: TextureSprite): Actor() {
             return COLOR_OVER
         if (checked && clickListener.isOver)
             return COLOR_OVER
+        if (checked && canBeActivated)
+            return COLOR_ACTIVE
         return Color.WHITE
     }
 
