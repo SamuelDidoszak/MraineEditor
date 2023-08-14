@@ -111,10 +111,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 builder.append("\t")
         }
         fun addBlock() {
-            builder.append(" ?: return@run")
-        }
-        fun addBlockAlt() {
-            builder.append(".also { if (it != null) return@run }!!")
+            builder.append(".also {if (it!=null) return@run}")
         }
 
         var randValAdded = false
@@ -139,7 +136,6 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 builder.append("\"$texture\", ")
             }
             builder.delete(builder.length - 2, builder.length)
-            builder.removeRange(builder.length - 2, builder.length)
             builder.append(")")
         }
         fun addSingleTexture(textureTable: TextureTable) {
@@ -162,10 +158,68 @@ class TextureAttributeView: AttributeView(VisTable()) {
             builder.append(",")
         }
 
+        fun addSingleRequirementList(textureTable: TextureTable) {
+            builder.append("listOf(")
+            for (i in 0 until 9) {
+                if (textureTable.rules!![i] != null)
+                    builder.append("${i + 1}, ")
+            }
+            builder.delete(builder.length - 2, builder.length)
+            builder.append(")")
+        }
+
+        fun hasRequirements(textureTable: TextureTable): Boolean {
+            val requirements = textureTable.rules?.filterNotNull()
+            if (requirements.isNullOrEmpty())
+                return false
+            return true
+        }
+
+        fun addRequirements(textureTable: TextureTable) {
+            val requirements = textureTable.rules!!.filterNotNull()
+
+            fun isSame(): Boolean {
+                var isSame = true
+                val firstReq = requirements.first()
+                for (req in requirements) {
+                    if (req != firstReq) {
+                        isSame = false
+                        break
+                    }
+                }
+                return isSame
+            }
+
+            var singleNameIdentity = isSame()
+
+            if (singleNameIdentity) {
+                builder.append("position!!.check(")
+                addSingleRequirementList(textureTable)
+                val nameOrIdentity = requirements.first()
+                val name =
+                    nameOrIdentity.getEntityName() ?:
+                    ("Identity." + nameOrIdentity.getIdentityName() + "::class")
+                builder.append(", $name")
+                if (nameOrIdentity.not)
+                    builder.append(", true")
+                builder.append(") {")
+            } else {
+                builder.append("position!!.check(listOf(")
+                for (i in 0 until 8) {
+                    if (textureTable.rules!![i] == null)
+                        continue
+                    builder.append("${i + 1} to ${textureTable.rules!![i]}, ")
+                }
+                builder.delete(builder.length - 2, builder.length)
+                builder.append(")) {")
+            }
+        }
+
         builder.append("TextureAttribute { position, random, textures -> run {")
 
         var block = false
         var chained = false
+        var chainedTextureRequirements = false
         for (i in 0 until textureTables.size - 1) {
             val textureTable = textureTables[i]
             if (textureTable.textures.isEmpty())
@@ -178,41 +232,82 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
                 // it's a single texture out of a chain group
                 if (!chained && (i in textureTables.indices && !textureTables[i + 1].isChained()) ||
-                    i == textureTables.size - 2) {
+                    (!chained && i == textureTables.size - 2)) {
                     if (textureTable.textures.size == 1 || textureTable.getAnimationState() != 0) {
+                        val hasRequirements = hasRequirements(textureTable)
+                        if (hasRequirements) {
+                            addRequirements(textureTable)
+                            addIndicedLine(2)
+                        }
                         addSingleTexture(textureTable)
+                        if (hasRequirements)
+                            builder.append("}")
+                        if (block)
+                            addBlock()
                         continue
                     }
                     addRandValOnce()
+                    val hasRequirements = hasRequirements(textureTable)
+                    if (hasRequirements) {
+                        addRequirements(textureTable)
+                        addIndicedLine(2)
+                    }
                     addSingleRandomTexture(textureTable)
+                    if (hasRequirements)
+                        builder.append("}")
+                    if (block)
+                        addBlock()
                     continue
                 }
                 if (!chained) {
+                    if (hasRequirements(textureTable)) {
+                        addRequirements(textureTable)
+                        addIndicedLine(2)
+                        chainedTextureRequirements = true
+                    }
                     builder.append("textures add Textures.getOrNull(Entities.getRandomTexture(random, listOf(")
                     addIndicedLine(1)
                 }
                 builder.append("\t")
+                if (chainedTextureRequirements)
+                    builder.append("\t")
                 chained = true
                 addMultipleRandomTextures(textureTable)
             } else {
                 if (chained) {
-                    builder.append("))")
+                    builder.append("\t")
+                    if (chainedTextureRequirements)
+                        builder.append("\t")
+                    builder.append(")))")
+                    if (chainedTextureRequirements)
+                        builder.append("}")
                     if (block)
                         addBlock()
-                    builder.append(")")
+
                     addIndicedLine(1)
                 }
                 chained = false
+                chainedTextureRequirements = false
                 block = textureTable.isBlock()
+                if (hasRequirements(textureTable)) {
+                    addRequirements(textureTable)
+                    addIndicedLine(2)
+                }
                 addSingleTexture(textureTable)
+                if (hasRequirements(textureTable))
+                    builder.append("}")
+                if (block)
+                    addBlock()
             }
         }
 
         if (chained) {
-            addIndicedLine()
+            addIndicedLine(1)
             builder.append(")))")
         } else
-            addIndicedLine()
+            addIndicedLine(1)
+        if (chainedTextureRequirements)
+            builder.append("}")
         builder.append("}}")
         return builder.toString()
     }
@@ -229,6 +324,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
         private var tableAnimation: TableAnimation? = null
         var animatedTextureSprite: AnimatedTextureSprite? = null
         var rules: List<NameOrIdentity?>? = null
+        var flipX: Boolean = false
+        var flipY: Boolean = false
 
         private val animationButton = object: TextureButton(Textures.get("animationButton")) {
             var state = 0
@@ -259,7 +356,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 private set
             fun newState() {
                 state += 1
-                state %= 3
+                state %= 4
                 changeTexture()
             }
 
@@ -268,6 +365,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     0 -> Textures.get("chainTexture")
                     1 -> Textures.get("addTexture")
                     2 -> Textures.get("stopTexture")
+                    3 -> Textures.get("chainStopTexture")
                     else -> {texture}
                 }
             }
@@ -502,7 +600,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             rulePickerButton.setSize(100f, 100f)
             rulePickerButton.addListener(getChangeListener { _, actor ->
                 stage.addActor(AddRulesView(rules?.toMutableList()) {
-                    addRules(it.first, it.second, actor as RulePickerButton)
+                    addRules(it.first, it.third.first, it.third.second, it.second, actor as RulePickerButton)
                 })
             })
 
@@ -544,8 +642,9 @@ class TextureAttributeView: AttributeView(VisTable()) {
             if (index == -1)
                 index = textureTables.size
 
+            println("Calculating chained probability")
             for (i in (0 until index).reversed()) {
-                if (textureTables[i].getTextureLinkState() != 0)
+                if (!textureTables[i].isChained())
                     break
                 probabilitySum -= textureTables[i].getProbability()
             }
@@ -559,10 +658,10 @@ class TextureAttributeView: AttributeView(VisTable()) {
             if (endIndex == -1)
                 endIndex = textureTables.size
 
-            if (getTextureLinkState() == 0) {
+            if (getTextureLinkState() == 3) {
                 (children.get(0) as VisTable).findActor<TextField>("probability").text =
                     previousChainedProbability.toInt().toString()
-                if (endIndex != 0 && textureTables[endIndex - 1].getTextureLinkState() == 0)
+                if (endIndex != 0 && textureTables[endIndex - 1].isChained())
                     textureTables[endIndex - 1].setProbability(
                         textureTables[endIndex - 1].getProbability() - previousChainedProbability)
 
@@ -570,7 +669,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             if (getTextureLinkState() == 1) {
                 previousChainedProbability = getProbability()
                 (children.get(0) as VisTable).findActor<TextField>("probability").text = "100"
-                if (endIndex != 0 && textureTables[endIndex - 1].getTextureLinkState() == 0)
+                if (endIndex != 0 && textureTables[endIndex - 1].isChained())
                     textureTables[endIndex - 1].setProbability(
                         textureTables[endIndex - 1].getProbability() + previousChainedProbability
                     )
@@ -578,6 +677,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
         }
         private fun addRules(
             ruleList: List<NameOrIdentity?>,
+            flipX: Boolean,
+            flipY: Boolean,
             newRulePickerButton: RulePickerButton,
             rulePickerButton: RulePickerButton) {
             var isEmpty = true
@@ -595,6 +696,9 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 rules = null
             else
                 rules = ruleList
+
+            this.flipX = flipX
+            this.flipY = flipY
         }
 
         override fun act(delta: Float) {

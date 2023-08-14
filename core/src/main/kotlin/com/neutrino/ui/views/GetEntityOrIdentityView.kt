@@ -59,17 +59,23 @@ class GetEntityOrIdentityView(
     }
 
     fun returnEntity(name: String) {
-        close()
+        super.close()
         callback.invoke(Triple(EntityOrIdentity.ENTITY, name, notButtonChecked))
     }
 
     fun returnIdentity(name: String) {
-        close()
+        super.close()
         callback.invoke(Triple(EntityOrIdentity.IDENTITY, name, notButtonChecked))
+    }
+
+    override fun close() {
+        super.close()
+        callback.invoke(Triple(EntityOrIdentity.NOTHING, name, notButtonChecked))
     }
 
     enum class EntityOrIdentity {
         ENTITY,
-        IDENTITY
+        IDENTITY,
+        NOTHING
     }
 }

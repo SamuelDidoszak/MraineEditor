@@ -9,6 +9,9 @@ import com.neutrino.util.hasIdentity
 import com.neutrino.util.id
 import kotlin.reflect.KClass
 
+/**
+ * @param not: true if rule has to be inverted. false if should be processed normally
+ */
 class NameOrIdentity(name: EntityName? = null, val identity: KClass<out Identity>? = null, val not: Boolean = false) {
     constructor(identity: KClass<out Identity>, not: Boolean = false) : this(null, identity, not)
     constructor(name: EntityName?, not: Boolean = false) : this(name, null, not)
@@ -37,5 +40,12 @@ class NameOrIdentity(name: EntityName? = null, val identity: KClass<out Identity
         if (identity == null)
             return null
         return identity.simpleName
+    }
+
+    override fun toString(): String {
+        var params = getEntityName() ?: ("Identity." + getIdentityName() + "::class")
+        if (not)
+            params += ", true"
+        return "NameOrIdentity($params)"
     }
 }

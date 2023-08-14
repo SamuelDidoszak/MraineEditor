@@ -70,8 +70,10 @@ class RulePickerButton(initTexture: TextureSprite): TextureButton(initTexture) {
     }
 
     fun setTexture(index: Int, texture: TextureSprite?) {
-        if (texture == null)
+        if (texture == null) {
             textureList[index] = null
+            return
+        }
         textureList[index] = ScalableTexture(texture!!, width / 3 - pad , height / 3 + pad)
     }
 

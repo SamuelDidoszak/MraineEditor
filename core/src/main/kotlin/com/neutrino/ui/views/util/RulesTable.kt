@@ -8,6 +8,7 @@ import com.neutrino.entities.attributes.Identity
 import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.generation.NameOrIdentity
 import com.neutrino.textures.SingleEntityDrawer
+import com.neutrino.textures.TextureSprite
 import com.neutrino.textures.Textures
 import com.neutrino.ui.elements.RulePickerButton
 import com.neutrino.ui.views.GetEntityOrIdentityView
@@ -62,6 +63,11 @@ class RulesTable(ruleList: MutableList<NameOrIdentity?>? = null) : VisTable() {
     }
 
     private fun addRuleData(position: Int, data: Triple<GetEntityOrIdentityView.EntityOrIdentity, String, Boolean>) {
+        if (data.first == GetEntityOrIdentityView.EntityOrIdentity.NOTHING) {
+            rulesButton.setTexture(position, null as TextureSprite?)
+            rules[position] = null
+            return
+        }
         if (data.first == GetEntityOrIdentityView.EntityOrIdentity.IDENTITY) {
             rulesButton.setTexture(position, Textures.get(data.second.lowercase() + "Identity"))
             rulesButton.setNot(position, data.third)

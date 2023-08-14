@@ -32,6 +32,8 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
             map[1][1][0] = field
             field.addAttribute(OnMapPositionAttribute(1, 1, this))
             field.get(TextureAttribute::class)!!.setTextures(null, Random)
+            if (field.get(TextureAttribute::class)!!.textures.isEmpty())
+                throw Exception("No texture was set!")
             updateScale()
         }
 
@@ -55,7 +57,9 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
             list.add(arrayListOf())
             for (x in 0 until 9) {
                 list[y].add(mutableListOf())
-                list[y][x].add(Entity())
+                val entity = Entity()
+                entity.id = -1
+                list[y][x].add(entity)
             }
         }
         return list
