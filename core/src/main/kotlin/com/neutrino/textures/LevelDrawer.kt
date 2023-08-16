@@ -60,9 +60,9 @@ open class LevelDrawer: EntityDrawer, Group() {
                     for (texture in textures) {
                         if (texture.z == 0)
                             batch!!.draw(
-                                texture.texture, if (!texture.mirrored) screenX else screenX + texture.texture.regionWidth * SCALE,
+                                texture.texture, if (!texture.mirrorX) screenX else screenX + texture.texture.regionWidth * SCALE,
                                 screenY,
-                                texture.texture.regionWidth * if (!texture.mirrored) SCALE else -1 * SCALE,
+                                texture.texture.regionWidth * if (!texture.mirrorX) SCALE else -1 * SCALE,
                                 texture.texture.regionHeight * SCALE)
                     }
                 }
@@ -87,9 +87,9 @@ open class LevelDrawer: EntityDrawer, Group() {
 
                     texture = layeredTexture.texture
                     batch!!.draw(texture.texture,
-                        if (!texture.mirrored) x + textureX else x + textureWidth + textureX,
+                        if (!texture.mirrorX) x + textureX else x + textureWidth + textureX,
                         y + textureY,
-                        textureWidth * if (!texture.mirrored) 1f else -1f,
+                        textureWidth * if (!texture.mirrorX) 1f else -1f,
                         layeredTexture.getHeight() * 1f)
                 }
             }

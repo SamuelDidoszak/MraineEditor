@@ -63,6 +63,11 @@ class TextureAttribute(
             return element
         }
 
+        override fun clear() {
+            for (i in (0 until size).reversed())
+                removeAt(i)
+        }
+
         private fun addToLevel(element: TextureSprite, animationData: AnimationData? = null) {
             val level = entity.get(OnMapPositionAttribute::class)!!.level
             if (element.z != 0)

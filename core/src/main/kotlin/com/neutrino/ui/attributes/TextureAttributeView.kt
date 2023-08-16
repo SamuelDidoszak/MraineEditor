@@ -111,16 +111,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 builder.append("\t")
         }
         fun addBlock() {
-            builder.append(".also {if (it!=null) return@run}")
-        }
-
-        var randValAdded = false
-        fun addRandValOnce() {
-            if (randValAdded)
-                return
-            builder.append("val randVal = random.nextFloat() * 100")
-            addIndicedLine(1)
-            randValAdded = true
+            builder.append(".also {if (it) return@run}")
         }
 
         fun getAnimationName(textureTable: TextureTable): String {
@@ -139,17 +130,24 @@ class TextureAttributeView: AttributeView(VisTable()) {
             builder.append(")")
         }
         fun addSingleTexture(textureTable: TextureTable) {
-            if (textureTable.getAnimationState() == 0)
-                builder.append("textures add Textures.get(\"${textureTable.textures.keys.first()}\")")
+            if (!textureTable.hasRequirements())
+                builder.append("textures.add(")
+
+            if (textureTable.getProbability().toInt() != 100)
+                builder.append("Textures.getOrNull(random, ${textureTable.getProbability().toInt()}f, ")
             else
-                builder.append("textures add Textures.get(\"${getAnimationName(textureTable)}\")")
+                builder.append("Textures.get(")
+
+            if (textureTable.getAnimationState() == 0)
+                builder.append("\"${textureTable.textures.keys.first()}\")")
+            else
+                builder.append("\"${getAnimationName(textureTable)}\")")
         }
         fun addSingleRandomTexture(textureTable: TextureTable) {
-            builder.append("textures add Textures.getOrNull(Entities.getRandomTexture(randVal, 100f, ")
+            if (!textureTable.hasRequirements())
+                builder.append("textures.add(")
+            builder.append("Textures.getRandomTexture(random, ${textureTable.getProbability().toInt()}f, ")
             addTextureListString(textureTable)
-            builder.append(")")
-            if (textureTable.isBlock())
-                addBlock()
             builder.append(")")
         }
         fun addMultipleRandomTextures(textureTable: TextureTable) {
@@ -166,13 +164,6 @@ class TextureAttributeView: AttributeView(VisTable()) {
             }
             builder.delete(builder.length - 2, builder.length)
             builder.append(")")
-        }
-
-        fun hasRequirements(textureTable: TextureTable): Boolean {
-            val requirements = textureTable.rules?.filterNotNull()
-            if (requirements.isNullOrEmpty())
-                return false
-            return true
         }
 
         fun addRequirements(textureTable: TextureTable) {
@@ -193,7 +184,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             var singleNameIdentity = isSame()
 
             if (singleNameIdentity) {
-                builder.append("position!!.check(")
+                builder.append("textures.add(position!!.check(")
                 addSingleRequirementList(textureTable)
                 val nameOrIdentity = requirements.first()
                 val name =
@@ -202,16 +193,24 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 builder.append(", $name")
                 if (nameOrIdentity.not)
                     builder.append(", true")
+                if (textureTable.flipX || textureTable.flipY) {
+                    if (!nameOrIdentity.not)
+                        builder.append(", false")
+                    builder.append(", ${textureTable.flipX}, ${textureTable.flipY}")
+                }
                 builder.append(") {")
             } else {
-                builder.append("position!!.check(listOf(")
+                builder.append("textures.add(position!!.check(listOf(")
                 for (i in 0 until 8) {
                     if (textureTable.rules!![i] == null)
                         continue
                     builder.append("${i + 1} to ${textureTable.rules!![i]}, ")
                 }
                 builder.delete(builder.length - 2, builder.length)
-                builder.append(")) {")
+                builder.append(")")
+                if (textureTable.flipX || textureTable.flipY)
+                    builder.append(", ${textureTable.flipX}, ${textureTable.flipY}")
+                builder.append(") {")
             }
         }
 
@@ -234,7 +233,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 if (!chained && (i in textureTables.indices && !textureTables[i + 1].isChained()) ||
                     (!chained && i == textureTables.size - 2)) {
                     if (textureTable.textures.size == 1 || textureTable.getAnimationState() != 0) {
-                        val hasRequirements = hasRequirements(textureTable)
+                        val hasRequirements = textureTable.hasRequirements()
                         if (hasRequirements) {
                             addRequirements(textureTable)
                             addIndicedLine(2)
@@ -242,12 +241,12 @@ class TextureAttributeView: AttributeView(VisTable()) {
                         addSingleTexture(textureTable)
                         if (hasRequirements)
                             builder.append("}")
+                        builder.append(")")
                         if (block)
                             addBlock()
                         continue
                     }
-                    addRandValOnce()
-                    val hasRequirements = hasRequirements(textureTable)
+                    val hasRequirements = textureTable.hasRequirements()
                     if (hasRequirements) {
                         addRequirements(textureTable)
                         addIndicedLine(2)
@@ -255,17 +254,19 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     addSingleRandomTexture(textureTable)
                     if (hasRequirements)
                         builder.append("}")
+                    builder.append(")")
                     if (block)
                         addBlock()
                     continue
                 }
                 if (!chained) {
-                    if (hasRequirements(textureTable)) {
+                    if (textureTable.hasRequirements()) {
                         addRequirements(textureTable)
                         addIndicedLine(2)
                         chainedTextureRequirements = true
-                    }
-                    builder.append("textures add Textures.getOrNull(Entities.getRandomTexture(random, listOf(")
+                    } else
+                        builder.append("textures.add(")
+                    builder.append("Textures.getRandomTexture(random, listOf(")
                     addIndicedLine(1)
                 }
                 builder.append("\t")
@@ -278,9 +279,10 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     builder.append("\t")
                     if (chainedTextureRequirements)
                         builder.append("\t")
-                    builder.append(")))")
+                    builder.append("))")
                     if (chainedTextureRequirements)
                         builder.append("}")
+                    builder.append(")")
                     if (block)
                         addBlock()
 
@@ -289,13 +291,17 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 chained = false
                 chainedTextureRequirements = false
                 block = textureTable.isBlock()
-                if (hasRequirements(textureTable)) {
+                if (textureTable.hasRequirements()) {
                     addRequirements(textureTable)
                     addIndicedLine(2)
                 }
-                addSingleTexture(textureTable)
-                if (hasRequirements(textureTable))
+                if (textureTable.textures.size == 1 || textureTable.getAnimationState() != 0)
+                    addSingleTexture(textureTable)
+                else
+                    addSingleRandomTexture(textureTable)
+                if (textureTable.hasRequirements())
                     builder.append("}")
+                builder.append(")")
                 if (block)
                     addBlock()
             }
@@ -303,11 +309,13 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
         if (chained) {
             addIndicedLine(1)
-            builder.append(")))")
+            builder.append("))")
+            if (!chainedTextureRequirements)
+                builder.append(")")
         } else
-            addIndicedLine(1)
+            addIndicedLine()
         if (chainedTextureRequirements)
-            builder.append("}")
+            builder.append("})")
         builder.append("}}")
         return builder.toString()
     }
@@ -625,7 +633,11 @@ class TextureAttributeView: AttributeView(VisTable()) {
             return rulesTable
         }
         fun getProbability(): Float {
-            return (children.get(0) as VisTable).findActor<TextField>("probability").text.toFloat()
+            try {
+                return (children.get(0) as VisTable).findActor<TextField>("probability").text.toFloat()
+            } catch (e: NumberFormatException) {
+                return 0f
+            }
         }
         fun setProbability(probability: Float) {
             (children.get(0) as VisTable).findActor<TextField>("probability")
@@ -847,6 +859,13 @@ class TextureAttributeView: AttributeView(VisTable()) {
         }
         fun isBlock(): Boolean {
             return textureLinkButton.state == 2 || textureLinkButton.state == 3
+        }
+
+        fun hasRequirements(): Boolean {
+            val requirements = rules?.filterNotNull()
+            if (requirements.isNullOrEmpty())
+                return false
+            return true
         }
 
         private fun getFile(table: VisTable, textureView: TextureButton) {

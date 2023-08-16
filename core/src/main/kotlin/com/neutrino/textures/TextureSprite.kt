@@ -19,15 +19,23 @@ open class TextureSprite(
     }
 
     var lights: LightSources? = null
-    var mirrored: Boolean = false
+    var mirrorX: Boolean = false
+    var mirrorY: Boolean = false
 
-    fun mirror() {
-        mirrored = !mirrored
+    fun mirrorX(): TextureSprite {
+        mirrorX = !mirrorX
+        return this
     }
 
-    fun mirror(probability: Float, randomGenerator: Random) {
+    fun mirrorY(): TextureSprite {
+        mirrorY = !mirrorY
+        return this
+    }
+
+    fun mirrorX(probability: Float, randomGenerator: Random): TextureSprite {
         if (randomGenerator.nextFloat() * 100 < probability)
-            mirrored = !mirrored
+            mirrorX = !mirrorX
+        return this
     }
 
     fun width(): Int {

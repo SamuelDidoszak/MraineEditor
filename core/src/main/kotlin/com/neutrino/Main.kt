@@ -34,6 +34,7 @@ class Main: ApplicationAdapter() {
 //            "com.neutrino.entities.callables.*", "com.neutrino.entities.util.*",
             "com.neutrino.textures.Textures", "com.neutrino.textures.TextureSprite",
             "com.neutrino.textures.AnimatedTextureSprite",
+            "com.neutrino.generation.NameOrIdentity",
 //            "com.neutrino.textures.Light", "com.neutrino.textures.LightSources",
 //            "com.badlogic.gdx.graphics.Color", "com.badlogic.gdx.graphics.g2d.TextureAtlas",
 //            "com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion", "com.badlogic.gdx.utils.Array",

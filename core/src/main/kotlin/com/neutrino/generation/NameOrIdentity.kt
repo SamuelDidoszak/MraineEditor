@@ -19,15 +19,15 @@ class NameOrIdentity(name: EntityName? = null, val identity: KClass<out Identity
     val id = name?.id()
 
     fun isSame(entity: Entity): Boolean {
-        return (entity.id == id || (identity != null && entity hasIdentity identity)) && !not
+        return (entity.id == id || (identity != null && entity hasIdentity identity)) == !not
     }
 
     fun isSame(name: EntityName): Boolean {
-        return (id != null && Entities.getName(id) == name) && !not
+        return (id != null && Entities.getName(id) == name) == !not
     }
 
     fun isSame(id: EntityId): Boolean {
-        return (this.id == id) && !not
+        return (this.id == id) == !not
     }
 
     fun getEntityName(): String? {
@@ -43,7 +43,11 @@ class NameOrIdentity(name: EntityName? = null, val identity: KClass<out Identity
     }
 
     override fun toString(): String {
-        var params = getEntityName() ?: ("Identity." + getIdentityName() + "::class")
+        var params =
+            if (id != null)
+                "\"${getEntityName()}\""
+            else
+                "Identity." + getIdentityName() + "::class"
         if (not)
             params += ", true"
         return "NameOrIdentity($params)"

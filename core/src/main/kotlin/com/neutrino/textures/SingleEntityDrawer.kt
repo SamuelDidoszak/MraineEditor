@@ -31,9 +31,13 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
             field = value
             map[1][1][0] = field
             field.addAttribute(OnMapPositionAttribute(1, 1, this))
-            field.get(TextureAttribute::class)!!.setTextures(null, Random)
-            if (field.get(TextureAttribute::class)!!.textures.isEmpty())
-                throw Exception("No texture was set!")
+            val textureAttribute = field.get(TextureAttribute::class) ?:
+                field.addAttribute(TextureAttribute {_, _, _ ->}).get(TextureAttribute::class)!!
+            textureAttribute.setTextures(null, Random)
+            if (textureAttribute.textures.isEmpty()) {
+                println(entity.name + " has no texture set!")
+                textureAttribute.textures.add(Textures.get("backgroundTexture"))
+            }
             updateScale()
         }
 
@@ -70,20 +74,20 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
         for (texture in textures) {
             if (texture.z == 0)
                 batch!!.draw(texture.texture,
-                    if (!texture.mirrored) x + texture.x * scale + offsetX
+                    if (!texture.mirrorX) x + texture.x * scale + offsetX
                         else x + texture.x * scale + offsetX + texture.texture.regionWidth * scale,
                     y + texture.y * scale + offsetY,
-                    texture.texture.regionWidth * if (!texture.mirrored) scale else -1 * scale,
+                    texture.texture.regionWidth * if (!texture.mirrorX) scale else -1 * scale,
                     texture.texture.regionHeight * scale)
         }
         for (layer in textureLayers) {
             for (layeredTexture in layer.value) {
                 val texture = layeredTexture.texture
                 batch!!.draw(texture.texture,
-                    if (!texture.mirrored) x + texture.x * scale + offsetX
+                    if (!texture.mirrorX) x + texture.x * scale + offsetX
                         else x + texture.x * scale + offsetX + layeredTexture.texture.width() * scale,
                     y + texture.y * scale + offsetY,
-                    layeredTexture.texture.width() * if (!texture.mirrored) scale else -1 * scale,
+                    layeredTexture.texture.width() * if (!texture.mirrorX) scale else -1 * scale,
                     layeredTexture.texture.height() * scale)
             }
         }
