@@ -1,8 +1,13 @@
 package com.neutrino.ui.views.util
 
+import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.ui.Container
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
+import com.kotcrab.vis.ui.widget.MenuItem
+import com.kotcrab.vis.ui.widget.PopupMenu
 import com.kotcrab.vis.ui.widget.VisTable
 import com.neutrino.entities.Entity
 import com.neutrino.textures.Textures
@@ -10,9 +15,11 @@ import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.views.AddNewEntityView
 import com.neutrino.util.Constants.entityList
 import com.neutrino.util.UiManagerFactory
+import com.neutrino.util.getChangeListener
 
 class EntitiesTable(
     private val allowEntityAddition: Boolean,
+    private val allowEntityEditing: Boolean,
     private val search: Search<EntityButton>? = null,
     override val callback: (data: String) -> Unit): VisTable(), Callback<String> {
 
@@ -90,7 +97,7 @@ class EntitiesTable(
         }
     }
 
-    private fun addEntityButton(entity: Entity): EntityButton {
+    private fun addEntityButton(entity: Entity, index: Int? = null): EntityButton {
         val entityButton = EntityButton(entity, nameX1Size)
         entityButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
         entityButton.addListener(object : ChangeListener() {
@@ -98,7 +105,12 @@ class EntitiesTable(
                 callback.invoke(entity.name)
             }
         })
-        entityButtonList.add(entityButton)
+        if (allowEntityEditing)
+            allowEntityEditing(entityButton, entity)
+        if (index != null)
+            entityButtonList[index] = entityButton
+        else
+            entityButtonList.add(entityButton)
         search?.data?.add(Pair(entityButton, entity.name))
         return entityButton
     }
@@ -118,9 +130,34 @@ class EntitiesTable(
         })
     }
 
+    private fun allowEntityEditing(entityButton: EntityButton, entity: Entity) {
+        entityButton.addListener(object : ClickListener(Input.Buttons.RIGHT) {
+            override fun clicked(event: InputEvent?, x: Float, y: Float) {
+                val menu = PopupMenu()
+                menu.addItem(MenuItem("edit", getChangeListener { _, _ ->
+                    UiManagerFactory.getUI().setLeftPanel(AddNewEntityView(entity) {
+                        entityEdited(it, entity, entityButton)
+                    })
+                }))
+                menu.showMenu(stage, entityButton)
+                menu.y += entityButton.height / 2
+                menu.x += entityButton.width / 2
+            }
+        })
+    }
+
     private fun newEntityAdded(entity: Entity) {
         entityList.add(entity)
         addEntityButton(entity)
+        refreshTable()
+    }
+
+    private fun entityEdited(entity: Entity, oldEntity: Entity, oldEntityButton: EntityButton) {
+        entityList[entityList.indexOf(oldEntity)] = entity
+        addEntityButton(
+            entity,
+            entityButtonList.indexOf(oldEntityButton)
+        )
         refreshTable()
     }
 }

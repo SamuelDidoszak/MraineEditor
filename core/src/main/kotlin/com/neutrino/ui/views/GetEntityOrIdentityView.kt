@@ -20,7 +20,7 @@ class GetEntityOrIdentityView(
     private var notButtonChecked = false
     private val notButton = TextureButton(Textures.get("notTexture"))
     private val identityButtonTable = IdentityButtonTable() { returnIdentity(it) }
-    private val entitiesView = EntitiesView(false) { returnEntity(it) }
+    private val entitiesView = EntitiesView(false, false) { returnEntity(it) }
 
     init {
         isModal = true

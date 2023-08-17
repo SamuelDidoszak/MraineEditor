@@ -2,6 +2,7 @@ package com.neutrino.builders
 
 import com.badlogic.gdx.Gdx
 import com.neutrino.textures.LightSources
+import com.neutrino.textures.Textures
 
 class TextureBuilder {
 
@@ -16,7 +17,7 @@ class TextureBuilder {
         addXYZ(x, y, z)
         stringBuilder.append(")\n")
 
-        addToFile(stringBuilder.toString())
+        writeToFile(name, stringBuilder.toString())
     }
 
     fun buildAnimation(names: List<String>, atlasName: String, looping: Boolean, speed: Float, lightSources: LightSources?,
@@ -32,7 +33,7 @@ class TextureBuilder {
         addXYZ(x, y, z)
         stringBuilder.append(")\n")
 
-        addToFile(stringBuilder.toString())
+        writeToFile(names.first().substringBefore('#'), stringBuilder.toString())
     }
 
     private fun addXYZ(x: Float, y: Float, z: Int) {
@@ -48,7 +49,25 @@ class TextureBuilder {
             stringBuilder.append(", $z")
     }
 
+    private fun writeToFile(textureName: String, string: String) {
+        if (Textures.getOrNull(textureName) == null)
+            addToFile(string)
+        else
+            replaceInFile(textureName, string)
+    }
+
     private fun addToFile(string: String) {
         texturesFile.writeString(string, true)
+    }
+
+    private fun replaceInFile(textureName: String, string: String) {
+        val fileContents = texturesFile.readString()
+        val oldTexturePosition = fileContents.indexOf(textureName)
+        val start = fileContents.lastIndexOf("Textures", oldTexturePosition)
+        var end = fileContents.indexOf("Textures", oldTexturePosition)
+        if (end == -1)
+            end = fileContents.length
+
+        texturesFile.writeString(fileContents.replaceRange(start, end, string), false)
     }
 }

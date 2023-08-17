@@ -1,19 +1,20 @@
 package com.neutrino.ui.views
 
 import com.kotcrab.vis.ui.widget.VisTable
+import com.neutrino.ui.views.util.Callback
 import com.neutrino.ui.views.util.EntitiesTable
 import com.neutrino.ui.views.util.EntityButton
 import com.neutrino.ui.views.util.Search
-import com.neutrino.ui.views.util.Callback
 
 class EntitiesView(
     allowEntityAddition: Boolean,
+    allowEntityEditing: Boolean,
     override val callback: (data: String) -> Unit): VisTable(), Callback<String> {
 
     private val search: Search<EntityButton> = Search {
         entitiesTable.displaySearchResults(it)
     }
-    private val entitiesTable = EntitiesTable(allowEntityAddition, search, callback)
+    private val entitiesTable = EntitiesTable(allowEntityAddition, allowEntityEditing, search, callback)
 
     init {
         padTop(0f)

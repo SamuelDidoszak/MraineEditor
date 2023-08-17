@@ -1,6 +1,7 @@
 package com.neutrino.ui.views
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.files.FileHandle
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.kotcrab.vis.ui.VisUI
@@ -21,6 +22,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 class AddNewEntityView(
+    val editEntity: Entity? = null,
     override val callback: (data: Entity) -> Unit = {}
 ): VisTable(), Callback<Entity> {
 
@@ -53,6 +55,8 @@ class AddNewEntityView(
             }
         })
         saveButton.isDisabled = true
+        if (editEntity != null)
+            nameTextField.text = editEntity.name
         nameTextField.setTextFieldListener { _, _ -> validateSave() }
         title.add(saveButton).right()
 
@@ -176,13 +180,18 @@ class AddNewEntityView(
                 return
             }
         }
+        try {
+            Entities.getId(nameTextField.text)
+            if (nameTextField.text != editEntity?.name)
+                enabled = false
+        } catch (_: Exception) {}
         saveButton.isDisabled = !enabled
     }
 
     private fun saveEntity(): String {
         val entitiesFile = Gdx.files.local("assets/core/AddEntities.kts")
         val builder = StringBuilder(300)
-        if (entitiesFile.file().readText().last() == '}')
+        if (editEntity == null && entitiesFile.file().readText().last() == '}')
             builder.append("\n")
         builder.append("Entities.add(\"${nameTextField.text}\") {\n\tEntity()\n")
 
@@ -203,7 +212,30 @@ class AddNewEntityView(
         }
         builder.append("}")
 
-        entitiesFile.writeString(builder.toString(), true)
+        writeToFile(entitiesFile, builder.toString())
         return builder.toString()
+    }
+
+    private fun writeToFile(entitiesFile: FileHandle, string: String) {
+        if (editEntity == null)
+            addToFile(entitiesFile, string)
+        else
+            replaceInFile(entitiesFile, editEntity, string)
+    }
+
+    private fun addToFile(entitiesFile: FileHandle, string: String) {
+        entitiesFile.writeString(string, true)
+    }
+
+    private fun replaceInFile(entitiesFile: FileHandle, oldEntity: Entity, string: String) {
+        val fileContents = entitiesFile.readString()
+        val start = fileContents.indexOf("Entities.add(\"${oldEntity.name}\")")
+        var end = fileContents.indexOf("Entities.add(", start + 1)
+        if (end == -1)
+            end = fileContents.length
+        else
+            end -= 1
+
+        entitiesFile.writeString(fileContents.replaceRange(start, end, string), false)
     }
 }

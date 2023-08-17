@@ -74,7 +74,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                         textureMap.value.y,
                         textureMap.value.z)
                     newTextureSprite.lights = textureMap.value.lights
-                    Textures add newTextureSprite
+                    Textures addOrReplace newTextureSprite
                 }
             } else {
                 textureBuilder.buildAnimation(
@@ -98,7 +98,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     textureTable.animatedTextureSprite!!.z,
                 )
                 newTextureSprite.lights = textureTable.animatedTextureSprite!!.lights
-                Textures add newTextureSprite
+                Textures addOrReplace newTextureSprite
             }
         }
     }
@@ -736,17 +736,29 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 val z = getFromPositionTable("z", table).textField.text.toInt()
                 val regions = Array<AtlasRegion>()
                 val lightSources = LightSources()
+                var hasLights = false
                 textures.forEach {
                     regions.add(it.value.texture)
                     lightSources.add(it.value.lights?.getLights())
+                    if (it.value.lights?.getLight() != null)
+                        hasLights = true
                 }
-                animatedTextureSprite = AnimatedTextureSprite(
-                    regions,
-                    true,
-                    getFps(table),
-                    lightSources,
-                    x, y, z
-                )
+                animatedTextureSprite = if (hasLights)
+                    AnimatedTextureSprite(
+                        regions,
+                        true,
+                        getFps(table),
+                        lightSources,
+                        x, y, z
+                    )
+                else
+                    AnimatedTextureSprite(
+                        regions,
+                        true,
+                        getFps(table),
+                        x, y, z
+                    )
+
                 if (textureView != null)
                     textureView.texture = animatedTextureSprite!!
                 else

@@ -6,11 +6,25 @@ object Entities {
     private val entityNames: ArrayList<String> = ArrayList()
     private val entityFactory: MutableList<() -> Entity> = mutableListOf()
 
+    /**
+     * Adds or replaces the entity. Method available only for entity editing
+     */
     fun add(name: String, entity: () -> Entity) {
-        entityIds[name] = entityFactory.size
-        entityNames.add(name)
-        entityFactory.add(entity)
+        val entityExists = entityIds[name] != null
+        if (entityExists) {
+            entityFactory[entityIds[name]!!] = entity
+        } else {
+            entityIds[name] = entityFactory.size
+            entityNames.add(name)
+            entityFactory.add(entity)
+        }
     }
+
+//    fun add(name: String, entity: () -> Entity) {
+//        entityIds[name] = entityFactory.size
+//        entityNames.add(name)
+//        entityFactory.add(entity)
+//    }
 
     fun new(name: String): Entity {
         try {
@@ -36,7 +50,7 @@ object Entities {
         try {
             return entityIds[name]!!
         } catch (_: Exception) {
-            println("Entity with name: $name does not exist!")
+            Exception("Entity with name: $name does not exist!").toString()
         }
         throw Exception()
     }
