@@ -140,7 +140,7 @@ class EntitiesTable(
                     })
                 }))
                 menu.showMenu(stage, entityButton)
-                menu.y += entityButton.height / 2
+                menu.y += entityButton.height * 2/3
                 menu.x += entityButton.width / 2
             }
         })

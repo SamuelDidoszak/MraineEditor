@@ -68,4 +68,10 @@ class InteractionAttributeView: AttributeView(VisTable()) {
         builder.append("))")
         return builder.toString()
     }
+
+    override fun validateAttribute(): Boolean {
+        if (interactionTable.getElements().size == 1)
+            return false
+        return true
+    }
 }
