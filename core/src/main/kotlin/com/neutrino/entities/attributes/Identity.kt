@@ -8,4 +8,15 @@ sealed class Identity: Attribute() {
     class Floor: Identity()
     class Wall: Identity()
 
+    override fun equals(other: kotlin.Any?): Boolean {
+        return this::class == other!!::class
+    }
+
+    override fun hashCode(): Int {
+        return javaClass.hashCode()
+    }
+
+    override fun toString(): String {
+        return this::class.simpleName!!
+    }
 }

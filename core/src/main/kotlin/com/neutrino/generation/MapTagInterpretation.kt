@@ -1,41 +1,34 @@
 package com.neutrino.generation
 
-import com.neutrino.entities.attributes.Identity
 import com.neutrino.generation.algorithms.GenerationAlgorithm
 import com.neutrino.util.EntityName
 import kotlin.reflect.KClass
 
 class MapTagInterpretation(val tagList: List<MapTag>) {
-    lateinit var entityIdentities: List<EntityIdentity>
+    lateinit var tileset: Tileset
     lateinit var mapGenerators: List<Pair<Float, KClass<out GenerationAlgorithm>>>
     lateinit var characterList: List<EntityName>
     lateinit var itemList: List<Pair<Float, EntityName>>
-    val generationParams: GenerationParams = tagList[0].generationParams
+    val tagParams: TagParams = TagParams(10f)
 
     init {
-        if (tagList.size == 1) {
-            entityIdentities = tagList[0].entityIdentities
+        if (tagList.isEmpty()) {
+            tileset = Tileset()
+            mapGenerators = ArrayList()
+            characterList = ArrayList()
+            itemList = ArrayList()
+        } else if (tagList.size == 1) {
+            tileset = tagList[0].tileset
             mapGenerators = tagList[0].mapGenerators
             characterList = tagList[0].characterList
             itemList = tagList[0].itemList
         } else {
-            val entityIdentities: ArrayList<EntityIdentity> = ArrayList()
+            val tileset = Tileset()
             val mapGenerators: ArrayList<Pair<Float, KClass<out GenerationAlgorithm>>> = ArrayList()
             val characterList: ArrayList<EntityName> = ArrayList()
             val itemList: ArrayList<Pair<Float, EntityName>> = ArrayList()
             for (tag in tagList) {
-                // Add entityIdentities
-                for (EI in tag.entityIdentities) {
-                    var canAdd = true
-                    for (addedEI in entityIdentities) {
-                        if (EI == addedEI) {
-                            canAdd = true
-                            break
-                        }
-                    }
-                    if (canAdd)
-                        entityIdentities.add(EI)
-                }
+                tileset += tileset
                 // Add generators
                 for (generator in tag.mapGenerators.sortedBy { it.first }) {
                     var canAdd = true
@@ -75,21 +68,13 @@ class MapTagInterpretation(val tagList: List<MapTag>) {
                 }
                 // Generate params
                 if (tag.isModifier)
-                    generationParams.mergeParamModifiers(tag.generationParams)
+                    tagParams.mergeParamModifiers(tag.tagParams)
                 else
-                    generationParams.mergeParams(tag.generationParams)
+                    tagParams.mergeParams(tag.tagParams)
             }
-            this.entityIdentities = entityIdentities
+            this.tileset = tileset
             this.characterList = characterList
             this.itemList = itemList
         }
-    }
-
-    fun getEntityIdentity(identity: KClass<out Identity>): EntityIdentity? {
-        for (EI in entityIdentities) {
-            if (EI.identity == identity)
-                return EI
-        }
-        return null
     }
 }

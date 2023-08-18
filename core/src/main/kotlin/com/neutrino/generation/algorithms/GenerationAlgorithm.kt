@@ -3,35 +3,47 @@ package com.neutrino.generation.algorithms
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.MapParamsAttribute
-import com.neutrino.generation.*
+import com.neutrino.generation.EntityPositionRequirement
+import com.neutrino.generation.EntityPositionRequirementType
+import com.neutrino.generation.NameOrIdentity
+import com.neutrino.generation.Tileset
+import com.neutrino.generation.util.GenerationParams
+import com.neutrino.generation.util.ModifyMap
 import com.neutrino.util.EntityName
 import com.neutrino.util.lessThanDelta
 import kotlin.math.roundToInt
-import kotlin.random.Random
 
 abstract class GenerationAlgorithm(
-    val interpretedTags: MapTagInterpretation,
-    val rng: Random,
-    map: List<List<MutableList<Entity>>>?,
-    val sizeX: Int = map!![0].size, val sizeY: Int = map!!.size) {
+    val params: GenerationParams,
+    var sizeX: Int = params.map[0].size,
+    var sizeY: Int = params.map.size,
+    val modifyBaseMap: ModifyMap? = null) {
 
     abstract val MAIN: Boolean
     abstract val GENERATION_PRIORITY: Int
-    val map: List<List<MutableList<Entity>>> = map ?: getEmptyMap()
+    val map: List<List<MutableList<Entity>>> = initializeMap()
 
-    open fun generate(
-        entityIdentities: List<EntityIdentity> = interpretedTags.entityIdentities
-    ): List<List<MutableList<Entity>>> {
-        return map
+    abstract fun generate(
+        tileset: Tileset = params.interpretedTags.tileset
+    ): List<List<MutableList<Entity>>>
+
+//    open fun generate(
+//        rules: List<EntityPositionRequirement>
+//    ): List<List<MutableList<Entity>>> {
+//        return map
+//    }
+
+    private fun initializeMap(): List<List<MutableList<Entity>>> {
+        if (sizeX != params.map[0].size || sizeY != params.map.size) {
+            if (modifyBaseMap == null)
+                return getEmptyMap(sizeX, sizeY)
+            else
+                TODO("Sublist of the OG map")
+        }
+        return params.map
     }
 
-    open fun generate(
-        rules: List<EntityPositionRequirement>
-    ): List<List<MutableList<Entity>>> {
-        return map
-    }
-
-    private fun getEmptyMap(): List<List<MutableList<Entity>>> {
+    private fun getEmptyMap(sizeX: Int, sizeY: Int): List<List<MutableList<Entity>>> {
         val list = arrayListOf<ArrayList<MutableList<Entity>>>()
         for (y in 0 until sizeY) {
             list.add(arrayListOf())
@@ -204,7 +216,7 @@ abstract class GenerationAlgorithm(
                 }
 
                 // Generate entity if allowed with a probability
-                else if (generationAllowed && rng.nextFloat().lessThanDelta(probability)) {
+                else if (generationAllowed && params.rng.nextFloat().lessThanDelta(probability)) {
                     if (replaceUnderneath)
                         map[y][x].removeAll { true }
                     // Assert that the entity wasn't added already
@@ -219,7 +231,7 @@ abstract class GenerationAlgorithm(
             var generatedAmount = 0
             val max = if (probability >= fulfillingTileList.size) fulfillingTileList.size else probability.roundToInt()
             while (generatedAmount < max) {
-                val index = rng.nextInt(fulfillingTileList.size)
+                val index = params.rng.nextInt(fulfillingTileList.size)
                 map[fulfillingTileList[index].first][fulfillingTileList[index].second].add(Entities.new(entity))
                 fulfillingTileList.removeAt(index)
                 generatedAmount++

@@ -3,8 +3,9 @@ package com.neutrino.generation.algorithms
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.Identity
-import com.neutrino.generation.EntityIdentity
-import com.neutrino.generation.MapTagInterpretation
+import com.neutrino.generation.Tileset
+import com.neutrino.generation.util.GenerationParams
+import com.neutrino.generation.util.ModifyMap
 import com.neutrino.util.EntityName
 import com.neutrino.util.hasIdentity
 import squidpony.squidgrid.mapping.DungeonGenerator
@@ -12,27 +13,29 @@ import squidpony.squidgrid.mapping.styled.TilesetType
 import squidpony.squidmath.Coord
 import squidpony.squidmath.GWTRNG
 import squidpony.squidmath.IRNG
-import kotlin.random.Random
 
 class SquidGenerationAlgorithm(
-    interpretedTags: MapTagInterpretation,
-    rng: Random,
-    map: List<List<MutableList<Entity>>>?,
-    sizeX: Int = map!![0].size,
-    sizeY: Int = map!!.size
-): GenerationAlgorithm(interpretedTags, rng, map, sizeX, sizeY) {
+    val tilesetType: TilesetType,
+    params: GenerationParams,
+    sizeX: Int = params.map[0].size,
+    sizeY: Int = params.map.size,
+    modifyBaseMap: ModifyMap? = null
+): GenerationAlgorithm(params, sizeX, sizeY, modifyBaseMap) {
 
     override val MAIN: Boolean = true
     override val GENERATION_PRIORITY: Int = 0
 
-    private val irng: IRNG = GWTRNG(rng.nextLong())
+    private val irng: IRNG = GWTRNG(params.rng.nextLong())
     private val dungeonGenerator = DungeonGenerator(sizeX, sizeY, irng)
     private lateinit var dungeonLayout: Array<out CharArray>
 
-    fun generate(tilesetType: TilesetType, entityIdentities: List<EntityIdentity>): List<List<MutableList<Entity>>> {
+    override fun generate(tileset: Tileset): List<List<MutableList<Entity>>> {
+        // TODO mix interpretedTags and entityIdentities
+        tileset += params.interpretedTags.tileset
         generateDungeon(tilesetType)
-        setWalls(map, interpretedTags.getEntityIdentity(Identity.Wall::class)!!.getRandomEntityName(rng))
-        addEntities(interpretedTags.getEntityIdentity(Identity.Floor::class)!!.getRandomEntityName(rng), listOf(), 1f)
+        println(tileset.getEntity(Identity.Wall()))
+        setWalls(map, tileset.getRandomEntity(Identity.Wall(), params.rng)!!)
+        addEntities(tileset.getRandomEntity(Identity.Floor(), params.rng)!!, listOf(), 1f)
         return map
     }
 
@@ -83,8 +86,8 @@ class SquidGenerationAlgorithm(
         // randomize position if no coord fount
         do {
             stairsCorrected = Coord.get(
-                rng.nextInt(0, sizeX),
-                rng.nextInt(0, sizeY)
+                params.rng.nextInt(0, sizeX),
+                params.rng.nextInt(0, sizeY)
             )
         } while (map[stairsCorrected!!.y][stairsCorrected.x] hasIdentity Identity.Wall::class)
 
