@@ -28,27 +28,46 @@ object Textures {
     }
 
     infix fun addOrReplace(textureSprite: TextureSprite) {
-        println("addorreplace")
-        println(textures[textureSprite.texture.name.substringBefore('#')])
         if (textureSprite is AnimatedTextureSprite)
             textures[textureSprite.texture.name.substringBefore('#')] = textureSprite
         else
             textures[textureSprite.texture.name] = textureSprite
     }
 
+    private fun new(name: String): TextureSprite? {
+        val tex = textures[name] ?: return null
+        if (tex is AnimatedTextureSprite)
+            return AnimatedTextureSprite(
+                tex.getTextureList(),
+                tex.getLooping(),
+                tex.animationSpeed,
+                tex.lights,
+                tex.x,
+                tex.y,
+                tex.z
+            )
+        return TextureSprite(
+            tex.texture,
+            tex.lights,
+            tex.x,
+            tex.y,
+            tex.z
+        )
+    }
+
     infix fun get(name: String): TextureSprite {
-        return textures[name]!!
+        return new(name)!!
     }
 
     infix fun getOrNull(name: String?): TextureSprite? {
         if (name == null)
             return null
-        return textures[name]
+        return new(name)
     }
 
     fun getOrNull(random: Random, probability: Float, texture: String): TextureSprite? {
         if (random.nextFloat() * 100f <= probability)
-            return get(texture)
+            return new(texture)
         return null
     }
 
@@ -62,7 +81,7 @@ object Textures {
         var max = increment
         for (texture in textures) {
             if (randVal < max)
-                return get(texture)
+                return new(texture)
             max += increment
         }
         return null

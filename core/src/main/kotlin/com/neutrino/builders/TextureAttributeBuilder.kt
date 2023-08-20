@@ -13,7 +13,8 @@ class TextureAttributeBuilder {
                 builder.append("\t")
         }
         fun addBlock() {
-            builder.append(".also {if (it) return@run}")
+//            builder.append(".also {if (it) return@run}")
+            builder.append("?.also {return@run}")
         }
 
         fun getAnimationName(textureTable: TextureAttributeView.TextureTable): String {

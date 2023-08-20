@@ -5,6 +5,7 @@ import com.neutrino.entities.Entity
 import com.neutrino.generation.NameOrIdentity
 import com.neutrino.textures.EntityDrawer
 import com.neutrino.textures.TextureSprite
+import com.neutrino.util.add
 import kotlin.reflect.KClass
 
 class OnMapPositionAttribute(
@@ -18,15 +19,15 @@ class OnMapPositionAttribute(
 
     private companion object {
         val positionMap = mapOf(
-            1 to (-1 to -1),
-            2 to (0 to -1),
-            3 to (1 to -1),
+            1 to (-1 to 1),
+            2 to (0 to 1),
+            3 to (1 to 1),
             4 to (-1 to 0),
             5 to (0 to 0),
             6 to (1 to 0),
-            7 to (-1 to 1),
-            8 to (0 to 1),
-            9 to (1 to 1)
+            7 to (-1 to -1),
+            8 to (0 to -1),
+            9 to (1 to -1)
         )
 
         val mirrorXMap = mapOf(
@@ -55,7 +56,7 @@ class OnMapPositionAttribute(
     }
 
     fun check(position: List<Int>, name: String, not: Boolean = false, mirrorX: Boolean = false, mirrorY: Boolean = false, unit: () -> TextureSprite?): TextureSprite? {
-        return check(position, NameOrIdentity(name, not), unit)
+        return check(position, NameOrIdentity(name, not), mirrorX, mirrorY, unit)
     }
 
     fun check(position: List<Int>, identity: KClass<out Identity>, not: Boolean = false, mirrorX: Boolean = false, mirrorY: Boolean = false,  unit: () -> TextureSprite?): TextureSprite? {
@@ -96,12 +97,18 @@ class OnMapPositionAttribute(
             val xy = positionMap[position[i]]!!
             val x = x + xy.first
             val y = y + xy.second
-            if (y !in level.map.indices || x !in level.map[0].indices && !nameOrIdentity.not)
+            if (y !in level.map.indices || x !in level.map[0].indices) {
+                if (nameOrIdentity.not)
+                    continue
                 return null
-            else for (entity in level.map[y][x]) {
-                if (!nameOrIdentity.isSame(entity))
-                    return null
             }
+            var add = false
+            for (entity in level.map[y][x]) {
+                if (nameOrIdentity.isSame(entity))
+                    add = true
+            }
+            if (!add)
+                return null
         }
         return unit.invoke()
     }
@@ -140,13 +147,91 @@ class OnMapPositionAttribute(
             val xy = positionMap[requirements[i].first]!!
             val x = x + xy.first
             val y = y + xy.second
-            if (y !in level.map.indices || x !in level.map[0].indices && !requirements[i].second.not)
+            if (y !in level.map.indices || x !in level.map[0].indices) {
+                if (requirements[i].second.not)
+                    continue
                 return null
-            else for (entity in level.map[y][x]) {
-                if (!requirements[i].second.isSame(entity))
-                    return null
             }
+            var add = false
+            for (entity in level.map[y][x]) {
+                if (requirements[i].second.isSame(entity))
+                    add = true
+            }
+            if (!add)
+                return null
         }
         return unit.invoke()
+    }
+
+    fun check(position: List<Int>, name: String, not: Boolean = false, mirrorX: Boolean, mirrorY: Boolean, checkAll: Boolean, unit: () -> TextureSprite?): List<TextureSprite>? {
+        return check(position, NameOrIdentity(name, not), mirrorX, mirrorY, checkAll, unit)
+    }
+
+    fun check(position: List<Int>, identity: KClass<out Identity>, not: Boolean = false, mirrorX: Boolean, mirrorY: Boolean, checkAll: Boolean, unit: () -> TextureSprite?): List<TextureSprite>? {
+        return check(position, NameOrIdentity(identity, not), mirrorX, mirrorY, checkAll, unit)
+    }
+
+    fun check(position: List<Int>, nameOrIdentity: NameOrIdentity, mirrorX: Boolean, mirrorY: Boolean, checkAll: Boolean, unit: () -> TextureSprite?): List<TextureSprite>? {
+        val textureSprites = ArrayList<TextureSprite>()
+        var textureSprite: TextureSprite? = check(position, nameOrIdentity, unit)
+        textureSprites.add(textureSprite)
+        if (!checkAll) {
+            if (textureSprites.isEmpty())
+                return null
+            return textureSprites
+        }
+
+        if (mirrorX) {
+            textureSprite = check(position.map {mirrorXMap[it]!!}, nameOrIdentity, unit)
+            textureSprite?.mirrorX()
+            textureSprites.add(textureSprite)
+        }
+        if (mirrorY) {
+            textureSprite = check(position.map {mirrorYMap[it]!!}, nameOrIdentity, unit)
+            textureSprite?.mirrorY()
+            textureSprites.add(textureSprite)
+        }
+        if (mirrorX && mirrorY) {
+            textureSprite = check(position.map {mirrorXMap[mirrorYMap[it]!!]!!}, nameOrIdentity, unit)
+            textureSprite?.mirrorX()?.mirrorY()
+            textureSprites.add(textureSprite)
+        }
+
+        if (textureSprites.isEmpty())
+            return null
+        return textureSprites
+    }
+
+    fun check(requirements: List<Pair<Int, NameOrIdentity>>, mirrorX: Boolean, mirrorY: Boolean, checkAll: Boolean, unit: () -> TextureSprite?): List<TextureSprite>? {
+        val textureSprites = ArrayList<TextureSprite>()
+        var textureSprite: TextureSprite? = check(requirements, unit)
+        textureSprites.add(textureSprite)
+        if (!checkAll) {
+            if (textureSprites.isEmpty())
+                return null
+            return textureSprites
+        }
+
+        if (mirrorX) {
+            textureSprite = check(requirements.map { mirrorXMap[it.first]!! to it.second }, unit)
+            textureSprite?.mirrorX()
+            textureSprites.add(textureSprite)
+        }
+        if (mirrorY) {
+            textureSprite = check(requirements.map { mirrorYMap[it.first]!! to it.second }, unit)
+            textureSprite?.mirrorY()
+            textureSprites.add(textureSprite)
+        }
+        if (mirrorX && mirrorY) {
+            textureSprite = check(requirements.map { mirrorXMap[mirrorYMap[it.first]!!]!! to it.second }, unit)
+            textureSprite?.mirrorX()?.mirrorY()
+            textureSprites.add(textureSprite)
+        }
+
+        if (textureSprites.isEmpty())
+            return null
+//        if (textureSprites.size > 1)
+//            println(textureSprites.size)
+        return textureSprites
     }
 }

@@ -8,6 +8,7 @@ import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.OnMapPositionAttribute
 import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.util.Constants.SCALE
+import com.neutrino.util.Constants.SCALE_INT
 import com.neutrino.util.Optimize
 import java.util.*
 import kotlin.random.Random
@@ -19,8 +20,9 @@ open class LevelDrawer: EntityDrawer, Group() {
     private val textureLayers: SortedMap<Int, LayeredTextureList> = sortedMapOf()
 
     override fun addTexture(entity: Entity, texture: TextureSprite) {
-        if (textureLayers[texture.z] == null)
+        if (textureLayers[texture.z] == null) {
             textureLayers[texture.z] = LayeredTextureList()
+        }
         textureLayers[texture.z]!!.add(LayeredTexture(entity, texture))
     }
 
@@ -72,6 +74,11 @@ open class LevelDrawer: EntityDrawer, Group() {
             screenX = xLeft * 48f
         }
 
+        yTop = Math.round(gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)
+        yBottom = Math.round(gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)
+        xLeft *= 16 * SCALE_INT
+        xRight *= 16 * SCALE_INT
+
         var textureX = 0f
         var textureY = 0f
         var textureWidth = 0
@@ -80,11 +87,10 @@ open class LevelDrawer: EntityDrawer, Group() {
             layer.sort()
             for (layeredTexture in layer) {
                 textureX = layeredTexture.getX()
-                textureY = layeredTexture.getY()
+                textureY = height - layeredTexture.getY()
                 textureWidth = layeredTexture.getWidth()
-                if (textureY <= yTop && textureY + layeredTexture.getHeight() >= yBottom &&
+                if (textureY + layeredTexture.getHeight() >= yBottom && textureY <= yTop &&
                     textureX + textureWidth >= xLeft && textureX <= xRight) {
-
                     texture = layeredTexture.texture
                     batch!!.draw(texture.texture,
                         if (!texture.mirrorX) x + textureX else x + textureWidth + textureX,

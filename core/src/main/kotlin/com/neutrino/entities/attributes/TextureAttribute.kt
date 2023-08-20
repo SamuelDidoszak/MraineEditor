@@ -52,6 +52,16 @@ class TextureAttribute(
             return super.add(element)
         }
 
+        override fun addAll(elements: Collection<TextureSprite>): Boolean {
+            elements.forEach { addToLevel(it) }
+            return super.addAll(elements)
+        }
+
+        override fun addAll(index: Int, elements: Collection<TextureSprite>): Boolean {
+            elements.forEach { addToLevel(it) }
+            return super.addAll(index, elements)
+        }
+
         override fun remove(element: TextureSprite): Boolean {
             removeFromLevel(element)
             return super.remove(element)

@@ -33,7 +33,6 @@ class SquidGenerationAlgorithm(
         // TODO mix interpretedTags and entityIdentities
         tileset += params.interpretedTags.tileset
         generateDungeon(tilesetType)
-        println(tileset.getEntity(Identity.Wall()))
         setWalls(map, tileset.getRandomEntity(Identity.Wall(), params.rng)!!)
         addEntities(tileset.getRandomEntity(Identity.Floor(), params.rng)!!, listOf(), 1f)
         return map

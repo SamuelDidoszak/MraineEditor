@@ -41,10 +41,18 @@ fun <T> ArrayList<T>.addInitial(element: T): ArrayList<T> {
     return this
 }
 
-infix fun <T> ArrayList<T>.add(element: T?): Boolean {
+infix fun <T> ArrayList<T>.add(element: T?): T? {
     if (element == null)
-        return false
-    return add(element)
+        return null
+    add(element)
+    return element
+}
+
+infix fun <T> ArrayList<T>.add(elements: List<T>?): T? {
+    if (elements.isNullOrEmpty())
+        return null
+    addAll(elements)
+    return elements.first()
 }
 
 fun getChangeListener(method: (event: ChangeListener.ChangeEvent?, actor: Actor?) -> Unit): ChangeListener {

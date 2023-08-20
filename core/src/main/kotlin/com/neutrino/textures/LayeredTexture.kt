@@ -17,7 +17,7 @@ internal data class LayeredTexture(
 
     /** Returns scaled y position including map placement */
     fun getY(): Float {
-        return positionAttribute.y * SCALE_INT + texture.y * SCALE_INT
+        return positionAttribute.y * 16 * SCALE_INT - texture.y * SCALE_INT
     }
 
     /** Returns scaled width */

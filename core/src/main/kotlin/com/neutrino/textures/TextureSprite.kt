@@ -11,7 +11,7 @@ open class TextureSprite(
 ) {
     constructor(
         texture: AtlasRegion,
-        lights: LightSources,
+        lights: LightSources?,
         x: Float = 0f,
         y: Float = 0f,
         z: Int = 1): this(texture, x, y, z) {

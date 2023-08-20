@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.textures.LevelDrawer
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
@@ -22,6 +23,8 @@ class EditorStage(
     private var map = levelDrawer.map
     private var startXPosition by Delegates.notNull<Float>()
     private var startYPosition by Delegates.notNull<Float>()
+    private var x: Int = 0
+    private var y: Int = 0
 
     init {
         setLevelDrawer(levelDrawer)
@@ -76,12 +79,16 @@ class EditorStage(
     override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
         if (!(button != Input.Buttons.LEFT || button != Input.Buttons.RIGHT) || pointer > 0)
             return false
+        val screenX = actualScreenX(screenX)
+        val screenY = actualScreenY(screenY)
         touchDownCoords = Pair(screenX, screenY)
         if (calledFromLongpress) calledFromLongpress = false
         return true
     }
 
     override fun touchDragged(screenX: Int, screenY: Int, pointer: Int): Boolean {
+        val screenX = actualScreenX(screenX)
+        val screenY = actualScreenY(screenY)
         if (max(abs(touchDownCoords.first - screenX), abs(touchDownCoords.second - screenY)) < 32)
             return true
         dragging = true
@@ -117,9 +124,19 @@ class EditorStage(
 //                return true
 //        }
 
+        val screenX = actualScreenX(screenX)
+        val screenY = actualScreenY(screenY)
         val touch: Vector3 = Vector3(screenX.toFloat(), screenY.toFloat(),0f)
         camera.unproject(touch)
         val tile = getTileUnprojected(touch)
+
+        if (button == Input.Buttons.RIGHT) {
+            var entities = "${tile.x}, ${tile.y}: "
+            levelDrawer.map[tile.y][tile.x].forEach { entities += "${it.name}: " +
+                it.get(TextureAttribute::class)?.textures?.map { "${it.texture.name}, " } }
+            println(entities)
+            return true
+        }
 
         // create the entityLookupPopup
 //        if (button == Input.Buttons.RIGHT) {
@@ -164,6 +181,8 @@ class EditorStage(
     }
 
     override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
+        val screenX = actualScreenX(screenX)
+        val screenY = actualScreenY(screenY)
         val coord = getTile(screenX, screenY)
         return super.mouseMoved(screenX, screenY)
     }
@@ -182,9 +201,22 @@ class EditorStage(
                 position.x.toInt() / 48
 
         val tileY: Int = if((startYPosition - position.y) / 48 <= 0) 0 else
-            if ((startYPosition - position.y) / 48 >= map.size) map.size - 1 else
-                (startYPosition - position.y).toInt() / 48
+            if ((startYPosition - position.y) / 48 >= map.size - 1) map.size - 1 else
+                (startYPosition - position.y).toInt() / 48 + 1
 
         return Coord.get(tileX, tileY)
+    }
+
+    fun setPosition(x: Int, y: Int) {
+        this.x = x
+        this.y = y
+    }
+
+    private fun actualScreenX(screenX: Int): Int {
+        return screenX - x
+    }
+
+    private fun actualScreenY(screenY: Int): Int {
+        return screenY - y
     }
 }
