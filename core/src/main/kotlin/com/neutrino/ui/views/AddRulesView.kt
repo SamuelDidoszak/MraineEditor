@@ -13,12 +13,13 @@ import ktx.scene2d.vis.visTable
 
 class AddRulesView(
     ruleList: MutableList<NameOrIdentity?>? = null,
-    override val callback: (data: Triple<List<NameOrIdentity?>, RulePickerButton, Pair<Boolean, Boolean>>) -> Unit
-): VisWindow(""), Callback<Triple<List<NameOrIdentity?>, RulePickerButton, Pair<Boolean, Boolean>>> {
+    override val callback: (data: Triple<List<NameOrIdentity?>, RulePickerButton, Triple<Boolean, Boolean, Boolean>>) -> Unit
+): VisWindow(""), Callback<Triple<List<NameOrIdentity?>, RulePickerButton, Triple<Boolean, Boolean, Boolean>>> {
 
     private val rulesTable = RulesTable(ruleList)
     private var flipX = false
     private var flipY = false
+    private var checkAll = false
 
     init {
         isModal = true
@@ -26,17 +27,37 @@ class AddRulesView(
         addCloseButton()
 
         val flipTable = VisTable()
+        val checkAllButton = VisTextButton("Check all", "toggle")
+        checkAllButton.addListener(getChangeListener { _, _ ->
+            checkAll = !checkAll
+        })
+        checkAllButton.isVisible = false
         val flipXButton = VisTextButton("Flip X", "toggle")
         flipXButton.addListener(getChangeListener { _, _ ->
             flipX = !flipX
+            if (!flipX && !flipY) {
+                checkAllButton.isVisible = false
+                if (checkAll)
+                    checkAllButton.toggle()
+                checkAll = false
+            } else
+                checkAllButton.isVisible = true
         })
         val flipYButton = VisTextButton("Flip Y", "toggle")
         flipYButton.addListener(getChangeListener { _, _ ->
             flipY = !flipY
+            if (!flipX && !flipY) {
+                checkAllButton.isVisible = false
+                if (checkAll)
+                    checkAllButton.toggle()
+                checkAll = false
+            } else
+                checkAllButton.isVisible = true
         })
 
         flipTable.add(flipXButton).center().padBottom(32f).row()
-        flipTable.add(flipYButton).center()
+        flipTable.add(flipYButton).center().padBottom(32f).row()
+        flipTable.add(checkAllButton).center()
 
         val saveButton = VisTextButton("save")
         saveButton.addListener(getChangeListener { _, _ -> save() })
@@ -58,7 +79,7 @@ class AddRulesView(
 
     private fun save() {
         val rules = rulesTable.getRules()
-        callback.invoke(Triple(rules.first, rules.second, flipX to flipY))
+        callback.invoke(Triple(rules.first, rules.second, Triple(flipX, flipY, checkAll)))
         close()
     }
 }

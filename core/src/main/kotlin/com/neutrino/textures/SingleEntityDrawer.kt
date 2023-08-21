@@ -107,7 +107,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
         val textures = entity.get(TextureAttribute::class)!!.textures
         // maybe add abs(it.x)
         val maxWidth = textures.maxOf { it.width() + it.x * if(centered) 2 else 1 }
-        val maxHeight = textures.maxOf { it.height() + it.y * if(centered) 2 else 1 }
+        val maxHeight = textures.maxOf { it.height() + it.y }
 
         val wScale: Float = width / maxWidth
         val hScale: Float = height / maxHeight

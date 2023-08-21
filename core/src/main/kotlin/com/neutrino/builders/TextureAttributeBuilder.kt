@@ -100,6 +100,8 @@ class TextureAttributeBuilder {
                     if (!nameOrIdentity.not)
                         builder.append(", false")
                     builder.append(", ${textureTable.flipX}, ${textureTable.flipY}")
+                    if (textureTable.checkAll)
+                        builder.append(", true")
                 }
                 builder.append(") {")
             } else {

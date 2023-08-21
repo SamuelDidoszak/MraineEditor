@@ -128,6 +128,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
         var rules: List<NameOrIdentity?>? = null
         var flipX: Boolean = false
         var flipY: Boolean = false
+        var checkAll: Boolean = false
 
         private val animationButton = object: TextureButton(Textures.get("animationButton")) {
             var state = 0
@@ -402,7 +403,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             rulePickerButton.setSize(100f, 100f)
             rulePickerButton.addListener(getChangeListener { _, actor ->
                 stage.addActor(AddRulesView(rules?.toMutableList()) {
-                    addRules(it.first, it.third.first, it.third.second, it.second, actor as RulePickerButton)
+                    addRules(it.first, it.third.first, it.third.second, it.third.third, it.second, actor as RulePickerButton)
                 })
             })
 
@@ -485,6 +486,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             ruleList: List<NameOrIdentity?>,
             flipX: Boolean,
             flipY: Boolean,
+            checkAll: Boolean,
             newRulePickerButton: RulePickerButton,
             rulePickerButton: RulePickerButton) {
             var isEmpty = true
@@ -505,6 +507,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
             this.flipX = flipX
             this.flipY = flipY
+            this.checkAll = checkAll
         }
 
         override fun act(delta: Float) {

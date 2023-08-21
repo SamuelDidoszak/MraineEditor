@@ -66,6 +66,7 @@ class RulesTable(ruleList: MutableList<NameOrIdentity?>? = null) : VisTable() {
         if (data.first == GetEntityOrIdentityView.EntityOrIdentity.NOTHING) {
             rulesButton.setTexture(position, null as TextureSprite?)
             rules[position] = null
+            rulesButton.setNot(position, false)
             return
         }
         if (data.first == GetEntityOrIdentityView.EntityOrIdentity.IDENTITY) {

@@ -106,6 +106,8 @@ class OnMapPositionAttribute(
             for (entity in level.map[y][x]) {
                 if (nameOrIdentity.isSame(entity))
                     add = true
+                else if (nameOrIdentity.not)
+                    return null
             }
             if (!add)
                 return null
@@ -156,6 +158,8 @@ class OnMapPositionAttribute(
             for (entity in level.map[y][x]) {
                 if (requirements[i].second.isSame(entity))
                     add = true
+                else if (requirements[i].second.not)
+                    return null
             }
             if (!add)
                 return null
@@ -175,26 +179,29 @@ class OnMapPositionAttribute(
         val textureSprites = ArrayList<TextureSprite>()
         var textureSprite: TextureSprite? = check(position, nameOrIdentity, unit)
         textureSprites.add(textureSprite)
-        if (!checkAll) {
-            if (textureSprites.isEmpty())
-                return null
+        if (!checkAll && textureSprite != null)
             return textureSprites
-        }
 
         if (mirrorX) {
             textureSprite = check(position.map {mirrorXMap[it]!!}, nameOrIdentity, unit)
             textureSprite?.mirrorX()
             textureSprites.add(textureSprite)
+            if (!checkAll && textureSprite != null)
+                return textureSprites
         }
         if (mirrorY) {
             textureSprite = check(position.map {mirrorYMap[it]!!}, nameOrIdentity, unit)
             textureSprite?.mirrorY()
             textureSprites.add(textureSprite)
+            if (!checkAll && textureSprite != null)
+                return textureSprites
         }
         if (mirrorX && mirrorY) {
             textureSprite = check(position.map {mirrorXMap[mirrorYMap[it]!!]!!}, nameOrIdentity, unit)
             textureSprite?.mirrorX()?.mirrorY()
             textureSprites.add(textureSprite)
+            if (!checkAll && textureSprite != null)
+                return textureSprites
         }
 
         if (textureSprites.isEmpty())
@@ -206,32 +213,33 @@ class OnMapPositionAttribute(
         val textureSprites = ArrayList<TextureSprite>()
         var textureSprite: TextureSprite? = check(requirements, unit)
         textureSprites.add(textureSprite)
-        if (!checkAll) {
-            if (textureSprites.isEmpty())
-                return null
+        if (!checkAll && textureSprite != null)
             return textureSprites
-        }
 
         if (mirrorX) {
             textureSprite = check(requirements.map { mirrorXMap[it.first]!! to it.second }, unit)
             textureSprite?.mirrorX()
             textureSprites.add(textureSprite)
+            if (!checkAll && textureSprite != null)
+                return textureSprites
         }
         if (mirrorY) {
             textureSprite = check(requirements.map { mirrorYMap[it.first]!! to it.second }, unit)
             textureSprite?.mirrorY()
             textureSprites.add(textureSprite)
+            if (!checkAll && textureSprite != null)
+                return textureSprites
         }
         if (mirrorX && mirrorY) {
             textureSprite = check(requirements.map { mirrorXMap[mirrorYMap[it.first]!!]!! to it.second }, unit)
             textureSprite?.mirrorX()?.mirrorY()
             textureSprites.add(textureSprite)
+            if (!checkAll && textureSprite != null)
+                return textureSprites
         }
 
         if (textureSprites.isEmpty())
             return null
-//        if (textureSprites.size > 1)
-//            println(textureSprites.size)
         return textureSprites
     }
 }

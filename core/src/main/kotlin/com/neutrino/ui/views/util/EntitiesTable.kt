@@ -10,6 +10,7 @@ import com.kotcrab.vis.ui.widget.MenuItem
 import com.kotcrab.vis.ui.widget.PopupMenu
 import com.kotcrab.vis.ui.widget.VisTable
 import com.neutrino.entities.Entity
+import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.textures.Textures
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.views.AddNewEntityView
@@ -142,6 +143,9 @@ class EntitiesTable(
                 menu.showMenu(stage, entityButton)
                 menu.y += entityButton.height * 2/3
                 menu.x += entityButton.width / 2
+                var entities = "${entity.name}: "
+                entities += entity.get(TextureAttribute::class)?.textures?.map { "${it.texture.name}, " }
+                println(entities)
             }
         })
     }
