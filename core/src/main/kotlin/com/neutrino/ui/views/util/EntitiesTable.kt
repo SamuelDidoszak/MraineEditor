@@ -143,9 +143,6 @@ class EntitiesTable(
                 menu.showMenu(stage, entityButton)
                 menu.y += entityButton.height * 2/3
                 menu.x += entityButton.width / 2
-                var entities = "${entity.name}: "
-                entities += entity.get(TextureAttribute::class)?.textures?.map { "${it.texture.name}, " }
-                println(entities)
             }
         })
     }

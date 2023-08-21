@@ -22,23 +22,24 @@ class EntityPositionRequirement {
         requirementList = list.map { Pair(it, requiredEntity) }
     }
 
-    constructor(requirementType: EntityPositionRequirementType, list: List<Pair<Int, NameOrIdentity>>) {
-        this.requirementType = requirementType
-        requirementList = list
-    }
+    constructor(requirementType: EntityPositionRequirementType,
+                requiredEntity: EntityName, list: List<Int>): this(
+                    requirementType, NameOrIdentity(requiredEntity), list)
 
     constructor(requirementType: EntityPositionRequirementType,
-                requiredEntity: EntityName, list: List<Int>) {
-        this.requirementType = requirementType
-        this.requiredEntity = NameOrIdentity(requiredEntity)
-        requirementList = list.map { Pair(it, this.requiredEntity!!) }
-    }
+                requiredIdentity: Identity, list: List<Int>): this(
+                    requirementType, NameOrIdentity(requiredIdentity::class), list)
 
     constructor(requirementType: EntityPositionRequirementType,
                 requiredEntity: KClass<out Identity>, list: List<Int>) {
         this.requirementType = requirementType
         this.requiredEntity = NameOrIdentity(requiredEntity)
         requirementList = list.map { Pair(it, this.requiredEntity!!) }
+    }
+
+    constructor(requirementType: EntityPositionRequirementType, list: List<Pair<Int, NameOrIdentity>>) {
+        this.requirementType = requirementType
+        requirementList = list
     }
 }
 

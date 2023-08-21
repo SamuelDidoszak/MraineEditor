@@ -2,13 +2,13 @@ package com.neutrino.generation.algorithms
 
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
+import com.neutrino.entities.attributes.Identity
 import com.neutrino.entities.attributes.MapParamsAttribute
-import com.neutrino.generation.EntityPositionRequirement
-import com.neutrino.generation.EntityPositionRequirementType
-import com.neutrino.generation.NameOrIdentity
-import com.neutrino.generation.Tileset
+import com.neutrino.generation.*
+import com.neutrino.generation.util.EntityGenerationParams
 import com.neutrino.generation.util.GenerationParams
 import com.neutrino.generation.util.ModifyMap
+import com.neutrino.util.EntityId
 import com.neutrino.util.EntityName
 import com.neutrino.util.lessThanDelta
 import kotlin.math.roundToInt
@@ -19,19 +19,49 @@ abstract class GenerationAlgorithm(
     var sizeY: Int = params.map.size,
     val modifyBaseMap: ModifyMap? = null) {
 
-    abstract val MAIN: Boolean
-    abstract val GENERATION_PRIORITY: Int
-    val map: List<List<MutableList<Entity>>> = initializeMap()
+    internal val map: List<List<MutableList<Entity>>> = initializeMap()
+    private val entities = ArrayList<EntityGenerationParams>()
 
+    /**
+     * Invokes the generation specific to this GenerationAlgorithm
+     */
     abstract fun generate(
         tileset: Tileset = params.interpretedTags.tileset
-    ): List<List<MutableList<Entity>>>
+    ): GenerationAlgorithm
 
-//    open fun generate(
-//        rules: List<EntityPositionRequirement>
-//    ): List<List<MutableList<Entity>>> {
-//        return map
-//    }
+    /**
+     * Invokes both the generation specific to this GenerationAlgorithm and generates all of entities provided
+     */
+    fun generateAll(tileset: Tileset = params.interpretedTags.tileset): GenerationAlgorithm {
+        generate(tileset)
+        generateEntities()
+        return this
+    }
+
+    open fun generateEntities(): GenerationAlgorithm {
+        for (entityParams in entities) {
+            addEntities(entityParams.id, entityParams.requirements, entityParams.amount, entityParams.asProbability, entityParams.replaceUnderneath)
+        }
+        return this
+    }
+
+    fun add(name: EntityName, amount: Float, asProbability: Boolean = false, replaceUnderneath: Boolean = false): GenerationAlgorithm {
+        val id = Entities.getId(name)
+        entities.add(EntityGenerationParams(id, GenerationRequirements.get(id), amount, asProbability, replaceUnderneath))
+        return this
+    }
+
+    fun add(name: EntityName, identityRequirement: Identity, amount: Float, asProbability: Boolean = false, replaceUnderneath: Boolean = false): GenerationAlgorithm {
+        val id = Entities.getId(name)
+        entities.add(EntityGenerationParams(id, GenerationRequirements.get(identityRequirement), amount, asProbability, replaceUnderneath))
+        return this
+    }
+
+    fun add(name: EntityName, requirements: List<EntityPositionRequirement>, amount: Float, asProbability: Boolean = false, replaceUnderneath: Boolean = false): GenerationAlgorithm {
+        val id = Entities.getId(name)
+        entities.add(EntityGenerationParams(id, requirements, amount, asProbability, replaceUnderneath))
+        return this
+    }
 
     private fun initializeMap(): List<List<MutableList<Entity>>> {
         if (sizeX != params.map[0].size || sizeY != params.map.size) {
@@ -54,8 +84,8 @@ abstract class GenerationAlgorithm(
         return list
     }
 
-    fun addEntities(entity: EntityName, entityPositionRequirementList: List<EntityPositionRequirement>, probability: Float,
-                    replaceUnderneath: Boolean = false, assertAmount: Boolean = false) {
+    fun addEntities(entity: EntityId, entityPositionRequirementList: List<EntityPositionRequirement>, amount: Float,
+                    asProbability: Boolean = false, replaceUnderneath: Boolean = false) {
         val fulfillingTileList: MutableList<Pair<Int, Int>> = ArrayList()
         val entityChecker = NameOrIdentity(entity)
         for (y in 0 until sizeY) {
@@ -211,12 +241,12 @@ abstract class GenerationAlgorithm(
                     }
                 }
                 // Add this tile to the list and generate later
-                if (assertAmount && generationAllowed) {
+                if (generationAllowed && !asProbability) {
                     fulfillingTileList.add(Pair(y, x))
                 }
 
                 // Generate entity if allowed with a probability
-                else if (generationAllowed && params.rng.nextFloat().lessThanDelta(probability)) {
+                else if (generationAllowed && params.rng.nextFloat().lessThanDelta(amount)) {
                     if (replaceUnderneath)
                         map[y][x].removeAll { true }
                     // Assert that the entity wasn't added already
@@ -227,9 +257,9 @@ abstract class GenerationAlgorithm(
         }
         // generate certain amount of items
         // treat probability as amount
-        if (assertAmount) {
+        if (!asProbability) {
             var generatedAmount = 0
-            val max = if (probability >= fulfillingTileList.size) fulfillingTileList.size else probability.roundToInt()
+            val max = if (amount >= fulfillingTileList.size) fulfillingTileList.size else amount.roundToInt()
             while (generatedAmount < max) {
                 val index = params.rng.nextInt(fulfillingTileList.size)
                 map[fulfillingTileList[index].first][fulfillingTileList[index].second].add(Entities.new(entity))

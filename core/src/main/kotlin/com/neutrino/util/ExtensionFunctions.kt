@@ -76,3 +76,4 @@ infix fun MutableList<Entity>.hasIdentity(identity: KClass<out Identity>): Boole
 }
 
 fun EntityName.id(): Int = Entities.getId(this)
+fun EntityId.name(): String = Entities.getName(this)

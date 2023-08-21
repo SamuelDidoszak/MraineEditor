@@ -6,6 +6,7 @@ import com.neutrino.entities.attributes.Identity
 import com.neutrino.generation.Tileset
 import com.neutrino.generation.util.GenerationParams
 import com.neutrino.generation.util.ModifyMap
+import com.neutrino.util.EntityId
 import com.neutrino.util.EntityName
 import com.neutrino.util.hasIdentity
 import squidpony.squidgrid.mapping.DungeonGenerator
@@ -22,20 +23,17 @@ class SquidGenerationAlgorithm(
     modifyBaseMap: ModifyMap? = null
 ): GenerationAlgorithm(params, sizeX, sizeY, modifyBaseMap) {
 
-    override val MAIN: Boolean = true
-    override val GENERATION_PRIORITY: Int = 0
-
     private val irng: IRNG = GWTRNG(params.rng.nextLong())
     private val dungeonGenerator = DungeonGenerator(sizeX, sizeY, irng)
     private lateinit var dungeonLayout: Array<out CharArray>
 
-    override fun generate(tileset: Tileset): List<List<MutableList<Entity>>> {
+    override fun generate(tileset: Tileset): GenerationAlgorithm{
         // TODO mix interpretedTags and entityIdentities
         tileset += params.interpretedTags.tileset
         generateDungeon(tilesetType)
         setWalls(map, tileset.getRandomEntity(Identity.Wall(), params.rng)!!)
-        addEntities(tileset.getRandomEntity(Identity.Floor(), params.rng)!!, listOf(), 1f)
-        return map
+        addEntities(tileset.getRandomEntity(Identity.Floor(), params.rng)!!, listOf(), 1f, true)
+        return this
     }
 
     private fun generateDungeon(tilesetType: TilesetType) {
@@ -43,7 +41,7 @@ class SquidGenerationAlgorithm(
             .generate(tilesetType)
     }
 
-    private fun setWalls(map: List<List<MutableList<Entity>>>, wall: EntityName) {
+    private fun setWalls(map: List<List<MutableList<Entity>>>, wall: EntityId) {
         for (y in 0 until sizeY) {
             for (x in 0 until sizeX) {
                 if (dungeonLayout[y][x] == '#')

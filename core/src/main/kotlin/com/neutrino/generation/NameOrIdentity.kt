@@ -15,6 +15,7 @@ import kotlin.reflect.KClass
 class NameOrIdentity(name: EntityName? = null, val identity: KClass<out Identity>? = null, val not: Boolean = false) {
     constructor(identity: KClass<out Identity>, not: Boolean = false) : this(null, identity, not)
     constructor(name: EntityName?, not: Boolean = false) : this(name, null, not)
+    constructor(id: EntityId, not: Boolean = false) : this(Entities.getName(id), null, not)
 
     val id = name?.id()
 

@@ -1,23 +1,25 @@
 package com.neutrino.generation
 
 import com.neutrino.entities.attributes.Identity
+import com.neutrino.util.EntityId
 import com.neutrino.util.EntityName
 import com.neutrino.util.addInitial
+import com.neutrino.util.id
 import kotlin.random.Random
 
 class Tileset() {
 
-    private val entityIdentityMap: MutableMap<Identity, ArrayList<EntityName>> = mutableMapOf()
+    private val entityIdentityMap: MutableMap<Identity, ArrayList<EntityId>> = mutableMapOf()
 
-    fun getEntity(identity: Identity): EntityName? {
+    fun getEntity(identity: Identity): EntityId? {
         return entityIdentityMap[identity]?.first()
     }
 
-    fun getEntities(identity: Identity): List<EntityName>? {
+    fun getEntities(identity: Identity): List<EntityId>? {
         return entityIdentityMap[identity]
     }
 
-    fun getRandomEntity(identity: Identity, rng: Random): EntityName? {
+    fun getRandomEntity(identity: Identity, rng: Random): EntityId? {
         val entities = entityIdentityMap[identity] ?: return null
         if (entities.size == 1)
             return entities.first()
@@ -26,29 +28,29 @@ class Tileset() {
         return entities[(randVal / entities.size).toInt()]
     }
 
-    fun getAll(): Map<Identity, ArrayList<EntityName>> {
+    fun getAll(): Map<Identity, ArrayList<EntityId>> {
         return entityIdentityMap
     }
 
     fun add(entityIdentity: Pair<Identity, EntityName>): Tileset {
         if (entityIdentityMap[entityIdentity.first] == null)
-            entityIdentityMap[entityIdentity.first] = ArrayList<EntityName>()
-        entityIdentityMap[entityIdentity.first]!!.add(entityIdentity.second)
+            entityIdentityMap[entityIdentity.first] = ArrayList<EntityId>()
+        entityIdentityMap[entityIdentity.first]!!.add(entityIdentity.second.id())
         return this
     }
 
     fun add(identity: Identity, entities: ArrayList<EntityName>): Tileset {
         if (entityIdentityMap[identity] == null)
-            entityIdentityMap[identity] = ArrayList<EntityName>()
-        entityIdentityMap[identity]!!.addAll(entities)
+            entityIdentityMap[identity] = ArrayList<EntityId>()
+        entityIdentityMap[identity]!!.addAll(entities.map { it.id() })
         return this
     }
 
     fun add(entityIdentities: List<Pair<Identity, EntityName>>): Tileset {
         entityIdentities.forEach {
             if (entityIdentityMap[it.first] == null)
-                entityIdentityMap[it.first] = ArrayList<EntityName>()
-            entityIdentityMap[it.first]!!.add(it.second)
+                entityIdentityMap[it.first] = ArrayList<EntityId>()
+            entityIdentityMap[it.first]!!.add(it.second.id())
         }
         return this
     }
@@ -56,7 +58,7 @@ class Tileset() {
     fun add(tileset: Tileset): Tileset {
         tileset.getAll().toList().forEach {
             if (entityIdentityMap[it.first] == null)
-                entityIdentityMap[it.first] = ArrayList<EntityName>()
+                entityIdentityMap[it.first] = ArrayList<EntityId>()
             entityIdentityMap[it.first]!!.addAll(it.second)
         }
         return this
@@ -67,16 +69,16 @@ class Tileset() {
     }
 
     constructor(entityIdentity: Pair<Identity, EntityName>): this() {
-        entityIdentityMap[entityIdentity.first] = ArrayList<EntityName>().addInitial(entityIdentity.second)
+        entityIdentityMap[entityIdentity.first] = ArrayList<EntityId>().addInitial(entityIdentity.second.id())
     }
 
     constructor(identity: Identity, entities: ArrayList<EntityName>): this() {
-        entityIdentityMap[identity] = entities
+        entityIdentityMap[identity] = entities.map { it.id() } as ArrayList<EntityId>
     }
 
     constructor(entityIdentities: List<Pair<Identity, EntityName>>): this() {
         entityIdentities.forEach {
-            entityIdentityMap[it.first] = ArrayList<EntityName>().addInitial(it.second)
+            entityIdentityMap[it.first] = ArrayList<EntityId>().addInitial(it.second.id())
         }
     }
 }
