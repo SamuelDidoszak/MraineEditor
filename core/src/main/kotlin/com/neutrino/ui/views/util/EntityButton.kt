@@ -12,7 +12,7 @@ import com.neutrino.textures.Textures
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.util.Constants
 
-class EntityButton(entity: Entity, private val x1Size: Boolean = false): Group() {
+class EntityButton(entity: Entity, val showName: Boolean = true, private val x1Size: Boolean = false): Group() {
 
     private var entityDrawer = SingleEntityDrawer(entity)
     private var entityNameLabel = VisLabel(
@@ -43,14 +43,16 @@ class EntityButton(entity: Entity, private val x1Size: Boolean = false): Group()
         addActor(textureButton)
         addActor(entityDrawer)
         entityDrawer.isVisible = false
-        addActor(entityNameLabel)
-        entityNameLabel.wrap = true
-        entityNameLabel.setAlignment(Alignment.TOP_LEFT.alignment)
+        if (showName) {
+            addActor(entityNameLabel)
+            entityNameLabel.wrap = true
+            entityNameLabel.setAlignment(Alignment.TOP_LEFT.alignment)
+        }
     }
 
     override fun setSize(width: Float, height: Float) {
         entityNameLabel.height = (if (x1Size) 25 else 43) * 2f
-        val nameHeight = entityNameLabel.height
+        val nameHeight = if (showName) entityNameLabel.height else 0f
         super.setSize(width, height)
         textureButton.setSize(width, height - nameHeight)
         entityDrawer.setSize(width, height - nameHeight)

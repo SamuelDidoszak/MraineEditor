@@ -14,7 +14,7 @@ import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.Identity
 import com.neutrino.ui.attributes.*
-import com.neutrino.ui.elements.ViewTitle
+import com.neutrino.ui.elements.TitleView
 import com.neutrino.ui.elements.VisTableNested
 import com.neutrino.ui.views.util.Callback
 import com.neutrino.util.Constants
@@ -27,7 +27,7 @@ class AddNewEntityView(
     override val callback: (data: Entity) -> Unit = {}
 ): VisTable(), Callback<Entity> {
 
-    private val saveButton = VisTextButton("save")
+    private val title: TitleView
     private val nameTextField = VisTextField()
     private val identityTable = VisTableNested()
     private val identityList = Identity::class.nestedClasses.map { it.simpleName }.minus("Any")
@@ -46,20 +46,17 @@ class AddNewEntityView(
         padTop(0f)
         top()
 
-        val title = ViewTitle("Add new entity")
-        saveButton.addListener(object : ChangeListener() {
-            override fun changed(event: ChangeEvent?, actor: Actor?) {
-                val newEntity = saveEntity()
-                Constants.scriptEngine.evaluate(newEntity)
-                callback.invoke(Entities.new(nameTextField.text))
-                UiManagerFactory.getUI().previousPanel()
-            }
-        })
-        saveButton.isDisabled = true
+        title = TitleView("Add new entity", true, "save") {
+            println("Called save!!!")
+            val newEntity = saveEntity()
+            Constants.scriptEngine.evaluate(newEntity)
+            callback.invoke(Entities.new(nameTextField.text))
+            UiManagerFactory.getUI().previousPanel()
+        }
+        title.rightButton.isDisabled = true
         if (editEntity != null)
             nameTextField.text = editEntity.name
         nameTextField.setTextFieldListener { _, _ -> validateSave() }
-        title.add(saveButton).right()
 
         add(title).growX().padTop(16f).row()
         add(nameTextField).growX().padLeft(32f).padRight(32f).padTop(32f).row()
@@ -193,7 +190,7 @@ class AddNewEntityView(
             if (nameTextField.text != editEntity?.name)
                 enabled = false
         } catch (_: Exception) {}
-        saveButton.isDisabled = !enabled
+        title.rightButton.isDisabled = !enabled
     }
 
     private fun saveEntity(): String {

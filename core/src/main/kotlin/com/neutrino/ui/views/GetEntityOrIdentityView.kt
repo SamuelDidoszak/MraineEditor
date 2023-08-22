@@ -8,7 +8,7 @@ import com.kotcrab.vis.ui.widget.VisWindow
 import com.neutrino.textures.Textures
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.views.util.Callback
-import com.neutrino.ui.views.util.IdentityButtonTable
+import com.neutrino.ui.views.minor.IdentityButtonTable
 import com.neutrino.util.getChangeListener
 import ktx.actors.setScrollFocus
 

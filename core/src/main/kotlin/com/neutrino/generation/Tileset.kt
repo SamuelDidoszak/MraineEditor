@@ -24,8 +24,8 @@ class Tileset() {
         if (entities.size == 1)
             return entities.first()
 
-        val randVal = rng.nextFloat() * 100f
-        return entities[(randVal / entities.size).toInt()]
+        val randVal = rng.nextFloat()
+        return entities[(entities.size * randVal).toInt()]
     }
 
     fun getAll(): Map<Identity, ArrayList<EntityId>> {
@@ -78,7 +78,8 @@ class Tileset() {
 
     constructor(entityIdentities: List<Pair<Identity, EntityName>>): this() {
         entityIdentities.forEach {
-            entityIdentityMap[it.first] = ArrayList<EntityId>().addInitial(it.second.id())
+            add(it)
+//            entityIdentityMap[it.first] = ArrayList<EntityId>().addInitial(it.second.id())
         }
     }
 }

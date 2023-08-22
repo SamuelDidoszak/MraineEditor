@@ -1,4 +1,4 @@
-package com.neutrino.ui.views.util
+package com.neutrino.ui.views.minor
 
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -10,10 +10,13 @@ import com.kotcrab.vis.ui.widget.MenuItem
 import com.kotcrab.vis.ui.widget.PopupMenu
 import com.kotcrab.vis.ui.widget.VisTable
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.textures.Textures
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.ui.views.AddNewEntityView
+import com.neutrino.ui.views.util.Callback
+import com.neutrino.ui.views.util.EntityButton
+import com.neutrino.ui.views.util.Search
+import com.neutrino.ui.views.util.UiTab
 import com.neutrino.util.Constants.entityList
 import com.neutrino.util.UiManagerFactory
 import com.neutrino.util.getChangeListener
@@ -99,7 +102,7 @@ class EntitiesTable(
     }
 
     private fun addEntityButton(entity: Entity, index: Int? = null): EntityButton {
-        val entityButton = EntityButton(entity, nameX1Size)
+        val entityButton = EntityButton(entity, true, nameX1Size)
         entityButton.setSize(BUTTON_WIDTH, BUTTON_HEIGHT)
         entityButton.addListener(object : ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
@@ -128,7 +131,7 @@ class EntitiesTable(
     private fun addNewEntityView() {
         UiManagerFactory.getUI().setLeftPanel(AddNewEntityView {
             newEntityAdded(it)
-        })
+        }, UiTab.EntitiesTab)
     }
 
     private fun allowEntityEditing(entityButton: EntityButton, entity: Entity) {
@@ -138,7 +141,7 @@ class EntitiesTable(
                 menu.addItem(MenuItem("edit", getChangeListener { _, _ ->
                     UiManagerFactory.getUI().setLeftPanel(AddNewEntityView(entity) {
                         entityEdited(it, entity, entityButton)
-                    })
+                    }, UiTab.EntitiesTab)
                 }))
                 menu.showMenu(stage, entityButton)
                 menu.y += entityButton.height * 2/3

@@ -6,7 +6,7 @@ import com.kotcrab.vis.ui.widget.VisWindow
 import com.neutrino.generation.NameOrIdentity
 import com.neutrino.ui.elements.RulePickerButton
 import com.neutrino.ui.views.util.Callback
-import com.neutrino.ui.views.util.RulesTable
+import com.neutrino.ui.views.minor.RulesTable
 import com.neutrino.util.getChangeListener
 import ktx.scene2d.scene2d
 import ktx.scene2d.vis.visTable

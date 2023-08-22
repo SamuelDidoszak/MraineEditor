@@ -2,7 +2,7 @@ package com.neutrino.ui.views
 
 import com.kotcrab.vis.ui.widget.VisTable
 import com.neutrino.ui.views.util.Callback
-import com.neutrino.ui.views.util.EntitiesTable
+import com.neutrino.ui.views.minor.EntitiesTable
 import com.neutrino.ui.views.util.EntityButton
 import com.neutrino.ui.views.util.Search
 

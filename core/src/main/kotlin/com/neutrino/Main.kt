@@ -20,6 +20,7 @@ class Main: ApplicationAdapter() {
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddTextures.kts"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddEditorTextures.kts"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddEntities.kts"))
+        scriptEngine.evaluate(Gdx.files.local("assets/core/AddTilesets.kts"))
 
         initializeEntities()
 

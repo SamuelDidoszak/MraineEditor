@@ -11,6 +11,10 @@ class LeftTable: VisScrollPane(Actor()) {
 
     private val background = VisUI.getSkin().get("default", Window.WindowStyle::class.java).background
 
+    companion object {
+        val WIDTH = 1920 * 1/4f + 34f
+    }
+
     init {
         setScrollFocus(true)
         setScrollingDisabled(true, false)

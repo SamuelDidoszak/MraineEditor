@@ -1,10 +1,11 @@
-package com.neutrino.ui.views.util
+package com.neutrino.ui.views.minor
 
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
 import com.neutrino.entities.attributes.Identity
 import com.neutrino.ui.elements.VisTableNested
+import com.neutrino.ui.views.util.Callback
 import com.neutrino.util.getChangeListener
 
 class IdentityButtonTable(override val callback: (data: String) -> Unit): VisTable(), Callback<String> {

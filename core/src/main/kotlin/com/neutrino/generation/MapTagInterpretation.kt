@@ -1,12 +1,10 @@
 package com.neutrino.generation
 
-import com.neutrino.generation.algorithms.GenerationAlgorithm
 import com.neutrino.util.EntityName
-import kotlin.reflect.KClass
 
 class MapTagInterpretation(val tagList: List<MapTag>) {
     lateinit var tileset: Tileset
-    lateinit var mapGenerators: List<Pair<Float, KClass<out GenerationAlgorithm>>>
+    lateinit var mapGenerators: List<Generator>
     lateinit var characterList: List<EntityName>
     lateinit var itemList: List<Pair<Float, EntityName>>
     val tagParams: TagParams = TagParams(10f)
@@ -24,13 +22,13 @@ class MapTagInterpretation(val tagList: List<MapTag>) {
             itemList = tagList[0].itemList
         } else {
             val tileset = Tileset()
-            val mapGenerators: ArrayList<Pair<Float, KClass<out GenerationAlgorithm>>> = ArrayList()
+            val mapGenerators: ArrayList<Generator> = ArrayList()
             val characterList: ArrayList<EntityName> = ArrayList()
             val itemList: ArrayList<Pair<Float, EntityName>> = ArrayList()
             for (tag in tagList) {
                 tileset += tileset
                 // Add generators
-                for (generator in tag.mapGenerators.sortedBy { it.first }) {
+                for (generator in tag.mapGenerators) {
                     var canAdd = true
                     for (addedGenerator in mapGenerators) {
                         if (generator == addedGenerator) {
