@@ -31,7 +31,7 @@ class UiManager() {
 
     init {
         uiStage.addActor(tabs)
-        tabs.setPosition(260f, uiStage.height - 20)
+        tabs.setPosition(258f, uiStage.height - 20)
         println(tabs.height)
         uiStage.addActor(leftTable)
         leftTable.setSize(LeftTable.WIDTH, uiStage.height - 42)

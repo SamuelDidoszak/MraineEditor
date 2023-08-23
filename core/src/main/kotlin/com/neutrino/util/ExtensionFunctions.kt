@@ -3,6 +3,7 @@ package com.neutrino.util
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.badlogic.gdx.utils.Array
+import com.kotcrab.vis.ui.widget.VisTable
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.Identity
@@ -77,3 +78,8 @@ infix fun MutableList<Entity>.hasIdentity(identity: KClass<out Identity>): Boole
 
 fun EntityName.id(): Int = Entities.getId(this)
 fun EntityId.name(): String = Entities.getName(this)
+
+fun VisTable.remove(actor: Actor) {
+    getCell(actor).pad(0f).space(0f)
+    removeActor(actor)
+}

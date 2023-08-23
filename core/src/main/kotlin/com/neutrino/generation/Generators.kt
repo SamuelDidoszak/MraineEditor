@@ -12,12 +12,16 @@ object Generators {
         generatorMap[name] = generator
         if (associations != null)
             addAssociations(name, associations)
+        else
+            addOthersAssociation(name)
     }
 
     fun add(name: String, associations: List<String>? = null, generator: (params: GenerationParams) -> Unit) {
         generatorMap[name] = Generator(false, DEFAULT_PRIORITY, generator)
         if (associations != null)
             addAssociations(name, associations)
+        else
+            addOthersAssociation(name)
     }
 
     fun get(name: String): Generator {
@@ -48,5 +52,11 @@ object Generators {
                 associationMap[association] = ArrayList()
             associationMap[association]!!.add(name)
         }
+    }
+
+    private fun addOthersAssociation(name: String) {
+        if (associationMap["others"] == null)
+            associationMap["others"] = ArrayList()
+        associationMap["others"]!!.add(name)
     }
 }

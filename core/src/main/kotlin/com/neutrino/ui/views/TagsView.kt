@@ -8,6 +8,7 @@ import com.kotcrab.vis.ui.widget.VisTextField
 import com.neutrino.generation.MapTag
 import com.neutrino.ui.attributes.AttributeView
 import com.neutrino.ui.elements.TitleView
+import com.neutrino.ui.views.minor.GeneratorsView
 import com.neutrino.ui.views.minor.TilesetView
 import com.neutrino.ui.views.util.Callback
 import kotlin.reflect.KClass
@@ -43,6 +44,7 @@ class TagsView(
         add(tagElementsTable).growX().padTop(16f).row()
 
         addTagElement(TilesetView::class)
+        addTagElement(GeneratorsView::class)
     }
 
 
@@ -57,7 +59,7 @@ class TagsView(
         attributeParamsTable.add(VisLabel(attributeView.attributeName)).expandX().left().padLeft(32f)
         attributeParamsTable.add(attributeCheckBox).right()
         tagElementsTable.add(attributeParamsTable).growX().row()
-        tagElementsTable.add(attributeView).growX().row()
+        tagElementsTable.add(attributeView).growX().padBottom(16f).row()
         tagElements.add(attributeView)
     }
 

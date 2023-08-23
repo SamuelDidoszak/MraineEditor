@@ -4,10 +4,8 @@ import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.generation.Generators
 import com.neutrino.generation.MapTagInterpretation
 import com.neutrino.generation.Tilesets
-import com.neutrino.generation.algorithms.SquidGenerationAlgorithm
 import com.neutrino.generation.util.GenerationParams
 import com.neutrino.textures.LevelDrawer
-import squidpony.squidgrid.mapping.styled.TilesetType
 import kotlin.random.Random
 
 class Editor: Group() {
@@ -17,11 +15,9 @@ class Editor: Group() {
 
     init {
         editorStage.addActor(levelDrawer)
-        Generators.add("Test") {
-            SquidGenerationAlgorithm(TilesetType.DEFAULT_DUNGEON, it).generateAll(Tilesets.get("Dungeon"))
-        }
 
         val params = GenerationParams(MapTagInterpretation(listOf()), Random(2137), levelDrawer.map)
+        params.interpretedTags.tileset.add(Tilesets.get("Dungeon"))
         Generators.get("Test").generate(params)
 
         levelDrawer.initializeTextures()
