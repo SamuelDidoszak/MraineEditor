@@ -5,7 +5,7 @@ import com.neutrino.textures.TextureSprite
 import com.neutrino.textures.Textures
 import com.neutrino.ui.elements.util.ScalableTexture
 
-class RulePickerButton(initTexture: TextureSprite): TextureButton(initTexture) {
+open class RulePickerButton(initTexture: TextureSprite = Textures.get("rulesTexture")): TextureButton(initTexture) {
 
     val textureList = MutableList<ScalableTexture?>(9) {null}
     private val notList = MutableList(9) {false}

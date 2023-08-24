@@ -22,6 +22,7 @@ class Main: ApplicationAdapter() {
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddEntities.kts"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddTilesets.kts"))
         scriptEngine.evaluate(Gdx.files.local("assets/core/AddGenerators.kts"))
+        scriptEngine.evaluate(Gdx.files.local("assets/core/AddGenerationRequirements.kts"))
 
         initializeEntities()
 
@@ -40,7 +41,8 @@ class Main: ApplicationAdapter() {
             "com.neutrino.generation.Tilesets",
             "com.neutrino.generation.Generators",
             "com.neutrino.generation.algorithms.*",
-            "squidpony.squidgrid.mapping.styled.TilesetType"
+            "squidpony.squidgrid.mapping.styled.TilesetType",
+            "com.neutrino.generation.*",
 //            "com.neutrino.textures.Light", "com.neutrino.textures.LightSources",
 //            "com.badlogic.gdx.graphics.Color", "com.badlogic.gdx.graphics.g2d.TextureAtlas",
 //            "com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion", "com.badlogic.gdx.utils.Array",

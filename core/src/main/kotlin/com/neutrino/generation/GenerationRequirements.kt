@@ -9,23 +9,7 @@ object GenerationRequirements {
 
     private val entityDefaults: HashMap<EntityId, List<EntityPositionRequirement>> = HashMap()
     private val identityDefaults: HashMap<Identity, List<EntityPositionRequirement>> = HashMap()
-
-    fun nearWall(canBlockPassage: Boolean = false): List<EntityPositionRequirement> {
-        var requirementList = listOf(
-            EntityPositionRequirement(EntityPositionRequirementType.OR, Identity.Wall(),
-                listOf(2, 4, 6, 8))
-        )
-
-        if (!canBlockPassage) {
-            requirementList = requirementList.plus(listOf(
-                EntityPositionRequirement(EntityPositionRequirementType.NAND, Identity.Wall(),
-                    listOf(4, 6)),
-                EntityPositionRequirement(EntityPositionRequirementType.NAND, Identity.Wall(),
-                    listOf(2, 8))
-            ))
-        }
-        return requirementList
-    }
+    private val others: HashMap<String, List<EntityPositionRequirement>> = HashMap()
 
     fun add(entity: EntityId, requirements: List<EntityPositionRequirement>) {
         entityDefaults[entity] = requirements
@@ -39,6 +23,10 @@ object GenerationRequirements {
         identityDefaults[identity] = requirements
     }
 
+    fun addOther(ruleName: String, requirements: List<EntityPositionRequirement>) {
+        others[ruleName] = requirements
+    }
+
     fun get(entity: EntityName): List<EntityPositionRequirement> {
         return entityDefaults[Entities.getId(entity)]!!
     }
@@ -49,6 +37,22 @@ object GenerationRequirements {
 
     fun get(identity: Identity): List<EntityPositionRequirement> {
         return identityDefaults[identity]!!
+    }
+
+    fun getOther(ruleName: String): List<EntityPositionRequirement> {
+        return others[ruleName]!!
+    }
+
+    fun getEntities(): Set<EntityId> {
+        return entityDefaults.keys
+    }
+
+    fun getIdentities(): Set<Identity> {
+        return identityDefaults.keys
+    }
+
+    fun getOthers(): Set<String> {
+        return others.keys
     }
 }
 

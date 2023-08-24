@@ -13,6 +13,9 @@ class VisTableNested: VisTable() {
     var padR: Float = 0f
     var padT: Float = 0f
     var padB: Float = 0f
+    fun padLRTB(pad: Float) {
+        padLRTB(pad, pad, pad, pad)
+    }
     fun padLRTB(left: Float, right: Float, top: Float, bottom: Float) {
         padL = left
         padR = right

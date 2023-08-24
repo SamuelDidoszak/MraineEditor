@@ -83,7 +83,7 @@ class AddGeneratorView(
                         methodView.add(DeleteButton {
                             generators.find { it.first == generatorView }?.second?.remove(methodView)
                             generatorTable.remove(methodView)
-                        }).right().top()
+                        }).right().top().row()
             }}}.showMenu(stage, this)
         }
         addMethodTable.add(addButton).padLeft(16f).padRight(16f).padTop(16f)

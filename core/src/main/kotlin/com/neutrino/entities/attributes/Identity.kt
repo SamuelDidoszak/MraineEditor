@@ -10,6 +10,7 @@ sealed class Identity: Attribute() {
     class StairsUp: Identity()
     class StairsDown: Identity()
     class Door: Identity()
+    class Torch: Identity()
 
     override fun equals(other: kotlin.Any?): Boolean {
         return this::class == other!!::class
