@@ -3,36 +3,46 @@ package com.neutrino.generation
 import com.neutrino.util.EntityName
 
 class MapTagInterpretation(val tagList: List<MapTag>) {
-    lateinit var tileset: Tileset
-    lateinit var mapGenerators: List<Generator>
-    lateinit var characterList: List<EntityName>
-    lateinit var itemList: List<Pair<Float, EntityName>>
+    lateinit var tilesets: ArrayList<Tileset>
+    lateinit var mapGenerators: ArrayList<Generator>
+    lateinit var characterList: ArrayList<EntityName>
+    lateinit var itemList: ArrayList<Pair<Float, EntityName>>
     val tagParams: TagParams = TagParams(10f)
 
     init {
         if (tagList.isEmpty()) {
-            tileset = Tileset()
+            tilesets = ArrayList()
             mapGenerators = ArrayList()
             characterList = ArrayList()
             itemList = ArrayList()
         } else if (tagList.size == 1) {
-            tileset = tagList[0].tileset
-            mapGenerators = tagList[0].mapGenerators
-            characterList = tagList[0].characterList
-            itemList = tagList[0].itemList
+            tilesets = ArrayList<Tileset>().apply { addAll(tagList[0].tilesets) }
+            mapGenerators = ArrayList<Generator>().apply { addAll(tagList[0].mapGenerators) }
+            characterList = ArrayList<EntityName>().apply { addAll(tagList[0].characterList) }
+            itemList = ArrayList<Pair<Float, EntityName>>().apply { addAll(tagList[0].itemList) }
         } else {
-            val tileset = Tileset()
+            val tilesets: ArrayList<Tileset> = ArrayList()
             val mapGenerators: ArrayList<Generator> = ArrayList()
             val characterList: ArrayList<EntityName> = ArrayList()
             val itemList: ArrayList<Pair<Float, EntityName>> = ArrayList()
             for (tag in tagList) {
-                tileset += tileset
+                for (tileset in tag.tilesets) {
+                    var canAdd = true
+                    for (addedTileset in tilesets) {
+                        if (tileset == addedTileset) {
+                            canAdd = false
+                            break
+                        }
+                    }
+                    if (canAdd)
+                        tilesets.add(tileset)
+                }
                 // Add generators
                 for (generator in tag.mapGenerators) {
                     var canAdd = true
                     for (addedGenerator in mapGenerators) {
                         if (generator == addedGenerator) {
-                            canAdd = true
+                            canAdd = false
                             break
                         }
                     }
@@ -44,7 +54,7 @@ class MapTagInterpretation(val tagList: List<MapTag>) {
                     var canAdd = true
                     for (addedCharacter in characterList) {
                         if (character == addedCharacter) {
-                            canAdd = true
+                            canAdd = false
                             break
                         }
                     }
@@ -70,7 +80,7 @@ class MapTagInterpretation(val tagList: List<MapTag>) {
                 else
                     tagParams.mergeParams(tag.tagParams)
             }
-            this.tileset = tileset
+            this.tilesets = tilesets
             this.characterList = characterList
             this.itemList = itemList
         }

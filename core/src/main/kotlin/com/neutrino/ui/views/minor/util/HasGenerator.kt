@@ -5,5 +5,8 @@ import com.neutrino.generation.Generator
 interface HasGenerator {
 
     var generatorName: String
-    val generator: Generator
+
+    fun getGenerator(): Generator
+
+    fun generateString(): String
 }

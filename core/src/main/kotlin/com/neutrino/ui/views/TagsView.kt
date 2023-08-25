@@ -6,11 +6,14 @@ import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextField
 import com.neutrino.generation.MapTag
+import com.neutrino.generation.TagParams
 import com.neutrino.ui.attributes.AttributeView
 import com.neutrino.ui.elements.TitleView
 import com.neutrino.ui.views.minor.GeneratorsView
 import com.neutrino.ui.views.minor.TilesetView
 import com.neutrino.ui.views.util.Callback
+import com.neutrino.util.EntityName
+import com.neutrino.util.UiManagerFactory
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
@@ -45,8 +48,19 @@ class TagsView(
 
         addTagElement(TilesetView::class)
         addTagElement(GeneratorsView::class)
+
+        UiManagerFactory.addCallToQueue { it.getEditorGeneration().registerTag { getTag() }}
     }
 
+    fun getTag(): MapTag {
+        val tilesets = (tagElements[0] as TilesetView).getTilesets()
+        val generators = (tagElements[1] as GeneratorsView).getGenerators()
+        val characters = listOf<EntityName>()
+        val items = listOf<Pair<Float, EntityName>>()
+        val params = TagParams(1f)
+        val isModifier = false
+        return MapTag(tilesets, generators, characters, items, params, isModifier)
+    }
 
     private fun addTagElement(attribute: KClass<out AttributeView>) {
         val attributeParamsTable = VisTable()

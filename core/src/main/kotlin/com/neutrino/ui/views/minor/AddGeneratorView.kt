@@ -13,6 +13,7 @@ import com.neutrino.ui.generators.SquidGenerationAlgorithmView
 import com.neutrino.ui.generators.methods.GeneratorMethodAddEntityView
 import com.neutrino.ui.generators.methods.GeneratorMethodView
 import com.neutrino.ui.views.minor.util.HasGenerator
+import com.neutrino.util.UiManagerFactory
 import com.neutrino.util.remove
 import ktx.actors.onChange
 import ktx.actors.onClick
@@ -28,7 +29,6 @@ class AddGeneratorView(
     var main = true
     var priority: Int = 1
 
-    override var generator: Generator = Generator(main, priority) {}
     private val generators: ArrayList<Pair<GenerationAlgorithmView, ArrayList<GeneratorMethodView>>> = ArrayList()
     private val generationAlgorithms = mapOf(
         "SquidGenerationAlgorithm" to SquidGenerationAlgorithmView::class
@@ -53,6 +53,18 @@ class AddGeneratorView(
         add(addGenerator).growX().row()
     }
 
+    override fun getGenerator(): Generator {
+        return Generator(main, priority) {
+            for (generator in generators) {
+                generator.first.getGenerationAlgorithm(it).apply {
+                    generator.second.forEach {
+                        it.addMethod(this)
+                    }
+                }.generateAll()
+            }
+        }
+    }
+
     private fun addGenerationAlgorithm(algorithmName: String) {
         remove(addGenerator)
         val generatorView = generationAlgorithms[algorithmName]!!.createInstance()
@@ -67,6 +79,8 @@ class AddGeneratorView(
                 remove(it) }
             generators.removeIf { it.first == generatorView }
             remove(generatorTable)
+
+            UiManagerFactory.getUI().generateMap()
         }).right().top().row()
         generatorTable.add(generatorView).growX().row()
 
@@ -77,12 +91,18 @@ class AddGeneratorView(
                 generatorMethods.keys.forEach {
                     menuItem(it).onClick {
                         val methodView = generatorMethods[it]!!.createInstance()
+                        generators.find { it.first == generatorView }?.second?.add(methodView)
                         generatorTable.remove(addMethodTable)
                         generatorTable.add(methodView).padTop(16f).padLeft(16f).growX().row()
                         generatorTable.add(addMethodTable).expandX().left().row()
+
+                        UiManagerFactory.getUI().generateMap()
+
                         methodView.add(DeleteButton {
                             generators.find { it.first == generatorView }?.second?.remove(methodView)
                             generatorTable.remove(methodView)
+
+                            UiManagerFactory.getUI().generateMap()
                         }).right().top().row()
             }}}.showMenu(stage, this)
         }
@@ -92,6 +112,8 @@ class AddGeneratorView(
 
         add(generatorTable).growX().padTop(16f).row()
         add(addGenerator).growX().row()
+
+        UiManagerFactory.getUI().generateMap()
     }
 
     private fun addHeader() {
@@ -110,6 +132,10 @@ class AddGeneratorView(
         paramsTable.add(priorityTextField).left()
         paramsTable.add(DeleteButton { onDelete.invoke(this@AddGeneratorView) }).right().top()
         add(paramsTable).growX().row()
+    }
+
+    override fun generateString(): String {
+        TODO("Not yet implemented")
     }
 
     override fun getPrefWidth(): Float {

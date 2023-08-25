@@ -7,6 +7,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
 import com.neutrino.ui.editor.Editor
+import com.neutrino.ui.editor.EditorGeneration
 import com.neutrino.ui.views.EntitiesView
 import com.neutrino.ui.views.TagsView
 import com.neutrino.ui.views.util.UiTab
@@ -39,6 +40,14 @@ class UiManager() {
         setLeftPanel(defaultTabWindows[UiTab.EntitiesTab]!!, UiTab.EntitiesTab)
         println(leftTable.x)
         setInputMultiplexer()
+    }
+
+    fun getEditorGeneration(): EditorGeneration {
+        return editor.editorGeneration
+    }
+
+    fun generateMap() {
+        getEditorGeneration().generateMap()
     }
 
     private fun getTabs(): VisTable {

@@ -6,6 +6,7 @@ import com.kotcrab.vis.ui.widget.VisTable
 import com.neutrino.generation.algorithms.GenerationAlgorithm
 import com.neutrino.generation.algorithms.SquidGenerationAlgorithm
 import com.neutrino.generation.util.GenerationParams
+import com.neutrino.util.UiManagerFactory
 import ktx.actors.onClick
 import ktx.scene2d.scene2d
 import ktx.scene2d.vis.menuItem
@@ -53,11 +54,12 @@ class SquidGenerationAlgorithmView(): GenerationAlgorithmView() {
 
     init {
         val tilesetTypeTable = VisTable()
-        tilesetTypeTable.add(scene2d.visLabel("Type: "))
-        tilesetTypeTable.add(scene2d.visLabel(formatTilesetString(tilesetType)).apply { onClick {
-            getTilesetTypeMenu(this)
-        } })
-        add(tilesetTypeTable).row()
+        tilesetTypeTable.add(scene2d.visLabel("Type: ") {})
+        tilesetTypeTable.add(scene2d.visLabel(formatTilesetString(tilesetType)) {
+//            this@visLabel.style.background = VisTextField().style.background
+            onClick { getTilesetTypeMenu(this) }
+        })
+        add(tilesetTypeTable).padLeft(16f).expandX().left().row()
     }
 
     private fun getTilesetTypeMenu(label: VisLabel) {
@@ -78,6 +80,8 @@ class SquidGenerationAlgorithmView(): GenerationAlgorithmView() {
         label.setText(formatTilesetString(tilesetType))
         if (label.text.length > 25)
             label.setText(label.text.substring(0, 25))
+
+        UiManagerFactory.getUI().generateMap()
     }
 
     override fun getGenerationAlgorithm(params: GenerationParams): GenerationAlgorithm {

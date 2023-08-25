@@ -29,10 +29,10 @@ class SquidGenerationAlgorithm(
 
     override fun generate(tileset: Tileset): GenerationAlgorithm{
         // TODO mix interpretedTags and entityIdentities
-        tileset += params.interpretedTags.tileset
+//        tileset += params.interpretedTags.tileset
         generateDungeon(tilesetType)
-        setWalls(map, tileset.getRandomEntity(Identity.Wall(), params.rng)!!)
-        addEntities(tileset.getRandomEntity(Identity.Floor(), params.rng)!!, listOf(), 1f, true)
+        setWalls(map, params.interpretedTags.tilesets[0].getRandomEntity(Identity.Wall(), params.rng)!!)
+        addEntities(params.interpretedTags.tilesets[0].getRandomEntity(Identity.Floor(), params.rng)!!, listOf(), 1f, true)
         return this
     }
 

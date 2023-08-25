@@ -6,6 +6,7 @@ import com.kotcrab.vis.ui.widget.MenuItem
 import com.kotcrab.vis.ui.widget.PopupMenu
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
+import com.neutrino.generation.Tileset
 import com.neutrino.generation.Tilesets
 import com.neutrino.ui.attributes.AttributeView
 import com.neutrino.ui.views.minor.util.TilesetTable
@@ -14,13 +15,17 @@ import ktx.actors.onClick
 class TilesetView: AttributeView(VisTable()) {
 
     override val attributeName: String = "Tileset"
-    val tilesets = mutableSetOf<String>()
+    private val tilesets = mutableSetOf<String>()
     private val tilesetTables = ArrayList<TilesetTable>()
     private val addButton = VisTextButton("+")
 
     init {
         table.add(addButton).padTop(16f).padLeft(16f).left().row()
         addButton.onClick { addTilesetMenu(addButton) }
+    }
+
+    fun getTilesets(): List<Tileset> {
+        return tilesets.map { Tilesets.get(it) }
     }
 
     private fun addTilesetTable(name: String) {

@@ -63,6 +63,12 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
         add(mainTable).growX()
     }
 
+    override fun addMethod(generator: GenerationAlgorithm) {
+        if (entity == null)
+            return
+        generator.add(entity!!.name, listOf(), amount, asPercent, replaceUnderneath)
+    }
+
     private fun setEntity(entityName: EntityName) {
         entity = Entities.new(entityName)
         pickEntity.actor = EntityButton(entity!!, false).apply {
@@ -118,9 +124,5 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
                     menuItem(it).onClick { setRuleText(it) }
             }}
         }.showMenu(stage, rulesLabel.parent.parent.getChild(0))
-    }
-
-    override fun invokeMethod(generator: GenerationAlgorithm) {
-        TODO("Not yet implemented")
     }
 }

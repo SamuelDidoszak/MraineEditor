@@ -19,6 +19,12 @@ open class LevelDrawer: EntityDrawer, Group() {
     override val lights: ArrayList<Pair<Entity, Light>> = ArrayList()
     private val textureLayers: SortedMap<Int, LayeredTextureList> = sortedMapOf()
 
+    fun clearAll() {
+        lights.clear()
+        textureLayers.forEach { t, u -> u.clear() }
+        textureLayers.clear()
+    }
+
     override fun addTexture(entity: Entity, texture: TextureSprite) {
         if (textureLayers[texture.z] == null) {
             textureLayers[texture.z] = LayeredTextureList()
@@ -107,8 +113,7 @@ open class LevelDrawer: EntityDrawer, Group() {
         animations.play(delta)
     }
 
-    fun initializeTextures() {
-        val rng = Random(Random.nextInt())
+    fun initializeTextures(rng: Random = Random(Random.nextInt())) {
         for (y in map.indices) {
             for (x in map[0].indices) {
                 for (entity in map[y][x]) {

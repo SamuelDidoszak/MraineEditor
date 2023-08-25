@@ -11,6 +11,7 @@ import com.neutrino.generation.util.ModifyMap
 import com.neutrino.util.EntityId
 import com.neutrino.util.EntityName
 import com.neutrino.util.lessThanDelta
+import com.neutrino.util.name
 import kotlin.math.roundToInt
 
 abstract class GenerationAlgorithm(
@@ -26,13 +27,13 @@ abstract class GenerationAlgorithm(
      * Invokes the generation specific to this GenerationAlgorithm
      */
     abstract fun generate(
-        tileset: Tileset = params.interpretedTags.tileset
+        tileset: Tileset = params.interpretedTags.tilesets[0]
     ): GenerationAlgorithm
 
     /**
      * Invokes both the generation specific to this GenerationAlgorithm and generates all of entities provided
      */
-    fun generateAll(tileset: Tileset = params.interpretedTags.tileset): GenerationAlgorithm {
+    fun generateAll(tileset: Tileset = params.interpretedTags.tilesets[0]): GenerationAlgorithm {
         generate(tileset)
         generateEntities()
         return this
