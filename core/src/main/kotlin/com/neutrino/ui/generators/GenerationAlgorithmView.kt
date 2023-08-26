@@ -13,7 +13,7 @@ abstract class GenerationAlgorithmView: VisTable() {
 
     abstract fun getGenerationAlgorithm(params: GenerationParams): GenerationAlgorithm
 
-    abstract override fun toString(): String
+    abstract fun generateString(): String
 
     fun getModifyMapView(): VisTable {
         return VisTable()

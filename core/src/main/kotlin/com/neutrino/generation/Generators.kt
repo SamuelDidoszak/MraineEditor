@@ -6,7 +6,7 @@ object Generators {
 
     private val generatorMap: HashMap<String, Generator> = HashMap()
     private val associationMap: HashMap<String, ArrayList<String>> = HashMap()
-    private val DEFAULT_PRIORITY = 1
+    val DEFAULT_PRIORITY = 1
 
     fun add(name: String, generator: Generator, associations: List<String>? = null) {
         generatorMap[name] = generator

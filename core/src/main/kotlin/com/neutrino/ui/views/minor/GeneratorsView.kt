@@ -83,26 +83,13 @@ class GeneratorsView: AttributeView(VisTable()) {
         menu.showMenu(stage, actor)
     }
 
+    fun save() {
+        generatorsToSave.forEach {
+            it.save()
+        }
+    }
+
     override fun generateString(): String {
         TODO("Not yet implemented")
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

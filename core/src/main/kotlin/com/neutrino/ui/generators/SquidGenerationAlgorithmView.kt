@@ -99,7 +99,7 @@ class SquidGenerationAlgorithmView(): GenerationAlgorithmView() {
         return tilesetType.name.lowercase().replace('_', ' ').replaceFirstChar { it.uppercase() }
     }
 
-    override fun toString(): String {
-        TODO("Not yet implemented")
+    override fun generateString(): String {
+        return "SquidGenerationAlgorithm(TilesetType.${tilesetType.name}, it)"
     }
 }

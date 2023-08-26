@@ -36,9 +36,9 @@ class AddGenerationRequirementsView: VisTable() {
 
     private val ruleGroups = ArrayList<RuleGroup>()
     // Save params
-    private var saveName: String? = null
-    private var saveEntity: EntityName? = null
-    private var saveIdentity: Identity? = null
+    var saveName: String? = null
+    var saveEntity: EntityName? = null
+    var saveIdentity: Identity? = null
     private val pickEntity = Container<Actor>()
 
     init {
@@ -114,8 +114,6 @@ class AddGenerationRequirementsView: VisTable() {
                 rules.add(group.rules[i].getRules())
             }
         }
-
-        println("SAVE: \n\tName: $saveName\n\tEntity: $saveEntity\n\tIdentity: $saveIdentity")
         return rules
     }
 

@@ -10,8 +10,8 @@ import com.neutrino.generation.util.GenerationParams
 import com.neutrino.generation.util.ModifyMap
 import com.neutrino.util.EntityId
 import com.neutrino.util.EntityName
+import com.neutrino.util.id
 import com.neutrino.util.lessThanDelta
-import com.neutrino.util.name
 import kotlin.math.roundToInt
 
 abstract class GenerationAlgorithm(
@@ -49,6 +49,18 @@ abstract class GenerationAlgorithm(
     fun add(name: EntityName, amount: Float, asProbability: Boolean = false, replaceUnderneath: Boolean = false): GenerationAlgorithm {
         val id = Entities.getId(name)
         entities.add(EntityGenerationParams(id, GenerationRequirements.get(id), amount, asProbability, replaceUnderneath))
+        return this
+    }
+
+    fun add(name: EntityName, entityRequirement: EntityName, amount: Float, asProbability: Boolean = false, replaceUnderneath: Boolean = false): GenerationAlgorithm {
+        val id = Entities.getId(name)
+        entities.add(EntityGenerationParams(id, GenerationRequirements.get(entityRequirement.id()), amount, asProbability, replaceUnderneath))
+        return this
+    }
+
+    fun add(name: EntityName, isOther: Boolean, otherRequirement: String, amount: Float, asProbability: Boolean = false, replaceUnderneath: Boolean = false): GenerationAlgorithm {
+        val id = Entities.getId(name)
+        entities.add(EntityGenerationParams(id, GenerationRequirements.getOther(otherRequirement), amount, asProbability, replaceUnderneath))
         return this
     }
 

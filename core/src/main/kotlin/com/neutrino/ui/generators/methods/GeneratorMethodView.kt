@@ -6,4 +6,6 @@ import com.neutrino.generation.algorithms.GenerationAlgorithm
 abstract class GeneratorMethodView: VisTable() {
 
     abstract fun addMethod(generator: GenerationAlgorithm)
+
+    abstract fun generateString(): String
 }

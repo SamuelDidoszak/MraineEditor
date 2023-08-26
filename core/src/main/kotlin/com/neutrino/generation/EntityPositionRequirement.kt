@@ -41,6 +41,24 @@ class EntityPositionRequirement {
         this.requirementType = requirementType
         requirementList = list
     }
+
+    override fun toString(): String {
+        val builder = StringBuilder(50)
+        builder.append("EntityPositionRequirement(EntityPositionRequirementType.${requirementType.name}")
+        if (requiredEntity == null && requirementList.isEmpty())
+            return builder.append(")").toString()
+        if (requiredEntity?.identity != null)
+            builder.append(", Identity." + requiredEntity!!.identity!!.simpleName + "(), ")
+        else if (requiredEntity?.id != null)
+            builder.append(", \"" + requiredEntity!!.getEntityName()!! + "\"")
+        builder.append("listOf(")
+        requirementList.map { it.first }.forEach {
+            builder.append("$it, ")
+        }
+        builder.delete(builder.length - 2, builder.length)
+        builder.append("))")
+        return builder.toString()
+    }
 }
 
 enum class EntityPositionRequirementType {

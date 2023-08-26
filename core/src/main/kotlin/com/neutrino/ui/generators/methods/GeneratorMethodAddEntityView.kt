@@ -6,6 +6,7 @@ import com.kotcrab.vis.ui.widget.CollapsibleWidget
 import com.kotcrab.vis.ui.widget.VisCheckBox
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
+import com.neutrino.builders.GenerationRequirementBuilder
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
 import com.neutrino.generation.EntityPositionRequirement
@@ -78,6 +79,60 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
         if (entity == null)
             return
         generator.add(entity!!.name, getRules(), amount, asPercent, replaceUnderneath)
+    }
+
+    override fun generateString(): String {
+        val builder = StringBuilder(100)
+        builder.append(".add(\"${entity!!.name}\", ")
+        when (ruleType) {
+            is RuleType.Entity -> {
+                val entityName = (ruleType as RuleType.Entity).entityName
+                if (entityName != entity!!.name)
+                    builder.append("\"$entityName\", ")
+            }
+            is RuleType.Identity ->
+                builder.append("Identity.${(ruleType as RuleType.Identity).identity::class.simpleName}(), ")
+            is RuleType.Other ->
+                builder.append("true, \"${(ruleType as RuleType.Other).ruleName}\", ")
+            is RuleType.New -> {
+                val addRules = (ruleType as RuleType.New).addRules
+                if (addRules.saveIdentity != null)
+                    builder.append("Identity.${addRules.saveIdentity!!::class.simpleName}(), ")
+                else if (addRules.saveEntity != null) {
+                    if (addRules.saveEntity != entity!!.name)
+                        builder.append("\"${addRules.saveEntity!!}\", ")
+                }
+                else if (addRules.saveName != null)
+                    builder.append("true, ${addRules.saveName!!}, ")
+                else {
+                    val rules = addRules.getRules()
+                    builder.append("listOf(")
+                    for (rule in rules) {
+                        builder.append("\n\t")
+                        builder.append("$rule,")
+                    }
+                    if (rules.isNotEmpty())
+                        builder.append("\n")
+                    builder.append("), ")
+                }
+            }
+            is RuleType.None -> builder.append("listOf()")
+        }
+        if (!asPercent)
+            builder.append("${amount.toInt()}f, ")
+        else
+            builder.append("${amount}f, ")
+        builder.append("$asPercent, $replaceUnderneath)")
+        return builder.toString()
+    }
+
+    fun save() {
+        if (ruleType !is RuleType.New)
+            return
+        val addRules = (ruleType as RuleType.New).addRules
+        if (addRules.saveName == null && addRules.saveEntity == null && addRules.saveIdentity == null)
+            return
+        GenerationRequirementBuilder().buildRules(addRules).save()
     }
 
     private fun getRules(): List<EntityPositionRequirement> {

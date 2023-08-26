@@ -3,6 +3,7 @@ package com.neutrino.ui.views.minor
 import com.badlogic.gdx.graphics.Color
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
+import com.neutrino.builders.GeneratorBuilder
 import com.neutrino.generation.Generator
 import com.neutrino.ui.LeftTable
 import com.neutrino.ui.elements.DeleteButton
@@ -133,31 +134,21 @@ class AddGeneratorView(
     }
 
     override fun generateString(): String {
-        TODO("Not yet implemented")
+        GeneratorBuilder(generatorName, main, priority, listOf()).buildGenerator(generators)
+        return generatorName
+    }
+
+    fun save() {
+        for (generator in generators) {
+            generator.second.forEach {
+                if (it is GeneratorMethodAddEntityView)
+                    it.save()
+            }
+        }
+        GeneratorBuilder(generatorName, main, priority, listOf()).buildGenerator(generators).save()
     }
 
     override fun getPrefWidth(): Float {
         return LeftTable.WIDTH - 6f
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

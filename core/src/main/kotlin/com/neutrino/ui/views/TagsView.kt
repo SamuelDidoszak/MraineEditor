@@ -37,9 +37,10 @@ class TagsView(
         top()
 
         title = TitleView("Add new tag", false, "save") {
-
+            val generators = (tagElements[1] as GeneratorsView)
+            generators.save()
         }
-        title.rightButton.isDisabled = true
+        title.rightButton.isDisabled = false
 
         if (editTag != null)
             nameTextField.text = "Editing"
@@ -87,29 +88,3 @@ class TagsView(
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
