@@ -24,7 +24,7 @@ class SquidGenerationAlgorithm(
 ): GenerationAlgorithm(params, sizeX, sizeY, modifyBaseMap) {
 
     private val irng: IRNG = GWTRNG(params.rng.nextLong())
-    private val dungeonGenerator = DungeonGenerator(sizeX, sizeY, irng)
+    private val dungeonGenerator = DungeonGenerator(sizeY, sizeX, irng)
     private lateinit var dungeonLayout: Array<out CharArray>
 
     override fun generate(tileset: Tileset): GenerationAlgorithm{
@@ -42,6 +42,9 @@ class SquidGenerationAlgorithm(
     }
 
     private fun setWalls(map: List<List<MutableList<Entity>>>, wall: EntityId) {
+        println("SizeX: $sizeX, SizeY: $sizeY")
+        println("Dungeon layout: ")
+        println("${dungeonLayout[0].size}, ${dungeonLayout.size}")
         for (y in 0 until sizeY) {
             for (x in 0 until sizeX) {
                 if (dungeonLayout[y][x] == '#')

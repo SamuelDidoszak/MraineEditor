@@ -10,10 +10,13 @@ import com.neutrino.generation.TagParams
 import com.neutrino.ui.attributes.AttributeView
 import com.neutrino.ui.elements.TitleView
 import com.neutrino.ui.views.minor.GeneratorsView
+import com.neutrino.ui.views.minor.MapGenerationParamsView
 import com.neutrino.ui.views.minor.TilesetView
 import com.neutrino.ui.views.util.Callback
 import com.neutrino.util.EntityName
 import com.neutrino.util.UiManagerFactory
+import ktx.scene2d.scene2d
+import ktx.scene2d.vis.separator
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
@@ -41,6 +44,9 @@ class TagsView(
         if (editTag != null)
             nameTextField.text = "Editing"
         nameTextField.setTextFieldListener { _, _ -> validateSave() }
+
+        add(MapGenerationParamsView()).growX().padTop(16f).row()
+        add(scene2d.separator()).growX().padLeft(64f).padRight(64f).row()
 
         add(title).growX().padTop(16f).row()
         add(nameTextField).growX().padLeft(32f).padRight(32f).padTop(32f).row()

@@ -13,7 +13,13 @@ class EditorGeneration(var levelDrawer: LevelDrawer) {
     private var tagGenerators: ArrayList<() -> MapTag> = ArrayList()
     var seed: Long = 2137
     var mapXSize = 100
+        set(value) {
+            field = value
+            levelDrawer.width = mapXSize * 48f }
     var mapYSize = 100
+        set(value) {
+            field = value
+            levelDrawer.height = mapYSize * 48f }
     var map: List<List<MutableList<Entity>>> = clearMap()
 
     fun generateMap() {
@@ -37,7 +43,7 @@ class EditorGeneration(var levelDrawer: LevelDrawer) {
 
     private fun clearLevelDrawer() {
         levelDrawer.clearAll()
-        levelDrawer.map = levelDrawer.initializeMap()
+        levelDrawer.map = clearMap()
     }
 
     fun registerTag(tag: MapTag) {
@@ -57,8 +63,8 @@ class EditorGeneration(var levelDrawer: LevelDrawer) {
     }
 
     private fun clearMap(): List<List<MutableList<Entity>>> {
-        return List(mapXSize) {
-            List(mapYSize) {
+        return List(mapYSize) {
+            List(mapXSize) {
                 java.util.ArrayList<Entity>()
             }
         }
