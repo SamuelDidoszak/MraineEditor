@@ -3,6 +3,7 @@ package com.neutrino.ui.generators
 import com.kotcrab.vis.ui.widget.PopupMenu
 import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
+import com.kotcrab.vis.ui.widget.VisTextField
 import com.neutrino.generation.algorithms.GenerationAlgorithm
 import com.neutrino.generation.algorithms.SquidGenerationAlgorithm
 import com.neutrino.generation.util.GenerationParams
@@ -54,11 +55,12 @@ class SquidGenerationAlgorithmView(): GenerationAlgorithmView() {
 
     init {
         val tilesetTypeTable = VisTable()
-        tilesetTypeTable.add(scene2d.visLabel("Type: ") {})
+        tilesetTypeTable.add(scene2d.visLabel("Type: "))
         tilesetTypeTable.add(scene2d.visLabel(formatTilesetString(tilesetType)) {
-//            this@visLabel.style.background = VisTextField().style.background
             onClick { getTilesetTypeMenu(this) }
         })
+        tilesetTypeTable.background = VisTextField("").style.background
+//        tilesetTypeTable.background = VisTextFieldStyle().background
         add(tilesetTypeTable).padLeft(16f).expandX().left().row()
     }
 

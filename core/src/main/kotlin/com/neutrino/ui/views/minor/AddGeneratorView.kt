@@ -3,7 +3,6 @@ package com.neutrino.ui.views.minor
 import com.badlogic.gdx.graphics.Color
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
-import com.kotcrab.vis.ui.widget.VisTextField
 import com.neutrino.generation.Generator
 import com.neutrino.ui.LeftTable
 import com.neutrino.ui.elements.DeleteButton
@@ -71,7 +70,6 @@ class AddGeneratorView(
         generators.add(generatorView to ArrayList())
         val generatorTable = VisTable()
         val titleTable = VisTable()
-        titleTable.background = VisTextField("").style.background
         titleTable.add(scene2d.visLabel(algorithmName)).expandX().center()
         generatorTable.add(titleTable).padBottom(16f)
         generatorTable.add(DeleteButton {

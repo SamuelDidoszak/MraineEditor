@@ -8,12 +8,14 @@ import com.kotcrab.vis.ui.widget.VisLabel
 import com.kotcrab.vis.ui.widget.VisTable
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
+import com.neutrino.generation.EntityPositionRequirement
 import com.neutrino.generation.GenerationRequirements
 import com.neutrino.generation.algorithms.GenerationAlgorithm
 import com.neutrino.ui.views.EntitiesWindow
 import com.neutrino.ui.views.minor.AddGenerationRequirementsView
 import com.neutrino.ui.views.util.EntityButton
 import com.neutrino.util.EntityName
+import com.neutrino.util.UiManagerFactory
 import com.neutrino.util.name
 import ktx.actors.onChange
 import ktx.actors.onClick
@@ -28,6 +30,7 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
     private var replaceUnderneath: Boolean = false
     private val pickEntity = Container<Actor>()
     private val rulesLabel = VisLabel("")
+    private var ruleType: RuleType = RuleType.None
 
     init {
         val mainTable = VisTable()
@@ -46,12 +49,20 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
             } catch (e: NumberFormatException) {
                 amount = 0f
             }
+            UiManagerFactory.getUI().generateMap()
         }}).growX().padLeft(16f).padRight(16f)
         mainTable.add(amountTable).padRight(8f)
 
         val paramsTable = VisTable()
-        paramsTable.add(scene2d.visTextButton("%", "toggle").apply { onChange { asPercent = !asPercent } }).row()
-        paramsTable.add(scene2d.visTextButton(".x", "toggle").apply { onChange { replaceUnderneath = !replaceUnderneath } }).row()
+        paramsTable.add(scene2d.visTextButton("%", "toggle").apply { onChange {
+            asPercent = !asPercent
+            UiManagerFactory.getUI().generateMap()
+        } }).row()
+        paramsTable.add(scene2d.visTextButton(".x", "toggle").apply { onChange {
+            replaceUnderneath = !replaceUnderneath
+            UiManagerFactory.getUI().generateMap()
+        } }).row()
+
         mainTable.add(paramsTable)
         val rulesTable = VisTable()
         rulesTable.add(scene2d.visTextButton("rules").apply { onChange { setRules() }}).row()
@@ -66,7 +77,17 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
     override fun addMethod(generator: GenerationAlgorithm) {
         if (entity == null)
             return
-        generator.add(entity!!.name, listOf(), amount, asPercent, replaceUnderneath)
+        generator.add(entity!!.name, getRules(), amount, asPercent, replaceUnderneath)
+    }
+
+    private fun getRules(): List<EntityPositionRequirement> {
+        return when (ruleType) {
+            is RuleType.Entity -> GenerationRequirements.get((ruleType as RuleType.Entity).entityName)
+            is RuleType.Identity -> GenerationRequirements.get((ruleType as RuleType.Identity).identity)
+            is RuleType.Other -> GenerationRequirements.getOther((ruleType as RuleType.Other).ruleName)
+            is RuleType.New -> (ruleType as RuleType.New).addRules.getRules()
+            is RuleType.None -> listOf()
+        }
     }
 
     private fun setEntity(entityName: EntityName) {
@@ -75,6 +96,8 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
             setSize(96f, 96f)
             onClick { stage.addActor(EntitiesWindow {setEntity(it)}) }
         }
+
+        UiManagerFactory.getUI().generateMap()
     }
 
     private fun setRules() {
@@ -89,7 +112,8 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
             }
 
             if (addCollapse) {
-                val rulesCollapsible = CollapsibleWidget(AddGenerationRequirementsView())
+                val rulesView = AddGenerationRequirementsView()
+                val rulesCollapsible = CollapsibleWidget(rulesView)
                 rulesCollapsible.isCollapsed = false
                 rulesCollapsible.width = width
                 (rulesLabel.parent as VisTable).add(scene2d.visCheckBox("") {
@@ -98,13 +122,19 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
                 })
                 row()
                 add(rulesCollapsible).row()
+                ruleType = RuleType.New(rulesView)
             }
+
+            UiManagerFactory.getUI().generateMap()
         }
         scene2d.popupMenu {
             menuItem("Add new").onClick { setRuleText("new", true) }
             menuItem("Identity").subMenu().apply {
                 GenerationRequirements.getIdentities().forEach {
-                    menuItem(it.toString()).onClick { setRuleText(it.toString()) }
+                    menuItem(it.toString()).onClick {
+                        ruleType = RuleType.Identity(it)
+                        setRuleText(it.toString())
+                    }
             }}
             menuItem("Entity").subMenu().apply {
                 var entityHasDefaults = false
@@ -113,16 +143,33 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
                         entityHasDefaults = true
                 }
                 if (entityHasDefaults)
-                    menuItem(entity?.name ?: "").onClick { setRuleText(entity!!.name) }
+                    menuItem(entity?.name ?: "").onClick {
+                        ruleType = RuleType.Entity(entity!!.name)
+                        setRuleText(entity!!.name)
+                    }
 
                 GenerationRequirements.getEntities().forEach {
                     if (it != entity?.id)
-                        menuItem(it.name()).onClick { setRuleText(it.name()) }
+                        menuItem(it.name()).onClick {
+                            ruleType = RuleType.Entity(it.name())
+                            setRuleText(it.name())
+                        }
             }}
             menuItem("Others").subMenu().apply {
                 GenerationRequirements.getOthers().forEach {
-                    menuItem(it).onClick { setRuleText(it) }
+                    menuItem(it).onClick {
+                        ruleType = RuleType.Other(it)
+                        setRuleText(it)
+                    }
             }}
         }.showMenu(stage, rulesLabel.parent.parent.getChild(0))
+    }
+
+    private sealed class RuleType() {
+        data class Entity(val entityName: EntityName): RuleType()
+        data class Identity(val identity: com.neutrino.entities.attributes.Identity): RuleType()
+        data class Other(val ruleName: String): RuleType()
+        data class New(val addRules: AddGenerationRequirementsView): RuleType()
+        object None: RuleType()
     }
 }

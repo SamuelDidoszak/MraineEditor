@@ -12,7 +12,9 @@ import com.neutrino.ui.views.minor.util.HasGenerator
 import com.neutrino.util.UiManagerFactory
 import com.neutrino.util.remove
 import ktx.actors.onClick
+import ktx.scene2d.scene2d
 import ktx.scene2d.vis.menuItem
+import ktx.scene2d.vis.separator
 import ktx.scene2d.vis.subMenu
 
 class GeneratorsView: AttributeView(VisTable()) {
@@ -32,30 +34,36 @@ class GeneratorsView: AttributeView(VisTable()) {
     }
 
     private fun addGeneratorTable(name: String) {
+        val separator = scene2d.separator()
         val generatorTable = GeneratorTable(name) {
             generators.remove(it)
             table.remove(it)
+            table.remove(separator)
             UiManagerFactory.getUI().generateMap()
         }
         generators.add(generatorTable)
         table.remove(addButton)
         table.add(generatorTable).growX().padTop(16f).row()
+        table.add(separator).growX().padLeft(16f).padRight(16f).padTop(8f).row()
         table.add(addButton).left().padLeft(16f).padTop(16f).row()
 
         UiManagerFactory.getUI().generateMap()
     }
 
     private fun addNewGenerator() {
+        val separator = scene2d.separator()
         val newGenerator = AddGeneratorView {
             generators.remove(it)
             generatorsToSave.remove(it)
             table.remove(it)
+            table.remove(separator)
             UiManagerFactory.getUI().generateMap()
         }
         generators.add(newGenerator)
         generatorsToSave.add(newGenerator)
         table.remove(addButton)
         table.add(newGenerator).growX().padTop(32f).padBottom(16f).row()
+        table.add(separator).growX().padLeft(16f).padRight(16f).row()
         table.add(addButton).left().padTop(16f).padLeft(16f).row()
 
         UiManagerFactory.getUI().generateMap()

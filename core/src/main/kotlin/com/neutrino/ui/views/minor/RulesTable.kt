@@ -89,16 +89,3 @@ class RulesTable(ruleList: MutableList<NameOrIdentity?>? = null) : VisTable() {
         return rules to rulesButton
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
