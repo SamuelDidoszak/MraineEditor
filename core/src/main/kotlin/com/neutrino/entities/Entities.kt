@@ -30,7 +30,7 @@ object Entities {
         try {
             return new(entityIds[name]!!)
         } catch (_: Exception) {
-            println("Entity with name: $name does not exist!")
+            System.err.println("Entity with name: $name does not exist!")
         }
         throw Exception()
     }
@@ -41,7 +41,7 @@ object Entities {
             entity.id = id
             return entity
         } catch (_: Exception) {
-            println("Entity with id: $id ${if (id < entityNames.size) "name: ${entityNames[id]} " else ""}does not exist!")
+            System.err.println("Entity with id: $id ${if (id < entityNames.size) "name: ${entityNames[id]} " else ""}does not exist!")
         }
         throw Exception()
     }

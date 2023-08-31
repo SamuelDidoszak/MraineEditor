@@ -3,6 +3,7 @@ package com.neutrino.textures
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.neutrino.entities.Entity
+import com.neutrino.entities.attributes.Identity
 import com.neutrino.entities.attributes.OnMapPositionAttribute
 import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.util.Constants.SCALE
@@ -35,9 +36,11 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
                 field.addAttribute(TextureAttribute {_, _, _ ->}).get(TextureAttribute::class)!!
             textureAttribute.setTextures(null, Random)
             if (textureAttribute.textures.isEmpty()) {
-                println(entity.name + " has no texture set!")
+                System.err.println(entity.name + " has no texture set!")
                 textureAttribute.textures.add(Textures.get("backgroundTexture"))
             }
+            if (textureAttribute.textures.size == 1)
+                textureAttribute.textures[0].xy(0f, 0f)
             updateScale()
         }
 
@@ -49,6 +52,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
         if (textureLayers[texture.z] == null)
             textureLayers[texture.z] = LayeredTextureList()
         textureLayers[texture.z]!!.add(LayeredTexture(entity, texture))
+        textureLayers[texture.z]!!.sort()
     }
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
@@ -63,6 +67,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
                 list[y].add(mutableListOf())
                 val entity = Entity()
                 entity.id = -1
+                entity.addAttribute(Identity.Any())
                 list[y][x].add(entity)
             }
         }

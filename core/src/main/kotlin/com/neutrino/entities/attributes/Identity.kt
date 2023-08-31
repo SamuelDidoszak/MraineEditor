@@ -11,6 +11,7 @@ sealed class Identity: Attribute() {
     class StairsDown: Identity()
     class Door: Identity()
     class Torch: Identity()
+    class Container: Identity()
 
     override fun equals(other: kotlin.Any?): Boolean {
         return this::class == other!!::class

@@ -12,7 +12,7 @@ internal data class LayeredTexture(
 
     /** Returns scaled x position including map placement */
     fun getX(): Float {
-        return positionAttribute.x * 16 * SCALE_INT + texture.x * SCALE_INT
+        return positionAttribute.x * 16 * SCALE_INT + texture.x * SCALE_INT * if (texture.mirrorX) -1 else 1
     }
 
     /** Returns scaled y position including map placement */

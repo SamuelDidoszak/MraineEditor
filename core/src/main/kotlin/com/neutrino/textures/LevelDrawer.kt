@@ -99,7 +99,7 @@ open class LevelDrawer: EntityDrawer, Group() {
                     textureX + textureWidth >= xLeft && textureX <= xRight) {
                     texture = layeredTexture.texture
                     batch!!.draw(texture.texture,
-                        if (!texture.mirrorX) x + textureX else x + textureWidth + textureX,
+                        if (!texture.mirrorX) x + textureX else x + textureX + textureWidth,
                         y + textureY,
                         textureWidth * if (!texture.mirrorX) 1f else -1f,
                         layeredTexture.getHeight() * 1f)

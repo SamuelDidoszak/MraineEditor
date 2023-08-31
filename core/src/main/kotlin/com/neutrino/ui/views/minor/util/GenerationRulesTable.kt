@@ -36,7 +36,7 @@ class GenerationRulesTable(
     private val pickEntity = Container<Actor>()
     private val rulesButton = RulePickerButton(Textures.get("rulesTexture"))
     private val rules = mutableSetOf<Int>()
-    var blockCenter = true
+    var blockCenter = false
 
     init {
         rulesButton.setSize(RULES_SIZE, RULES_SIZE)

@@ -25,14 +25,9 @@ class InteractionAttribute(interactionList: ArrayList<Interaction>): Attribute()
 
     override fun onEntityAttached() {
         for (interaction in interactionList) {
-            setEntity(interaction)
+            if (interaction is RequiresEntityParameter)
+                interaction.entity = entity
         }
-    }
-
-    private fun setEntity(interaction: Interaction) {
-        try {
-            interaction::class.java.getField("entity").set(interaction, entity)
-        } catch (_: Error) {}
     }
 
     fun getPrimaryInteraction(): Interaction? {

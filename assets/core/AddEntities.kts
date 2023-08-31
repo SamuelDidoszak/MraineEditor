@@ -47,20 +47,12 @@ Entities.add("DungeonStairsUp") {
 Entities.add("StonePillar") {
 	Entity()
 		.addAttribute(TextureAttribute { position, random, textures -> run {
+            textures.add(position!!.check(listOf(2), Identity.Wall::class) {
+                Textures.get("stonePillarTop")})?.also {return@run}
 			textures add Textures.getRandomTexture(random, listOf(
 				80f to listOf("stonePillar"),
 				20f to listOf("stonePillarCracked"),
 		))}})
-		.addAttribute(MapParamsAttribute(false, false))
-}
-Entities.add("WoodenDoor") {
-	Entity()
-		.addAttribute(TextureAttribute { position, random, textures -> run {
-            textures add Textures.get("woodenDoorClosed")
-            textures add Textures.getOrNull(random, 30f, "woodenDoorClosed")
-        }})
-		.addAttribute(InteractionAttribute(arrayListOf(Interaction.DOOR())))
-		.addAttribute(ChangesImpassableAttribute())
 		.addAttribute(MapParamsAttribute(false, false))
 }
 Entities.add("DungeonWall") {
@@ -88,4 +80,131 @@ Entities.add("DungeonWall") {
                 Textures.getRandomTexture(random, 100f, listOf("dungeonWallSideSmall$1", "dungeonWallSideSmall$2", "dungeonWallSideSmall$4", "dungeonWallSideSmall$5"))})
         }})
 		.addAttribute(MapParamsAttribute(false, false))
+}
+Entities.add("WoodenDoor") {
+    Entity()
+        .addAttribute(Identity.Door())
+        .addAttribute(MapParamsAttribute(false, false))
+        .addAttribute(InteractionAttribute(arrayListOf(Interaction.DOOR())))
+        .addAttribute(ChangesImpassableAttribute())
+        .addAttribute(TextureAttribute { position, random, textures -> run {
+            textures.add(position!!.check(listOf(2 to NameOrIdentity(Identity.Wall::class), 8 to NameOrIdentity(Identity.Wall::class))) {
+                Textures.get("woodenDoorVerticalClosed")})?.also {return@run}
+            textures add Textures.get("woodenDoorClosed")
+        }})
+}
+Entities.add("WoodenDoorArched") {
+	Entity()
+		.addAttribute(Identity.Door())
+		.addAttribute(InteractionAttribute(arrayListOf(Interaction.DOOR())))
+		.addAttribute(ChangesImpassableAttribute())
+		.addAttribute(MapParamsAttribute(false, false))
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+            textures.add(position!!.check(listOf(2 to NameOrIdentity(Identity.Wall::class), 8 to NameOrIdentity(Identity.Wall::class))) {
+                Textures.get("woodenDoorArchedVerticalClosed")})?.also {return@run}
+            textures add Textures.get("woodenDoorArchedClosed")
+		}})
+}
+Entities.add("CandleWhiteSingle") {
+	Entity()
+		.addAttribute(MapParamsAttribute(false, true))
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+			textures.add(Textures.getRandomTexture(random, 100f, listOf("candleSingle$1", "candleSingle$2", "candleSingle$3", "candleSingle$4", "candleSingle$5")))
+		}})
+}
+Entities.add("CandleWhiteMultiple") {
+	Entity()
+		.addAttribute(MapParamsAttribute(false, true))
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+			textures.add(Textures.getOrNull(random, 60f, "candleSingle$1"))
+			textures.add(Textures.getOrNull(random, 50f, "candleSingle$2"))
+			textures.add(Textures.getOrNull(random, 45f, "candleSingle$3"))
+			textures.add(Textures.getOrNull(random, 30f, "candleSingle$4"))
+			textures.add(Textures.getOrNull(random, 60f, "candleSingle$5"))
+		}})
+}
+Entities.add("ClayPot") {
+	Entity()
+		.addAttribute(Identity.Container())
+		.addAttribute(InteractionAttribute(arrayListOf(Interaction.DESTROY())))
+		.addAttribute(MapParamsAttribute(false, false))
+		.addAttribute(ChangesImpassableAttribute())
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+			textures.add(Textures.getRandomTexture(random, listOf(
+				83f to listOf("clayPot$1", "clayPot$2", "clayPot$3"),
+				17f to listOf("clayPot$4"),
+        )))}})
+}
+Entities.add("ClayPotMultiple") {
+	Entity()
+		.addAttribute(Identity.Container())
+		.addAttribute(MapParamsAttribute(false, false))
+		.addAttribute(InteractionAttribute(arrayListOf(Interaction.DESTROY())))
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+			textures.add(Textures.getOrNull(random, 70f, "clayPot$3"))
+			textures.add(Textures.getOrNull(random, 40f, "clayPot$4"))?.also {return@run}
+			textures.add(Textures.getOrNull(random, 60f, "clayPot$1"))
+			textures.add(Textures.getOrNull(random, 50f, "clayPot$2"))
+		}})
+		.addAttribute(ChangesImpassableAttribute())
+}
+Entities.add("StandingMetalTorch") {
+	Entity()
+		.addAttribute(Identity.Torch())
+		.addAttribute(MapParamsAttribute(false, false))
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+			textures.add(Textures.getRandomTexture(random, listOf(
+				65f to listOf("standingTorch$1"),
+				35f to listOf("standingTorch$2"),
+			)))}})
+}
+Entities.add("WoodenTorch") {
+	Entity()
+		.addAttribute(Identity.Torch())
+		.addAttribute(MapParamsAttribute(true, true))
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+            textures.add(position!!.check(listOf(4), Identity.Wall::class, false, true) {
+                Textures.get("torchSide")})?.also {return@run}
+            textures.add(Textures.get("torchFront"))
+		}})
+}
+Entities.add("Barrel") {
+	Entity()
+		.addAttribute(Identity.Container())
+		.addAttribute(InteractionAttribute(arrayListOf(Interaction.DESTROY())))
+		.addAttribute(ChangesImpassableAttribute())
+		.addAttribute(MapParamsAttribute(false, false))
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+			textures.add(Textures.get("barrel"))
+		}})
+}
+Entities.add("WoodenCrateBigger") {
+	Entity()
+		.addAttribute(Identity.Container())
+		.addAttribute(InteractionAttribute(arrayListOf(Interaction.DESTROY())))
+		.addAttribute(ChangesImpassableAttribute())
+		.addAttribute(MapParamsAttribute(false, false))
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+			textures.add(Textures.get("crateBiggerDark"))
+		}})
+}
+Entities.add("WoodenCrateSmall") {
+	Entity()
+		.addAttribute(Identity.Container())
+		.addAttribute(InteractionAttribute(arrayListOf(Interaction.DESTROY())))
+		.addAttribute(MapParamsAttribute(false, false))
+		.addAttribute(ChangesImpassableAttribute())
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+			textures.add(Textures.get("crateSmall"))
+		}})
+}
+Entities.add("WoodenChestMid") {
+	Entity()
+		.addAttribute(Identity.Container())
+		.addAttribute(InteractionAttribute(arrayListOf(Interaction.OPEN())))
+		.addAttribute(MapParamsAttribute(false, false))
+		.addAttribute(ChangesImpassableAttribute())
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+			textures.add(Textures.get("woodenChestMid"))
+		}})
 }
