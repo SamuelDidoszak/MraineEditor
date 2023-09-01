@@ -5,14 +5,35 @@ import com.neutrino.entities.Entity
 import com.neutrino.generation.NameOrIdentity
 import com.neutrino.textures.EntityDrawer
 import com.neutrino.textures.TextureSprite
+import com.neutrino.util.Constants.SCALE
+import com.neutrino.util.Constants.SCALE_INT
 import com.neutrino.util.add
 import kotlin.reflect.KClass
 
 class OnMapPositionAttribute(
-    var x: Int,
-    var y: Int,
+    x: Int,
+    y: Int,
     var level: EntityDrawer
 ): Attribute() {
+
+    var x: Int = x
+        set(value) {
+            field = value
+            entity.get(PositionAttribute::class)!!.x = value * 16 * SCALE
+        }
+
+    var y: Int = y
+        set(value) {
+            field = value
+            entity.get(PositionAttribute::class)!!.y =
+                level.map.size * 16 * SCALE_INT - value * 16 * SCALE
+        }
+
+    override fun onEntityAttached() {
+        this.x = x
+        this.y = y
+    }
+
     fun getMap(): List<List<MutableList<Entity>>> {
         return level.map
     }

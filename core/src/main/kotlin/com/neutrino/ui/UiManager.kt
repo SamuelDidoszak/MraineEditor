@@ -2,10 +2,12 @@ package com.neutrino.ui
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
+import com.neutrino.textures.Shaders
 import com.neutrino.ui.editor.Editor
 import com.neutrino.ui.editor.EditorGeneration
 import com.neutrino.ui.views.EntitiesView
@@ -17,7 +19,8 @@ import ktx.scene2d.vis.visTextButton
 import java.util.*
 
 class UiManager() {
-    private val uiStage: Stage = Stage(FitViewport(1920f, 1080f))
+    private val uiStage: Stage = Stage(FitViewport(1920f, 1080f),
+        SpriteBatch(100, Shaders.fragmentAlphas))
     private val leftTable = LeftTable()
     private val tabs = getTabs()
     private val editor = Editor()

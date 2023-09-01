@@ -6,7 +6,7 @@ internal class LayeredTextureList: ArrayList<LayeredTexture>() {
         for (j in 1 until size){
             var i = j - 1
             val processedValue = this[j]
-            while ( (i >= 0) && (this[i].getY() > processedValue.getY()) ){
+            while ( (i >= 0) && (this[i].getYSort() < processedValue.getYSort()) ){
                 this[i + 1] = this[i]
                 i--
             }

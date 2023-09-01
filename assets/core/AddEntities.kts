@@ -58,6 +58,7 @@ Entities.add("StonePillar") {
 Entities.add("DungeonWall") {
 	Entity()
 		.addAttribute(Identity.Wall())
+        .addAttribute(StitchedSpriteAttribute())
 		.addAttribute(TextureAttribute { position, random, textures -> run {
 			textures.add(position!!.check(listOf(2), Identity.Wall::class, true) {
 				Textures.getRandomTexture(random, 100f, listOf("dungeonWall$1", "dungeonWall$2", "dungeonWall$3", "dungeonWall$4", "dungeonWall$5"))}) ?:
@@ -207,4 +208,14 @@ Entities.add("WoodenChestMid") {
 		.addAttribute(TextureAttribute { position, random, textures -> run {
 			textures.add(Textures.get("woodenChestMid"))
 		}})
+}
+Entities.add("TextureLightsReplacement") {
+	Entity()
+		.addAttribute(TextureAttribute { position, random, textures -> run {
+			textures.add(Textures.getRandomTexture(random, listOf(
+				100f to listOf("standingTorch$1"),
+				0f to listOf("standingTorch$2"),
+				0f to listOf("torchFront"),
+				0f to listOf("torchSide"),
+			)))}})
 }

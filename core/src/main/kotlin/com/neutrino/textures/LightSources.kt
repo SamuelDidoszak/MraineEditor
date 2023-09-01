@@ -4,6 +4,19 @@ import com.neutrino.util.addInitial
 
 class LightSources() {
 
+    fun copy(): LightSources {
+        if (light != null)
+            return LightSources(Light(light!!.x, light!!.y, light!!.color, light!!.intensity, light!!.radius))
+        if (lights != null) {
+            val newLights = ArrayList<ArrayList<Light>?>()
+            for (light in lights!!) {
+                newLights.add(light?.map { Light(it.x, it.y, it.color, it.intensity, it.radius) } as ArrayList<Light>?)
+            }
+            return LightSources(newLights)
+        }
+        return LightSources()
+    }
+
     var isSingleLight = false
 
     private var light : Light? = null
@@ -35,6 +48,10 @@ class LightSources() {
 
     fun getLights(i: Int = 0): ArrayList<Light>? {
         return lights?.get(i) ?: if (light != null) ArrayList<Light>().addInitial(light!!) else null
+    }
+
+    fun getLightArraySize(): Int {
+        return lights?.size ?: 0
     }
 
     override fun toString(): String {

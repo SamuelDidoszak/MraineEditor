@@ -1,23 +1,31 @@
 package com.neutrino.textures
 
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.OnMapPositionAttribute
+import com.neutrino.entities.attributes.PositionAttribute
 import com.neutrino.util.Constants.SCALE_INT
 
-internal data class LayeredTexture(
+internal open class LayeredTexture(
     val entity: Entity,
     val texture: TextureSprite
 ) {
-    private val positionAttribute = entity.get(OnMapPositionAttribute::class)!!
+    private val positionAttribute = entity.get(PositionAttribute::class)!!
 
     /** Returns scaled x position including map placement */
     fun getX(): Float {
-        return positionAttribute.x * 16 * SCALE_INT + texture.x * SCALE_INT * if (texture.mirrorX) -1 else 1
+        return positionAttribute.x + texture.x * SCALE_INT * if (texture.mirrorX) -1 else 1
     }
 
     /** Returns scaled y position including map placement */
     fun getY(): Float {
-        return positionAttribute.y * 16 * SCALE_INT - texture.y * SCALE_INT
+        return positionAttribute.y + texture.y * SCALE_INT
+    }
+
+    fun getYPos(): Float {
+        return positionAttribute.y
+    }
+
+    open fun getYSort(): Float {
+        return getY()
     }
 
     /** Returns scaled width */

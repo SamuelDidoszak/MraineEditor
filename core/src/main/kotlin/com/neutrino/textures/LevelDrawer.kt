@@ -1,12 +1,17 @@
 package com.neutrino.textures
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.OnMapPositionAttribute
+import com.neutrino.entities.attributes.PositionAttribute
+import com.neutrino.entities.attributes.StitchedSpriteAttribute
 import com.neutrino.entities.attributes.TextureAttribute
+import com.neutrino.util.Constants
 import com.neutrino.util.Constants.SCALE
 import com.neutrino.util.Constants.SCALE_INT
 import com.neutrino.util.Optimize
@@ -20,6 +25,7 @@ open class LevelDrawer: EntityDrawer, Group() {
     private val textureLayers: SortedMap<Int, LayeredTextureList> = sortedMapOf()
 
     fun clearAll() {
+        animations.clear()
         lights.clear()
         textureLayers.forEach { t, u -> u.clear() }
         textureLayers.clear()
@@ -29,7 +35,10 @@ open class LevelDrawer: EntityDrawer, Group() {
         if (textureLayers[texture.z] == null) {
             textureLayers[texture.z] = LayeredTextureList()
         }
-        textureLayers[texture.z]!!.add(LayeredTexture(entity, texture))
+        if (entity has StitchedSpriteAttribute::class)
+            textureLayers[texture.z]!!.add(LayeredTextureUnsorted(entity, texture))
+        else
+            textureLayers[texture.z]!!.add(LayeredTexture(entity, texture))
     }
 
     override fun removeTexture(entity: Entity, texture: TextureSprite) {
@@ -93,7 +102,7 @@ open class LevelDrawer: EntityDrawer, Group() {
             layer.sort()
             for (layeredTexture in layer) {
                 textureX = layeredTexture.getX()
-                textureY = height - layeredTexture.getY()
+                textureY = layeredTexture.getY()
                 textureWidth = layeredTexture.getWidth()
                 if (textureY + layeredTexture.getHeight() >= yBottom && textureY <= yTop &&
                     textureX + textureWidth >= xLeft && textureX <= xRight) {
@@ -106,6 +115,29 @@ open class LevelDrawer: EntityDrawer, Group() {
                 }
             }
         }
+
+        drawLights(batch)
+    }
+
+    private fun drawLights(batch: Batch?) {
+        batch?.shader = Shaders.lightShader
+        batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE)
+        for (light in lights) {
+            val positionAttribute = light.first.get(PositionAttribute::class)!!
+            val radius = light.second.radius
+            batch?.color = light.second.color
+            // TODO add texture position
+            batch?.draw(
+                Constants.whitePixel,
+                x + positionAttribute.x + light.second.x * SCALE_INT - radius + SCALE / 2,
+                y + positionAttribute.y + light.second.y * SCALE_INT - radius + SCALE / 2,
+                2 * radius, 2 * radius
+            )
+        }
+
+        batch?.shader = null
+        batch?.color = Color(1f, 1f, 1f, 1f)
+        batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
     }
 
     override fun act(delta: Float) {
@@ -117,6 +149,7 @@ open class LevelDrawer: EntityDrawer, Group() {
         for (y in map.indices) {
             for (x in map[0].indices) {
                 for (entity in map[y][x]) {
+                    entity addAttribute PositionAttribute()
                     entity addAttribute OnMapPositionAttribute(x, y, this)
                     entity.get(TextureAttribute::class)?.setTextures(null, rng)
                 }

@@ -41,14 +41,14 @@ object Textures {
                 tex.getTextureList(),
                 tex.getLooping(),
                 tex.animationSpeed,
-                tex.lights,
+                tex.lights?.copy(),
                 tex.x,
                 tex.y,
                 tex.z
             )
         return TextureSprite(
             tex.texture,
-            tex.lights,
+            tex.lights?.copy(),
             tex.x,
             tex.y,
             tex.z

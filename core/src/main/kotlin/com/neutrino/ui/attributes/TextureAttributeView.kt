@@ -621,7 +621,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 for (x in 0 until texture.width) {
                     pixel = pixelData.getPixel(x, y)
                     if (pixel.a() in 100..250)
-                        lights.add(Light(x.toFloat(), y.toFloat(), pixel.color()))
+                        lights.add(Light(x.toFloat(), (texture.height - y - 1).toFloat(), pixel.color()))
                 }
             }
 

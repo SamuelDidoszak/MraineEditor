@@ -116,7 +116,7 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
                     builder.append("), ")
                 }
             }
-            is RuleType.None -> builder.append("listOf()")
+            is RuleType.None -> builder.append("listOf(), ")
         }
         if (!asPercent)
             builder.append("${amount.toInt()}f, ")

@@ -87,11 +87,6 @@ Textures add TextureSprite(get("entities", "dungeonStairsDown"), z = 0)
 Textures add TextureSprite(get("entities", "dungeonStairsUp"), z = 0)
 Textures add TextureSprite(get("entities", "stonePillar"), 2f, 10f)
 Textures add TextureSprite(get("entities", "stonePillarCracked"), 2f, 10f)
-Textures add TextureSprite(get("entities", "candlesMultiple$3"), LightSources(arrayListOf(
-	Light(10f, 2f, Color.valueOf("f3642268"), 4f, 48f),
-	Light(3f, 5f, Color.valueOf("f3642268"), 4f, 48f),
-	Light(10f, 10f, Color.valueOf("dc5e2666"), 2f, 24f),
-),))
 Textures add TextureSprite(get("entities", "dungeonWall$1"), z = 0)
 Textures add TextureSprite(get("entities", "dungeonWall$2"), z = 0)
 Textures add TextureSprite(get("entities", "dungeonWall$3"), z = 0)
@@ -123,11 +118,11 @@ Textures add TextureSprite(get("entities", "woodenDoorArchedClosed"))
 Textures add TextureSprite(get("entities", "woodenDoorArchedVertical"), 0f, 14f)
 Textures add TextureSprite(get("entities", "woodenDoorArchedVerticalClosed"), 13f)
 Textures add TextureSprite(get("entities", "stonePillarTop"), 2f, 2f)
-Textures add TextureSprite(get("entities", "candleSingle$1"), LightSources(Light(1f, 2f, Color.valueOf("e5842868"), 4f, 48f)), 10f, 8f)
-Textures add TextureSprite(get("entities", "candleSingle$2"), LightSources(Light(1f, 2f, Color.valueOf("e5842868"), 4f, 48f)), 8f, 4f)
-Textures add TextureSprite(get("entities", "candleSingle$3"), LightSources(Light(2f, 2f, Color.valueOf("f3642268"), 4f, 48f)), 7f, 3f)
-Textures add TextureSprite(get("entities", "candleSingle$4"), LightSources(Light(2f, 3f, Color.valueOf("f3642268"), 4f, 48f)), 4f, 4f)
-Textures add TextureSprite(get("entities", "candleSingle$5"), LightSources(Light(0f, 2f, Color.valueOf("dc5e2668"), 4f, 48f)), 11f, 11f)
+Textures add TextureSprite(get("entities", "candleSingle$1"), LightSources(Light(1f, 8f, Color.valueOf("e5842868"), 4f, 48f)), 10f, 8f)
+Textures add TextureSprite(get("entities", "candleSingle$2"), LightSources(Light(1f, 6f, Color.valueOf("e5842868"), 4f, 48f)), 8f, 4f)
+Textures add TextureSprite(get("entities", "candleSingle$3"), LightSources(Light(2f, 5f, Color.valueOf("f3642268"), 4f, 48f)), 7f, 3f)
+Textures add TextureSprite(get("entities", "candleSingle$4"), LightSources(Light(2f, 8f, Color.valueOf("f3642268"), 4f, 48f)), 4f, 4f)
+Textures add TextureSprite(get("entities", "candleSingle$5"), LightSources(Light(0f, 5f, Color.valueOf("dc5e2668"), 4f, 48f)), 11f, 11f)
 Textures add TextureSprite(get("entities", "clayPot$1"), 1f, 3f)
 Textures add TextureSprite(get("entities", "clayPot$2"), 0f, 5f)
 Textures add TextureSprite(get("entities", "clayPot$3"), 4f, 4f)
@@ -137,32 +132,32 @@ Textures add TextureSprite(get("entities", "clayPot$2Destroyed"), 1f, 2f)
 Textures add TextureSprite(get("entities", "clayPot$3Destroyed"), 4f, 1f)
 Textures add TextureSprite(get("entities", "clayPot$4Destroyed"), 2f, 1f)
 Textures add AnimatedTextureSprite(getArray("entities", "standingTorch$1#1", "standingTorch$1#2", "standingTorch$1#3", ), true, 0.25f, LightSources(listOf(arrayListOf(
-		Light(6f, 7f, Color.valueOf("f36422a2"), 12f, 512f),
+		Light(6f, 23f, Color.valueOf("f36422a2"), 12f, 512f),
 	),arrayListOf(
-		Light(6f, 7f, Color.valueOf("f36422a2"), 12f, 512f),
+		Light(6f, 23f, Color.valueOf("f36422a2"), 12f, 512f),
 	),arrayListOf(
-		Light(6f, 7f, Color.valueOf("f36422a2"), 12f, 512f),
+		Light(6f, 23f, Color.valueOf("f36422a2"), 12f, 512f),
 	),)), 1f, 4f)
 Textures add AnimatedTextureSprite(getArray("entities", "standingTorch$2#1", "standingTorch$2#2", "standingTorch$2#3", ), true, 0.25f, LightSources(listOf(arrayListOf(
-		Light(6f, 5f, Color.valueOf("f36422a0"), 10f, 384f),
+		Light(6f, 21f, Color.valueOf("f36422a0"), 10f, 384f),
 	),arrayListOf(
-		Light(6f, 5f, Color.valueOf("f36422a0"), 10f, 384f),
+		Light(6f, 21f, Color.valueOf("f36422a0"), 10f, 384f),
 	),arrayListOf(
-		Light(6f, 5f, Color.valueOf("f36422a0"), 10f, 384f),
+		Light(6f, 21f, Color.valueOf("f36422a0"), 10f, 384f),
 	),)), 1f, 4f)
 Textures add AnimatedTextureSprite(getArray("entities", "torchFront#1", "torchFront#2", "torchFront#3", ), true, 0.25f, LightSources(listOf(arrayListOf(
-		Light(2f, 4f, Color.valueOf("f3510783"), 6f, 128f),
+		Light(2f, 7f, Color.valueOf("f3510783"), 6f, 128f),
 	),arrayListOf(
-		Light(2f, 4f, Color.valueOf("f3510783"), 6f, 128f),
+		Light(2f, 7f, Color.valueOf("f3510783"), 6f, 128f),
 	),arrayListOf(
-		Light(2f, 4f, Color.valueOf("f3510783"), 6f, 128f),
+		Light(2f, 7f, Color.valueOf("f3510783"), 6f, 128f),
 	),)), 5f, 19f)
 Textures add AnimatedTextureSprite(getArray("entities", "torchSide#1", "torchSide#2", "torchSide#3", ), true, 0.25f, LightSources(listOf(arrayListOf(
-		Light(2f, 6f, Color.valueOf("f3510783"), 6f, 128f),
+		Light(2f, 5f, Color.valueOf("f3510783"), 6f, 128f),
 	),arrayListOf(
-		Light(2f, 6f, Color.valueOf("f3510783"), 6f, 128f),
+		Light(2f, 5f, Color.valueOf("f3510783"), 6f, 128f),
 	),arrayListOf(
-		Light(2f, 6f, Color.valueOf("f3510783"), 6f, 128f),
+		Light(2f, 5f, Color.valueOf("f3510783"), 6f, 128f),
 	),)), -1f, 3f)
 Textures add TextureSprite(get("entities", "barrel"), 3f)
 Textures add TextureSprite(get("entities", "barrelDestroyed"))

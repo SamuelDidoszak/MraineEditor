@@ -86,11 +86,19 @@ class TextureAttribute(
                 level.animations.add(animationData ?: AnimationData(element, entity))
             if (element.lights != null) {
                 if (element.lights!!.isSingleLight)
-                    level.lights.add(Pair(entity, element.lights!!.getLight()))
-                else
-                    for (light in element.lights!!.getLights()!!) {
-                        level.lights.add(Pair(entity, light))
+                    level.lights.add(Pair(entity, element.lights!!.getLight().xyDiff(element.x, element.y)))
+                else {
+                    if (element is AnimatedTextureSprite) {
+                        for (i in 0 until element.lights!!.getLightArraySize()) {
+                            for (light in element.lights!!.getLights(i)!!)
+                                light.xyDiff(element.x, element.y)
+                        }
+                    } else {
+                        for (light in element.lights!!.getLights()!!) {
+                            level.lights.add(Pair(entity, light.xyDiff(element.x, element.y)))
+                        }
                     }
+                }
             }
         }
 

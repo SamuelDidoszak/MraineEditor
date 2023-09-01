@@ -1,11 +1,12 @@
 package com.neutrino.textures
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.Identity
-import com.neutrino.entities.attributes.OnMapPositionAttribute
-import com.neutrino.entities.attributes.TextureAttribute
+import com.neutrino.entities.attributes.*
+import com.neutrino.util.Constants
 import com.neutrino.util.Constants.SCALE
 import com.neutrino.util.Optimize
 import java.util.*
@@ -31,6 +32,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
                 textureLayers.clear()
             field = value
             map[1][1][0] = field
+            field.addAttribute(PositionAttribute())
             field.addAttribute(OnMapPositionAttribute(1, 1, this))
             val textureAttribute = field.get(TextureAttribute::class) ?:
                 field.addAttribute(TextureAttribute {_, _, _ ->}).get(TextureAttribute::class)!!
@@ -39,8 +41,22 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
                 System.err.println(entity.name + " has no texture set!")
                 textureAttribute.textures.add(Textures.get("backgroundTexture"))
             }
-            if (textureAttribute.textures.size == 1)
-                textureAttribute.textures[0].xy(0f, 0f)
+            if (textureAttribute.textures.size == 1) {
+                val texture = textureAttribute.textures.first()
+                if (texture.lights != null) {
+                    if (texture is AnimatedTextureSprite) {
+                        for (i in 0 until texture.lights!!.getLightArraySize()) {
+                            for (light in texture.lights!!.getLights(i)!!)
+                                light.xyDiff(-1 * texture.x, -1 * texture.y)
+                        }
+                    } else {
+                        for (light in texture.lights!!.getLights()!!) {
+                            light.xyDiff(-1 * texture.x, -1 * texture.y)
+                        }
+                    }
+                }
+                texture.xy(0f, 0f)
+            }
             updateScale()
         }
 
@@ -51,7 +67,10 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
     override fun addTexture(entity: Entity, texture: TextureSprite) {
         if (textureLayers[texture.z] == null)
             textureLayers[texture.z] = LayeredTextureList()
-        textureLayers[texture.z]!!.add(LayeredTexture(entity, texture))
+        if (entity has StitchedSpriteAttribute::class)
+            textureLayers[texture.z]!!.add(LayeredTextureUnsorted(entity, texture))
+        else
+            textureLayers[texture.z]!!.add(LayeredTexture(entity, texture))
         textureLayers[texture.z]!!.sort()
     }
 
@@ -75,6 +94,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
+        val clipBegin = clipBegin()
         val textures = entity.get(TextureAttribute::class)!!.textures
         for (texture in textures) {
             if (texture.z == 0)
@@ -96,6 +116,28 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
                     layeredTexture.texture.height() * scale)
             }
         }
+        drawLights(batch)
+        if (clipBegin)
+            clipEnd()
+    }
+
+    private fun drawLights(batch: Batch?) {
+        batch?.shader = Shaders.lightShader
+        batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE)
+        for (light in lights) {
+            val radius = light.second.radius / 4 * scale
+            batch?.color = light.second.color
+            batch?.draw(
+                Constants.whitePixel,
+                x + offsetX + light.second.x * scale - radius + SCALE / 2,
+                y + offsetY + light.second.y * scale - radius + SCALE / 2,
+                2 * radius, 2 * radius
+            )
+        }
+
+        batch?.shader = null
+        batch?.color = Color(1f, 1f, 1f, 1f)
+        batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA)
     }
 
     override fun act(delta: Float) {

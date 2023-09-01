@@ -3,8 +3,8 @@ package com.neutrino.textures
 import com.badlogic.gdx.graphics.Color
 
 data class Light(
-    val x: Float,
-    val y: Float,
+    var x: Float,
+    var y: Float,
     val color: Color,
     val intensity: Float = color.a * 255f % 25f,
     val radius: Float = setRadius(intensity)
@@ -16,6 +16,12 @@ data class Light(
             return if (num.compareTo(i) == 0) i.toString() else num.toString()
         }
         return "Light(${format(x)}f, ${format(y)}f, Color.valueOf(\"$color\"), ${format(intensity)}f, ${format(radius)}f)"
+    }
+
+    fun xyDiff(x: Float, y: Float): Light {
+        this.x += x
+        this.y += y
+        return this
     }
 
     companion object {

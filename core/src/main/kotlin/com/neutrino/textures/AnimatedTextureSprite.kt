@@ -58,4 +58,8 @@ class AnimatedTextureSprite(
         texture = animation.getKeyFrame(stateTime) as AtlasRegion
         return true
     }
+
+    fun getCurrentLights(): ArrayList<Light>? {
+        return lights?.getLights(animation.getKeyFrameIndex(stateTime))
+    }
 }

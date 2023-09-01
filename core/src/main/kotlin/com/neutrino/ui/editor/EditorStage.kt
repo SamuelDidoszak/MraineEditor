@@ -3,12 +3,14 @@ package com.neutrino.ui.editor
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.graphics.OrthographicCamera
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.textures.LevelDrawer
+import com.neutrino.textures.Shaders
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
 import kotlin.math.abs
@@ -18,7 +20,8 @@ import kotlin.properties.Delegates
 
 class EditorStage(
     private var levelDrawer: LevelDrawer
-): Stage(ExtendViewport(1920f, 1080f)) {
+): Stage(ExtendViewport(1920f, 1080f),
+    SpriteBatch(10, Shaders.fragmentAlphas)) {
 
     private var map = levelDrawer.map
     private var startXPosition by Delegates.notNull<Float>()
@@ -132,8 +135,9 @@ class EditorStage(
 
         if (button == Input.Buttons.RIGHT) {
             var entities = "${tile.x}, ${tile.y}: "
-            levelDrawer.map[tile.y][tile.x].forEach { entities += "${it.name}: " +
-                it.get(TextureAttribute::class)?.textures?.map { "${it.texture.name}, " } }
+            levelDrawer.map[tile.y][tile.x].forEach { entity ->
+                entities += "${entity.name}: " +
+                entity.get(TextureAttribute::class)?.textures?.map { "${it.texture.name}, " } }
             println(entities)
             return true
         }
