@@ -21,7 +21,8 @@ abstract class GenerationAlgorithm(
     val modifyBaseMap: ModifyMap? = null) {
 
     internal val map: List<List<MutableList<Entity>>> = initializeMap()
-    private val entities = ArrayList<EntityGenerationParams>()
+    internal val entities = ArrayList<EntityGenerationParams>()
+    internal val defaultBlockMap = List<List<Boolean>>(sizeY) {List<Boolean>(sizeX) {true} }
 
     /**
      * Invokes the generation specific to this GenerationAlgorithm
@@ -97,12 +98,21 @@ abstract class GenerationAlgorithm(
         return list
     }
 
+
     fun addEntities(entity: EntityId, entityPositionRequirementList: List<EntityPositionRequirement>, amount: Float,
+                    asProbability: Boolean = false, replaceUnderneath: Boolean = false) {
+        addEntities(0 until sizeY, 0 until sizeX, defaultBlockMap,
+            entity, entityPositionRequirementList, amount, asProbability, replaceUnderneath)
+    }
+
+    fun addEntities(yIterator: IntRange, xIterator: IntRange, blockMap: List<List<Boolean>>, entity: EntityId, entityPositionRequirementList: List<EntityPositionRequirement>, amount: Float,
                     asProbability: Boolean = false, replaceUnderneath: Boolean = false) {
         val fulfillingTileList: MutableList<Pair<Int, Int>> = ArrayList()
         val entityChecker = NameOrIdentity(entity)
-        for (y in 0 until sizeY) {
-            for (x in 0 until sizeX) {
+        for (y in yIterator) {
+            for (x in xIterator) {
+                if (!blockMap[y][x])
+                    continue
                 var generationAllowed = true
                 for (mapEntity in map[y][x]) {
                     if (!mapEntity.get(MapParamsAttribute::class)!!.allowOnTop) {

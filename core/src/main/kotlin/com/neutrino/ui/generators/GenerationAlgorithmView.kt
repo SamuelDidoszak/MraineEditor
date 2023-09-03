@@ -4,6 +4,8 @@ import com.kotcrab.vis.ui.widget.VisTable
 import com.neutrino.generation.algorithms.GenerationAlgorithm
 import com.neutrino.generation.util.GenerationParams
 import com.neutrino.generation.util.ModifyMap
+import com.neutrino.ui.generators.methods.GeneratorMethodView
+import kotlin.reflect.KClass
 
 abstract class GenerationAlgorithmView: VisTable() {
 
@@ -17,5 +19,9 @@ abstract class GenerationAlgorithmView: VisTable() {
 
     fun getModifyMapView(): VisTable {
         return VisTable()
+    }
+
+    open fun getMethods(): Map<String, KClass<out GeneratorMethodView>> {
+        return mapOf()
     }
 }

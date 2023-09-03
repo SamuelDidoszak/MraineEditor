@@ -2,6 +2,7 @@
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.*
+import com.neutrino.entities.attributes.map.ChangesImpassableAttribute
 import com.neutrino.entities.util.Interaction
 import com.neutrino.generation.NameOrIdentity
 import com.neutrino.textures.Textures
@@ -208,14 +209,4 @@ Entities.add("WoodenChestMid") {
 		.addAttribute(TextureAttribute { position, random, textures -> run {
 			textures.add(Textures.get("woodenChestMid"))
 		}})
-}
-Entities.add("TextureLightsReplacement") {
-	Entity()
-		.addAttribute(TextureAttribute { position, random, textures -> run {
-			textures.add(Textures.getRandomTexture(random, listOf(
-				100f to listOf("standingTorch$1"),
-				0f to listOf("standingTorch$2"),
-				0f to listOf("torchFront"),
-				0f to listOf("torchSide"),
-			)))}})
 }

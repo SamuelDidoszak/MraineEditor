@@ -8,7 +8,6 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.textures.LevelDrawer
 import com.neutrino.textures.Shaders
 import squidpony.squidmath.Coord
@@ -135,9 +134,9 @@ class EditorStage(
 
         if (button == Input.Buttons.RIGHT) {
             var entities = "${tile.x}, ${tile.y}: "
-            levelDrawer.map[tile.y][tile.x].forEach { entity ->
-                entities += "${entity.name}: " +
-                entity.get(TextureAttribute::class)?.textures?.map { "${it.texture.name}, " } }
+//            levelDrawer.map[tile.y][tile.x].forEach { entity ->
+//                entities += "${entity.name}: " +
+//                entity.get(TextureAttribute::class)?.textures?.map { "${it.texture.name}, " } }
             println(entities)
             return true
         }

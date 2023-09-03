@@ -9,6 +9,7 @@ import com.neutrino.ui.LeftTable
 import com.neutrino.ui.elements.DeleteButton
 import com.neutrino.ui.elements.TextField
 import com.neutrino.ui.generators.GenerationAlgorithmView
+import com.neutrino.ui.generators.RoomFinderAlgorithmView
 import com.neutrino.ui.generators.SquidGenerationAlgorithmView
 import com.neutrino.ui.generators.methods.GeneratorMethodAddEntityView
 import com.neutrino.ui.generators.methods.GeneratorMethodView
@@ -19,6 +20,7 @@ import ktx.actors.onChange
 import ktx.actors.onClick
 import ktx.scene2d.scene2d
 import ktx.scene2d.vis.*
+import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 class AddGeneratorView(
@@ -31,9 +33,10 @@ class AddGeneratorView(
 
     private val generators: ArrayList<Pair<GenerationAlgorithmView, ArrayList<GeneratorMethodView>>> = ArrayList()
     private val generationAlgorithms = mapOf(
-        "SquidGenerationAlgorithm" to SquidGenerationAlgorithmView::class
+        "SquidGenerationAlgorithm" to SquidGenerationAlgorithmView::class,
+        "RoomFinderAlgorithm" to RoomFinderAlgorithmView::class
     )
-    private val generatorMethods = mapOf(
+    private val generatorMethods: Map<String, KClass<out GeneratorMethodView>> = mapOf(
         "Add Entity" to GeneratorMethodAddEntityView::class,
     )
     private val addGenerator: VisTable
@@ -87,9 +90,10 @@ class AddGeneratorView(
         val addButton = VisTextButton("+")
         addButton.onClick {
             scene2d.popupMenu {
-                generatorMethods.keys.forEach {
+                val generatorSpecific = generators.find { it.first == generatorView }?.first?.getMethods() ?: mapOf()
+                generatorMethods.keys.plus(generatorSpecific.keys) .forEach {
                     menuItem(it).onClick {
-                        val methodView = generatorMethods[it]!!.createInstance()
+                        val methodView = generatorMethods[it]?.createInstance() ?: generatorSpecific[it]!!.createInstance()
                         generators.find { it.first == generatorView }?.second?.add(methodView)
                         generatorTable.remove(addMethodTable)
                         generatorTable.add(methodView).padTop(16f).padLeft(16f).growX().row()

@@ -23,12 +23,12 @@ import ktx.actors.onClick
 import ktx.scene2d.scene2d
 import ktx.scene2d.vis.*
 
-class GeneratorMethodAddEntityView: GeneratorMethodView() {
+open class GeneratorMethodAddEntityView: GeneratorMethodView() {
 
-    private var entity: Entity? = null
-    private var amount: Float = 0f
-    private var asPercent: Boolean = false
-    private var replaceUnderneath: Boolean = false
+    internal var entity: Entity? = null
+    internal var amount: Float = 0f
+    internal var asPercent: Boolean = false
+    internal var replaceUnderneath: Boolean = false
     private val pickEntity = Container<Actor>()
     private val rulesLabel = VisLabel("")
     private var ruleType: RuleType = RuleType.None
@@ -75,15 +75,21 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
         add(mainTable).growX()
     }
 
-    override fun addMethod(generator: GenerationAlgorithm) {
+    open override fun addMethod(generator: GenerationAlgorithm) {
         if (entity == null)
             return
         generator.add(entity!!.name, getRules(), amount, asPercent, replaceUnderneath)
     }
 
-    override fun generateString(): String {
+    open override fun generateString(): String {
         val builder = StringBuilder(100)
         builder.append(".add(\"${entity!!.name}\", ")
+        addRulesString(builder)
+        addParametersString(builder)
+        return builder.toString()
+    }
+
+    internal fun addRulesString(builder: StringBuilder) {
         when (ruleType) {
             is RuleType.Entity -> {
                 val entityName = (ruleType as RuleType.Entity).entityName
@@ -118,12 +124,14 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
             }
             is RuleType.None -> builder.append("listOf(), ")
         }
+    }
+
+    internal fun addParametersString(builder: StringBuilder) {
         if (!asPercent)
             builder.append("${amount.toInt()}f, ")
         else
             builder.append("${amount}f, ")
         builder.append("$asPercent, $replaceUnderneath)")
-        return builder.toString()
     }
 
     fun save() {
@@ -135,7 +143,7 @@ class GeneratorMethodAddEntityView: GeneratorMethodView() {
         GenerationRequirementBuilder().buildRules(addRules).save()
     }
 
-    private fun getRules(): List<EntityPositionRequirement> {
+    internal fun getRules(): List<EntityPositionRequirement> {
         return when (ruleType) {
             is RuleType.Entity -> GenerationRequirements.get((ruleType as RuleType.Entity).entityName)
             is RuleType.Identity -> GenerationRequirements.get((ruleType as RuleType.Identity).identity)
