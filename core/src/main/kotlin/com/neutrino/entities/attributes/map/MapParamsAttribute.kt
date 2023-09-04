@@ -1,4 +1,4 @@
-package com.neutrino.entities.attributes
+package com.neutrino.entities.attributes.map
 
 import attributes.Attribute
 

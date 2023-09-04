@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.OnMapPositionAttribute
+import com.neutrino.entities.attributes.map.OnMapPositionAttribute
 import com.neutrino.entities.attributes.PositionAttribute
 import com.neutrino.entities.attributes.StitchedSpriteAttribute
 import com.neutrino.entities.attributes.TextureAttribute

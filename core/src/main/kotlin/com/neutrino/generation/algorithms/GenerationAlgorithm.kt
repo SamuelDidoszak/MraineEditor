@@ -3,7 +3,7 @@ package com.neutrino.generation.algorithms
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.Identity
-import com.neutrino.entities.attributes.MapParamsAttribute
+import com.neutrino.entities.attributes.map.MapParamsAttribute
 import com.neutrino.generation.*
 import com.neutrino.generation.util.EntityGenerationParams
 import com.neutrino.generation.util.GenerationParams

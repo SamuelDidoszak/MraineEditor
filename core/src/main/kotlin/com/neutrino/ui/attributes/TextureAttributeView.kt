@@ -26,10 +26,7 @@ import com.neutrino.builders.TextureAttributeBuilder
 import com.neutrino.builders.TextureBuilder
 import com.neutrino.generation.NameOrIdentity
 import com.neutrino.textures.*
-import com.neutrino.ui.elements.RulePickerButton
-import com.neutrino.ui.elements.TextField
-import com.neutrino.ui.elements.TextureButton
-import com.neutrino.ui.elements.VisTableNested
+import com.neutrino.ui.elements.*
 import com.neutrino.ui.views.AddRulesView
 import com.neutrino.util.*
 
@@ -192,11 +189,10 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
             val buttonsTable = VisTable()
             buttonsTable.name = "buttonsTable"
-            val deleteButton = VisCheckBox("")
-            deleteButton.addListener(getChangeListener {_, _ ->
+            val deleteButton = DeleteButton() {
                 textureTables.remove(this)
-                table.removeActor(this)
-            })
+                table.remove(this)
+            }
 
             val expandButton = VisCheckBox("")
             expandButton.addListener(object : ChangeListener() {
@@ -204,7 +200,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     collapsibleInnerTextures.isCollapsed = !collapsibleInnerTextures.isCollapsed
                 }
             })
-            buttonsTable.add(deleteButton).top().row()
+            buttonsTable.add(deleteButton).top().right().row()
             buttonsTable.add(expandButton).bottom().expandY()
             mainTextureTable.add(buttonsTable).growY()
 
@@ -219,20 +215,19 @@ class TextureAttributeView: AttributeView(VisTable()) {
             innerTable.add(addParametersTable(innerTable, false)).growY().left()
 
             val buttonsTable = VisTable()
-            val deleteButton = VisCheckBox("")
-            deleteButton.addListener(getChangeListener { _, _ ->
+            val deleteButton = DeleteButton {
                 texturesToAtlas.removeIf { it.file().nameWithoutExtension == name }
                 if (innerTables.size == 1) {
                     textureTables.remove(this)
-                    table.removeActor(this)
-                    return@getChangeListener
+                    table.remove(this)
+                    return@DeleteButton
                 }
                 textures.remove(name)
                 innerTables.removeValue(innerTable, true)
                 findActor<CollapsibleWidget>("collapsibleTextures")
-                    .findActor<VisTable>("innerTextures").removeActor(innerTable)
+                    .findActor<VisTable>("innerTextures").remove(innerTable)
                 setMainAnimationState(animationButton.state)
-            })
+            }
             buttonsTable.add(deleteButton).expandY().top()
             innerTable.add(buttonsTable).growY()
 

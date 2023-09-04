@@ -38,6 +38,7 @@ class AddNewEntityView(
         "MapParamsAttribute" to MapParamsAttributeView::class,
         "InteractionAttribute" to InteractionAttributeView::class,
         "ChangesImpassableAttrib" to ChangesImpassableAttributeView::class,
+        "StatsAttribute" to StatsAttributeView::class,
     )
 
     init {

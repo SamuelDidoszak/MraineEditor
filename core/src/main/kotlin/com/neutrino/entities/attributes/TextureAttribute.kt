@@ -1,6 +1,7 @@
 package com.neutrino.entities.attributes
 
 import attributes.Attribute
+import com.neutrino.entities.attributes.map.OnMapPositionAttribute
 import com.neutrino.textures.AnimatedTextureSprite
 import com.neutrino.textures.AnimationData
 import com.neutrino.textures.TextureSprite
@@ -90,12 +91,22 @@ class TextureAttribute(
                 else {
                     if (element is AnimatedTextureSprite) {
                         for (i in 0 until element.lights!!.getLightArraySize()) {
-                            for (light in element.lights!!.getLights(i)!!)
-                                light.xyDiff(element.x, element.y)
+                            for (light in element.lights!!.getLights(i)!!) {
+                                if (element.mirrorX)
+                                    light.x += element.width() + element.x * -1
+                                else
+                                    light.x += element.x
+                                light.y += element.y
+                            }
                         }
                     } else {
                         for (light in element.lights!!.getLights()!!) {
-                            level.lights.add(Pair(entity, light.xyDiff(element.x, element.y)))
+                            if (element.mirrorX)
+                                light.x += element.width() + element.x * -1
+                            else
+                                light.x += element.x
+                            light.y += element.y
+                            level.lights.add(Pair(entity, light))
                         }
                     }
                 }

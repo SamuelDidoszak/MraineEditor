@@ -33,7 +33,10 @@ class Main: ApplicationAdapter() {
     }
 
     private fun getImportList(): List<String> {
-        return listOf("com.neutrino.entities.*", "com.neutrino.entities.attributes.*",
+        return listOf("com.neutrino.entities.*",
+            "com.neutrino.entities.attributes.*",
+            "com.neutrino.entities.attributes.character.*",
+            "com.neutrino.entities.attributes.map.*",
 //            "com.neutrino.entities.callables.*", "com.neutrino.entities.util.*",
             "com.neutrino.textures.Textures", "com.neutrino.textures.TextureSprite",
             "com.neutrino.textures.AnimatedTextureSprite",

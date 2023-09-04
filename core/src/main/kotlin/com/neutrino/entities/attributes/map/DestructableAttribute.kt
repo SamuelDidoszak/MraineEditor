@@ -1,6 +1,7 @@
-package com.neutrino.entities.attributes
+package com.neutrino.entities.attributes.map
 
 import attributes.Attribute
+import com.neutrino.entities.attributes.InteractionAttribute
 import com.neutrino.entities.util.Interaction
 
 class DestructableAttribute(var entityHp: Float): Attribute() {

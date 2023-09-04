@@ -1,7 +1,9 @@
-package com.neutrino.entities.attributes
+package com.neutrino.entities.attributes.map
 
 import attributes.Attribute
 import com.neutrino.entities.Entity
+import com.neutrino.entities.attributes.Identity
+import com.neutrino.entities.attributes.PositionAttribute
 import com.neutrino.generation.NameOrIdentity
 import com.neutrino.textures.EntityDrawer
 import com.neutrino.textures.TextureSprite
@@ -80,7 +82,7 @@ class OnMapPositionAttribute(
         return check(position, NameOrIdentity(name, not), mirrorX, mirrorY, unit)
     }
 
-    fun check(position: List<Int>, identity: KClass<out Identity>, not: Boolean = false, mirrorX: Boolean = false, mirrorY: Boolean = false,  unit: () -> TextureSprite?): TextureSprite? {
+    fun check(position: List<Int>, identity: KClass<out Identity>, not: Boolean = false, mirrorX: Boolean = false, mirrorY: Boolean = false, unit: () -> TextureSprite?): TextureSprite? {
         return check(position, NameOrIdentity(identity, not), mirrorX, mirrorY, unit)
     }
 
@@ -90,21 +92,21 @@ class OnMapPositionAttribute(
             return textureSprite
 
         if (mirrorX) {
-            textureSprite = check(position.map {mirrorXMap[it]!!}, nameOrIdentity, unit)
+            textureSprite = check(position.map { mirrorXMap[it]!!}, nameOrIdentity, unit)
             textureSprite?.mirrorX()
 
             if (textureSprite != null)
                 return textureSprite
         }
         if (mirrorY) {
-            textureSprite = check(position.map {mirrorYMap[it]!!}, nameOrIdentity, unit)
+            textureSprite = check(position.map { mirrorYMap[it]!!}, nameOrIdentity, unit)
             textureSprite?.mirrorY()
 
             if (textureSprite != null)
                 return textureSprite
         }
         if (mirrorX && mirrorY) {
-            textureSprite = check(position.map {mirrorXMap[mirrorYMap[it]!!]!!}, nameOrIdentity, unit)
+            textureSprite = check(position.map { mirrorXMap[mirrorYMap[it]!!]!!}, nameOrIdentity, unit)
             textureSprite?.mirrorX()?.mirrorY()
 
             if (textureSprite != null)
@@ -204,21 +206,21 @@ class OnMapPositionAttribute(
             return textureSprites
 
         if (mirrorX) {
-            textureSprite = check(position.map {mirrorXMap[it]!!}, nameOrIdentity, unit)
+            textureSprite = check(position.map { mirrorXMap[it]!!}, nameOrIdentity, unit)
             textureSprite?.mirrorX()
             textureSprites.add(textureSprite)
             if (!checkAll && textureSprite != null)
                 return textureSprites
         }
         if (mirrorY) {
-            textureSprite = check(position.map {mirrorYMap[it]!!}, nameOrIdentity, unit)
+            textureSprite = check(position.map { mirrorYMap[it]!!}, nameOrIdentity, unit)
             textureSprite?.mirrorY()
             textureSprites.add(textureSprite)
             if (!checkAll && textureSprite != null)
                 return textureSprites
         }
         if (mirrorX && mirrorY) {
-            textureSprite = check(position.map {mirrorXMap[mirrorYMap[it]!!]!!}, nameOrIdentity, unit)
+            textureSprite = check(position.map { mirrorXMap[mirrorYMap[it]!!]!!}, nameOrIdentity, unit)
             textureSprite?.mirrorX()?.mirrorY()
             textureSprites.add(textureSprite)
             if (!checkAll && textureSprite != null)

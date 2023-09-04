@@ -158,9 +158,9 @@ Textures add AnimatedTextureSprite(getArray("entities", "torchSide#1", "torchSid
 		Light(2f, 5f, Color.valueOf("f3510783"), 6f, 128f),
 	),arrayListOf(
 		Light(2f, 5f, Color.valueOf("f3510783"), 6f, 128f),
-	),)), -1f, 3f, 2)
-Textures add TextureSprite(get("entities", "barrel"), 3f)
-Textures add TextureSprite(get("entities", "barrelDestroyed"))
+	),)), -1f, 3f)
+Textures add TextureSprite(get("entities", "barrel"), 3f, 1f)
+Textures add TextureSprite(get("entities", "barrelDestroyed"), 0f, 1f)
 Textures add TextureSprite(get("entities", "crateBiggerDark"), 2f)
 Textures add TextureSprite(get("entities", "crateBiggerDarkDestroyed"))
 Textures add TextureSprite(get("entities", "crateSmall"), 3f)

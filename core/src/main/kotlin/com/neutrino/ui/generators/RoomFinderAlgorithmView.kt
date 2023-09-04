@@ -19,7 +19,7 @@ import kotlin.reflect.KClass
 
 class RoomFinderAlgorithmView: GenerationAlgorithmView() {
 
-    private var finderType: FinderType = FinderType.RECTANGLE
+    private var finderType: FinderType = FinderType.NORMAL
 
     init {
         val tilesetTypeTable = VisTable()

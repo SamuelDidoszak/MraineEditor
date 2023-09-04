@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.*
+import com.neutrino.entities.attributes.map.OnMapPositionAttribute
 import com.neutrino.util.Constants
 import com.neutrino.util.Constants.SCALE
 import com.neutrino.util.Optimize

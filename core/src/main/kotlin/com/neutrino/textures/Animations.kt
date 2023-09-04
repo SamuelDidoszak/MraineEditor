@@ -1,7 +1,7 @@
 package com.neutrino.textures
 
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.OnMapPositionAttribute
+import com.neutrino.entities.attributes.map.OnMapPositionAttribute
 import com.neutrino.entities.attributes.TextureAttribute
 
 class Animations {

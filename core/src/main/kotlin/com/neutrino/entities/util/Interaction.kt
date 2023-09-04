@@ -1,7 +1,7 @@
 package com.neutrino.entities.util
 
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.MapParamsAttribute
+import com.neutrino.entities.attributes.map.MapParamsAttribute
 import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.textures.Textures
 
