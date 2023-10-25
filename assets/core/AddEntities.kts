@@ -1,8 +1,12 @@
 
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.*
+import com.neutrino.entities.attributes.Identity
+import com.neutrino.entities.attributes.InteractionAttribute
+import com.neutrino.entities.attributes.StitchedSpriteAttribute
+import com.neutrino.entities.attributes.TextureAttribute
 import com.neutrino.entities.attributes.map.ChangesImpassableAttribute
+import com.neutrino.entities.attributes.map.MapParamsAttribute
 import com.neutrino.entities.util.Interaction
 import com.neutrino.generation.NameOrIdentity
 import com.neutrino.textures.Textures
@@ -90,7 +94,7 @@ Entities.add("WoodenDoor") {
         .addAttribute(InteractionAttribute(arrayListOf(Interaction.DOOR())))
         .addAttribute(ChangesImpassableAttribute())
         .addAttribute(TextureAttribute { position, random, textures -> run {
-            textures.add(position!!.check(listOf(2 to NameOrIdentity(Identity.Wall::class), 8 to NameOrIdentity(Identity.Wall::class))) {
+            textures.add(position!!.check(listOf(2, 8), NameOrIdentity(Identity.Wall::class)) {
                 Textures.get("woodenDoorVerticalClosed")})?.also {return@run}
             textures add Textures.get("woodenDoorClosed")
         }})
@@ -141,7 +145,7 @@ Entities.add("ClayPotMultiple") {
 	Entity()
 		.addAttribute(Identity.Container())
 		.addAttribute(MapParamsAttribute(false, false))
-		.addAttribute(InteractionAttribute(arrayListOf(Interaction.DESTROY())))
+		.addAttribute(InteractionAttribute(arrayListOf(Interaction.DESTROY(), Interaction.OPEN())))
 		.addAttribute(TextureAttribute { position, random, textures -> run {
 			textures.add(Textures.getOrNull(random, 70f, "clayPot$3"))
 			textures.add(Textures.getOrNull(random, 40f, "clayPot$4"))?.also {return@run}

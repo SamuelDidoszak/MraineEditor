@@ -17,6 +17,8 @@ object Constants {
 
     val SCALE = 3f
     val SCALE_INT = SCALE.toInt()
+    val TILE_SIZE = 16 * SCALE
+    val TILE_SIZE_INT = 16 * SCALE_INT
 
     val VisUIX1Skin = Skin(VisUI.SkinScale.X1.skinFile)
     val scriptEngine = KotlinScriptEngine()

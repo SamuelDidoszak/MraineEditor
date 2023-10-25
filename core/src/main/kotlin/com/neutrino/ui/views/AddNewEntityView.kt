@@ -48,7 +48,6 @@ class AddNewEntityView(
         top()
 
         title = TitleView("Add new entity", true, "save") {
-            println("Called save!!!")
             val newEntity = saveEntity()
             Constants.scriptEngine.evaluate(newEntity)
             callback.invoke(Entities.new(nameTextField.text))
@@ -100,7 +99,6 @@ class AddNewEntityView(
     fun addAttribute(attribute: KClass<out AttributeView>) {
         val attributeParamsTable = VisTable()
         val attributeView = attribute.createInstance()
-//        attributeView.width = width
         val attributeCheckBox = VisCheckBox("")
         attributeParamsTable.background = nameTextField.style.background
         attributeCheckBox.isChecked = true

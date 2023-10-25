@@ -53,3 +53,18 @@ GenerationRequirements.add("WoodenChestMid", listOf(
 	EntityPositionRequirement(EntityPositionRequirementType.AND, Identity.Wall(), listOf(9, 6, 3)),
 	EntityPositionRequirement(EntityPositionRequirementType.NOR, Identity.Wall(), listOf(2, 1, 4, 7, 8)),
 ))
+GenerationRequirements.add(Identity.Container(), listOf(
+	EntityPositionRequirement(EntityPositionRequirementType.AND),
+	EntityPositionRequirement(EntityPositionRequirementType.OR, "DungeonWall", listOf(8, 6, 3, 9)),
+	EntityPositionRequirement(EntityPositionRequirementType.NAND, Identity.Wall(), listOf(7, 4, 1, 2)),
+	EntityPositionRequirement(EntityPositionRequirementType.OR),
+	EntityPositionRequirement(EntityPositionRequirementType.AND, Identity.Wall(), listOf(7, 4, 1)),
+	EntityPositionRequirement(EntityPositionRequirementType.AND, "DungeonWall", listOf(9, 6, 3, 4)),
+	EntityPositionRequirement(EntityPositionRequirementType.AND, Identity.Wall(), listOf(7, 8, 9)),
+	EntityPositionRequirement(EntityPositionRequirementType.AND, Identity.Wall(), listOf(1, 2, 3)),
+	EntityPositionRequirement(EntityPositionRequirementType.AND, Identity.Wall(), listOf(2, 3, 6)),
+))
+GenerationRequirements.addOther("costam", listOf(
+	EntityPositionRequirement(EntityPositionRequirementType.AND, "WoodenChestMid", listOf(6)),
+	EntityPositionRequirement(EntityPositionRequirementType.AND, Identity.Wall(), listOf(8)),
+))

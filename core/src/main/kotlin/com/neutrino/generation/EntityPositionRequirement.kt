@@ -50,7 +50,7 @@ class EntityPositionRequirement {
         if (requiredEntity?.identity != null)
             builder.append(", Identity." + requiredEntity!!.identity!!.simpleName + "(), ")
         else if (requiredEntity?.id != null)
-            builder.append(", \"" + requiredEntity!!.getEntityName()!! + "\"")
+            builder.append(", \"" + requiredEntity!!.getEntityName()!! + "\", ")
         builder.append("listOf(")
         requirementList.map { it.first }.forEach {
             builder.append("$it, ")

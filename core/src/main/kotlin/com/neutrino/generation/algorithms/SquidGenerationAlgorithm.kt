@@ -42,9 +42,6 @@ class SquidGenerationAlgorithm(
     }
 
     private fun setWalls(map: List<List<MutableList<Entity>>>, wall: EntityId) {
-        println("SizeX: $sizeX, SizeY: $sizeY")
-        println("Dungeon layout: ")
-        println("${dungeonLayout[0].size}, ${dungeonLayout.size}")
         for (y in 0 until sizeY) {
             for (x in 0 until sizeX) {
                 if (dungeonLayout[y][x] == '#')

@@ -21,7 +21,6 @@ class MapGenerationParamsView: VisTable() {
         }
         UiManagerFactory.getUI().getEditorGeneration().seed = seed
         UiManagerFactory.getUI().generateMap()
-        println("Changed!")
     }}
 
     init {

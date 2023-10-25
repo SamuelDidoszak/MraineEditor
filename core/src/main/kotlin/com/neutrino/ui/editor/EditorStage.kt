@@ -10,6 +10,8 @@ import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.neutrino.textures.LevelDrawer
 import com.neutrino.textures.Shaders
+import com.neutrino.util.Constants.TILE_SIZE
+import com.neutrino.util.Constants.TILE_SIZE_INT
 import squidpony.squidmath.Coord
 import java.lang.Integer.max
 import kotlin.math.abs
@@ -37,17 +39,17 @@ class EditorStage(
     fun setLevelDrawer(levelDrawer: LevelDrawer) {
         map = levelDrawer.map
         startXPosition = 0f
-        startYPosition = map.size * 48f
+        startYPosition = map.size * TILE_SIZE
     }
 
     fun setCameraPosition(xPos: Int, yPos: Int) {
-        camera.position.lerp(Vector3(xPos * 48f, startYPosition - yPos * 48f, camera.position.z), 0.03f)
+        camera.position.lerp(Vector3(xPos * TILE_SIZE, startYPosition - yPos * TILE_SIZE, camera.position.z), 0.03f)
     }
 
     fun getCameraPosition(): Pair<Int, Int> {
         val gameCamera = camera as OrthographicCamera
-        val yPos = (levelDrawer.height - gameCamera.position.y) / 48
-        val xPos = (gameCamera.position.x / 48)
+        val yPos = (levelDrawer.height - gameCamera.position.y) / TILE_SIZE_INT
+        val xPos = gameCamera.position.x / TILE_SIZE_INT
 
         return Pair(xPos.roundToInt(), yPos.roundToInt())
     }
@@ -55,12 +57,12 @@ class EditorStage(
     fun isInCamera(tileX: Int, tileY: Int): Boolean {
         val gameCamera = camera as OrthographicCamera
 
-        var yBottom = MathUtils.ceil((levelDrawer.height - (gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 48) + 2
-        var yTop = MathUtils.floor((levelDrawer.height - (gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)) / 48) + 1
+        var yBottom = MathUtils.ceil((levelDrawer.height - (gameCamera.position.y - gameCamera.viewportHeight * gameCamera.zoom / 2f)) / TILE_SIZE_INT) + 2
+        var yTop = MathUtils.floor((levelDrawer.height - (gameCamera.position.y + gameCamera.viewportHeight * gameCamera.zoom / 2f)) / TILE_SIZE_INT) + 1
         var xLeft: Int =
-            MathUtils.floor((gameCamera.position.x - gameCamera.viewportWidth * gameCamera.zoom / 2f) / 48)
+            MathUtils.floor((gameCamera.position.x - gameCamera.viewportWidth * gameCamera.zoom / 2f) / TILE_SIZE_INT)
         var xRight =
-            MathUtils.ceil((gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f) / 48)
+            MathUtils.ceil((gameCamera.position.x + gameCamera.viewportWidth * gameCamera.zoom / 2f) / TILE_SIZE_INT)
 
         // Make sure that values are in range
         yBottom = if (yBottom <= 0) 0 else if (yBottom > map.size) map.size else yBottom
@@ -199,13 +201,13 @@ class EditorStage(
 
     fun getTileUnprojected(position: Vector3): Coord {
         // Change the outOfBounds click behavior
-        val tileX: Int = if(position.x.toInt() / 48 <= 0) 0 else
-            if (position.x.toInt() / 48 >= map[0].size) map[0].size - 1 else
-                position.x.toInt() / 48
+        val tileX: Int = if(position.x.toInt() / TILE_SIZE_INT <= 0) 0 else
+            if (position.x.toInt() / TILE_SIZE_INT >= map[0].size) map[0].size - 1 else
+                position.x.toInt() / TILE_SIZE_INT
 
-        val tileY: Int = if((startYPosition - position.y) / 48 <= 0) 0 else
-            if ((startYPosition - position.y) / 48 >= map.size - 1) map.size - 1 else
-                (startYPosition - position.y).toInt() / 48 + 1
+        val tileY: Int = if((startYPosition - position.y) / TILE_SIZE_INT <= 0) 0 else
+            if ((startYPosition - position.y) / TILE_SIZE_INT >= map.size - 1) map.size - 1 else
+                (startYPosition - position.y).toInt() / TILE_SIZE_INT + 1
 
         return Coord.get(tileX, tileY)
     }
