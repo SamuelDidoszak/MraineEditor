@@ -1,18 +1,18 @@
 package com.neutrino.entities.attributes
 
 import attributes.Attribute
-import com.neutrino.entities.util.Interaction
+import com.neutrino.entities.util.InteractionType
 import com.neutrino.entities.util.RequiresEntityParameter
 
-class InteractionAttribute(interactionList: ArrayList<Interaction>): Attribute() {
+class Interaction(interactionList: ArrayList<InteractionType>): Attribute() {
 
-    val interactionList = object : ArrayList<Interaction>() {
-        override fun add(element: Interaction): Boolean {
+    val interactionList = object : ArrayList<InteractionType>() {
+        override fun add(element: InteractionType): Boolean {
              if (element is RequiresEntityParameter)
                  element.entity = entity
             return super.add(element)
         }
-        override fun add(index: Int, element: Interaction) {
+        override fun add(index: Int, element: InteractionType) {
             if (element is RequiresEntityParameter)
                 element.entity = entity
             return super.add(index, element)
@@ -30,7 +30,7 @@ class InteractionAttribute(interactionList: ArrayList<Interaction>): Attribute()
         }
     }
 
-    fun getPrimaryInteraction(): Interaction? {
+    fun getPrimaryInteraction(): InteractionType? {
         for (action in interactionList)
             if (action.isPrimary)
                 return action

@@ -2,7 +2,7 @@ package com.neutrino.entities.attributes.map
 
 import attributes.Attribute
 
-class MapParamsAttribute(
+class MapParams(
     var allowOnTop: Boolean,
     var allowCharacterOnTop: Boolean
 ): Attribute()

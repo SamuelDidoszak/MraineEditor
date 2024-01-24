@@ -3,7 +3,7 @@ package com.neutrino.generation.algorithms
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
 import com.neutrino.entities.attributes.Identity
-import com.neutrino.entities.attributes.map.MapParamsAttribute
+import com.neutrino.entities.attributes.map.MapParams
 import com.neutrino.generation.*
 import com.neutrino.generation.util.EntityGenerationParams
 import com.neutrino.generation.util.GenerationParams
@@ -115,7 +115,7 @@ abstract class GenerationAlgorithm(
                     continue
                 var generationAllowed = true
                 for (mapEntity in map[y][x]) {
-                    if (!mapEntity.get(MapParamsAttribute::class)!!.allowOnTop) {
+                    if (!mapEntity.get(MapParams::class)!!.allowOnTop) {
                         generationAllowed = false
                         break
                     }

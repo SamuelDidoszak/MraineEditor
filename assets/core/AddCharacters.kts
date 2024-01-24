@@ -1,7 +1,7 @@
 
 import com.neutrino.entities.Entities
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.TextureAttribute
+import com.neutrino.entities.attributes.Texture
 import com.neutrino.entities.attributes.character.Stats
 import com.neutrino.textures.Textures
 Entities.add("Bat") {
@@ -16,7 +16,7 @@ Entities.add("Bat") {
             accuracy = 0.9f,
             criticalChance = 0.2f,
         ))
-		.addAttribute(TextureAttribute { position, random, textures -> run {
+		.addAttribute(Texture { position, random, textures -> run {
 			textures.add(Textures.get("bat"))
 		}})
 }
@@ -31,7 +31,7 @@ Entities.add("Mouse") {
             damageMax = 4f,
             defence = 2f,
         ))
-		.addAttribute(TextureAttribute { position, random, textures -> run {
+		.addAttribute(Texture { position, random, textures -> run {
 			textures.add(Textures.get("mouse"))
 		}})
 }
@@ -45,7 +45,7 @@ Entities.add("Slime") {
             defence = 1f,
             fireDefence = 4f,
         ))
-        .addAttribute(TextureAttribute { position, random, textures -> run {
+        .addAttribute(Texture { position, random, textures -> run {
             textures.add(Textures.get("slime"))
         }})
 }

@@ -5,8 +5,11 @@ import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.*
-import com.neutrino.entities.attributes.map.OnMapPositionAttribute
+import com.neutrino.entities.attributes.Identity
+import com.neutrino.entities.attributes.Position
+import com.neutrino.entities.attributes.StitchedSprite
+import com.neutrino.entities.attributes.Texture
+import com.neutrino.entities.attributes.map.OnMapPosition
 import com.neutrino.util.Constants
 import com.neutrino.util.Constants.SCALE
 import com.neutrino.util.Optimize
@@ -33,10 +36,10 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
                 textureLayers.clear()
             field = value
             map[1][1][0] = field
-            field.addAttribute(PositionAttribute())
-            field.addAttribute(OnMapPositionAttribute(1, 1, this))
-            val textureAttribute = field.get(TextureAttribute::class) ?:
-                field.addAttribute(TextureAttribute {_, _, _ ->}).get(TextureAttribute::class)!!
+            field.addAttribute(Position())
+            field.addAttribute(OnMapPosition(1, 1, this))
+            val textureAttribute = field.get(Texture::class) ?:
+                field.addAttribute(Texture { _, _, _ ->}).get(Texture::class)!!
             textureAttribute.setTextures(null, Random)
             if (textureAttribute.textures.isEmpty()) {
                 System.err.println(entity.name + " has no texture set!")
@@ -68,7 +71,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
     override fun addTexture(entity: Entity, texture: TextureSprite) {
         if (textureLayers[texture.z] == null)
             textureLayers[texture.z] = LayeredTextureList()
-        if (entity has StitchedSpriteAttribute::class)
+        if (entity has StitchedSprite::class)
             textureLayers[texture.z]!!.add(LayeredTextureUnsorted(entity, texture))
         else
             textureLayers[texture.z]!!.add(LayeredTexture(entity, texture))
@@ -96,7 +99,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
         val clipBegin = clipBegin()
-        val textures = entity.get(TextureAttribute::class)!!.textures
+        val textures = entity.get(Texture::class)!!.textures
         for (texture in textures) {
             if (texture.z == 0)
                 batch!!.draw(texture.texture,
@@ -152,7 +155,7 @@ class SingleEntityDrawer(entity: Entity): Actor(), EntityDrawer {
     }
 
     private fun updateScale() {
-        val textures = entity.get(TextureAttribute::class)!!.textures
+        val textures = entity.get(Texture::class)!!.textures
         // maybe add abs(it.x)
         val maxWidth = textures.maxOf { it.width() + it.x * if(centered) 2 else 1 }
         val maxHeight = textures.maxOf { it.height() + it.y }

@@ -1,8 +1,8 @@
 package com.neutrino.textures
 
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.map.OnMapPositionAttribute
-import com.neutrino.entities.attributes.TextureAttribute
+import com.neutrino.entities.attributes.Texture
+import com.neutrino.entities.attributes.map.OnMapPosition
 
 class Animations {
     private val animations = ArrayList<AnimationData>(10)
@@ -27,7 +27,7 @@ class Animations {
         val iterator = animations.listIterator()
         while (iterator.hasNext()) {
             val animation = iterator.next()
-            val levelLights = animation.entity.get(OnMapPositionAttribute::class)!!.level.lights
+            val levelLights = animation.entity.get(OnMapPosition::class)!!.level.lights
             if (animation.animation.getCurrentLights() != null) {
                 for (light in animation.animation.getCurrentLights()!!) {
                     levelLights.remove(animation.entity to light)
@@ -43,8 +43,8 @@ class Animations {
                 iterator.remove()
                 if (animation.nextAnimation == null)
                     continue
-                animation.entity.get(TextureAttribute::class)!!
-                    .textures[animation.entity.get(TextureAttribute::class)!!.textures.indexOf(animation.animation)] = animation.nextAnimation
+                animation.entity.get(Texture::class)!!
+                    .textures[animation.entity.get(Texture::class)!!.textures.indexOf(animation.animation)] = animation.nextAnimation
                 iterator.add(AnimationData(animation.nextAnimation, animation.entity, null))
             }
         }

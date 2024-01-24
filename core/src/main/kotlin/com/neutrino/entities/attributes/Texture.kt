@@ -1,22 +1,22 @@
 package com.neutrino.entities.attributes
 
 import attributes.Attribute
-import com.neutrino.entities.attributes.map.OnMapPositionAttribute
+import com.neutrino.entities.attributes.map.OnMapPosition
 import com.neutrino.textures.AnimatedTextureSprite
 import com.neutrino.textures.AnimationData
 import com.neutrino.textures.TextureSprite
 import kotlin.random.Random
 
-class TextureAttribute(
-    private val setTextures: (position: OnMapPositionAttribute?,
+class Texture(
+    private val setTextures: (position: OnMapPosition?,
                               random: Random,
                               textures: ArrayList<TextureSprite>) -> Unit
 ): Attribute() {
     val textures: TextureList = TextureList()
 
-    fun setTextures(onMapPosition: OnMapPositionAttribute?, randomGenerator: Random) {
+    fun setTextures(onMapPosition: OnMapPosition?, randomGenerator: Random) {
         setTextures.invoke(
-            onMapPosition ?: (entity get OnMapPositionAttribute::class),
+            onMapPosition ?: (entity get OnMapPosition::class),
             randomGenerator,
             textures)
     }
@@ -80,7 +80,7 @@ class TextureAttribute(
         }
 
         private fun addToLevel(element: TextureSprite, animationData: AnimationData? = null) {
-            val level = entity.get(OnMapPositionAttribute::class)!!.level
+            val level = entity.get(OnMapPosition::class)!!.level
             if (element.z != 0)
                 level.addTexture(entity, element)
             if (element is AnimatedTextureSprite)
@@ -114,7 +114,7 @@ class TextureAttribute(
         }
 
         private fun removeFromLevel(element: TextureSprite) {
-            val level = entity.get(OnMapPositionAttribute::class)!!.level
+            val level = entity.get(OnMapPosition::class)!!.level
             if (element.z != 0)
                 level.removeTexture(entity, element)
             if (element is AnimatedTextureSprite)

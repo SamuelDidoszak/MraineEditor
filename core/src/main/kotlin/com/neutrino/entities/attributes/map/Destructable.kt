@@ -1,18 +1,18 @@
 package com.neutrino.entities.attributes.map
 
 import attributes.Attribute
-import com.neutrino.entities.attributes.InteractionAttribute
-import com.neutrino.entities.util.Interaction
+import com.neutrino.entities.attributes.Interaction
+import com.neutrino.entities.util.InteractionType
 
-class DestructableAttribute(var entityHp: Float): Attribute() {
+class Destructable(var entityHp: Float): Attribute() {
     var destroyed: Boolean = false
 
     init {
-        if (!(entity has InteractionAttribute::class))
-            entity addAttribute InteractionAttribute(arrayListOf())
-        val interaction = Interaction.DESTROY()
+        if (!(entity has Interaction::class))
+            entity addAttribute Interaction(arrayListOf())
+        val interaction = InteractionType.DESTROY()
         interaction.entity = entity
-        entity.get(InteractionAttribute::class)!!.interactionList.add(interaction)
+        entity.get(Interaction::class)!!.interactionList.add(interaction)
     }
 
 //    fun getDamage(data: AttackData, coord: Coord) {

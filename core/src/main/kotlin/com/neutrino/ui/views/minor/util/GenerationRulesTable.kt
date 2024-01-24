@@ -10,7 +10,7 @@ import com.kotcrab.vis.ui.widget.VisTextButton
 import com.kotcrab.vis.ui.widget.VisWindow
 import com.neutrino.entities.Entities
 import com.neutrino.entities.attributes.Identity
-import com.neutrino.entities.attributes.TextureAttribute
+import com.neutrino.entities.attributes.Texture
 import com.neutrino.generation.EntityPositionRequirementType
 import com.neutrino.generation.NameOrIdentity
 import com.neutrino.textures.SingleEntityDrawer
@@ -163,7 +163,7 @@ class GenerationRulesTable(
             val entity = Entities.new(nameOrIdentity!!.id!!)
             SingleEntityDrawer(entity)
             rulesButton.setTexture(position,
-                entity.get(TextureAttribute::class)!!.textures.maxBy { it.width() + it.height() })
+                entity.get(Texture::class)!!.textures.maxBy { it.width() + it.height() })
             rulesButton.setNot(position, isNot())
             rules.add(position)
             return

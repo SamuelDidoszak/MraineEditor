@@ -5,7 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.kotcrab.vis.ui.widget.VisTable
 import com.neutrino.entities.Entities
 import com.neutrino.entities.attributes.Identity
-import com.neutrino.entities.attributes.TextureAttribute
+import com.neutrino.entities.attributes.Texture
 import com.neutrino.generation.NameOrIdentity
 import com.neutrino.textures.SingleEntityDrawer
 import com.neutrino.textures.TextureSprite
@@ -80,7 +80,7 @@ class RulesTable(ruleList: MutableList<NameOrIdentity?>? = null) : VisTable() {
         }
         val entity = Entities.new(data.second)
         SingleEntityDrawer(entity)
-        rulesButton.setTexture(position, entity.get(TextureAttribute::class)!!.textures.maxBy { it.width() + it.height() })
+        rulesButton.setTexture(position, entity.get(Texture::class)!!.textures.maxBy { it.width() + it.height() })
         rulesButton.setNot(position, data.third)
         rules[position] = NameOrIdentity(data.second, data.third)
     }

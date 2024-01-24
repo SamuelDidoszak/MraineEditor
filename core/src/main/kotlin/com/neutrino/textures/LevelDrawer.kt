@@ -7,10 +7,10 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.scenes.scene2d.Group
 import com.neutrino.entities.Entity
-import com.neutrino.entities.attributes.map.OnMapPositionAttribute
-import com.neutrino.entities.attributes.PositionAttribute
-import com.neutrino.entities.attributes.StitchedSpriteAttribute
-import com.neutrino.entities.attributes.TextureAttribute
+import com.neutrino.entities.attributes.Position
+import com.neutrino.entities.attributes.StitchedSprite
+import com.neutrino.entities.attributes.Texture
+import com.neutrino.entities.attributes.map.OnMapPosition
 import com.neutrino.util.Constants
 import com.neutrino.util.Constants.SCALE
 import com.neutrino.util.Constants.SCALE_INT
@@ -35,7 +35,7 @@ open class LevelDrawer: EntityDrawer, Group() {
         if (textureLayers[texture.z] == null) {
             textureLayers[texture.z] = LayeredTextureList()
         }
-        if (entity has StitchedSpriteAttribute::class)
+        if (entity has StitchedSprite::class)
             textureLayers[texture.z]!!.add(LayeredTextureUnsorted(entity, texture))
         else
             textureLayers[texture.z]!!.add(LayeredTexture(entity, texture))
@@ -73,7 +73,7 @@ open class LevelDrawer: EntityDrawer, Group() {
         for (y in yTop until yBottom) {
             for (x in xLeft until xRight) {
                 for (entity in map[y][x]) {
-                    val textures = entity.get(TextureAttribute::class)!!.textures
+                    val textures = entity.get(Texture::class)!!.textures
                     for (texture in textures) {
                         if (texture.z == 0)
                             batch!!.draw(
@@ -123,7 +123,7 @@ open class LevelDrawer: EntityDrawer, Group() {
         batch?.shader = Shaders.lightShader
         batch?.setBlendFunction(GL20.GL_SRC_ALPHA, GL20.GL_ONE)
         for (light in lights) {
-            val positionAttribute = light.first.get(PositionAttribute::class)!!
+            val positionAttribute = light.first.get(Position::class)!!
             val radius = light.second.radius
             batch?.color = light.second.color
             // TODO add texture position
@@ -149,9 +149,9 @@ open class LevelDrawer: EntityDrawer, Group() {
         for (y in map.indices) {
             for (x in map[0].indices) {
                 for (entity in map[y][x]) {
-                    entity addAttribute PositionAttribute()
-                    entity addAttribute OnMapPositionAttribute(x, y, this)
-                    entity.get(TextureAttribute::class)?.setTextures(null, rng)
+                    entity addAttribute Position()
+                    entity addAttribute OnMapPosition(x, y, this)
+                    entity.get(Texture::class)?.setTextures(null, rng)
                 }
             }
         }

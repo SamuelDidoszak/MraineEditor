@@ -7,14 +7,14 @@ import com.kotcrab.vis.ui.widget.MenuItem
 import com.kotcrab.vis.ui.widget.PopupMenu
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
-import com.neutrino.entities.util.Interaction
+import com.neutrino.entities.util.InteractionType
 import com.neutrino.ui.elements.VisTableNested
 
 class InteractionAttributeView: AttributeView(VisTable()) {
 
     override val attributeName: String = "InteractionAttribute"
     private val interactionTable = VisTableNested()
-    private val interactionList = Interaction::class.nestedClasses.map { it.simpleName }
+    private val interactionList = InteractionType::class.nestedClasses.map { it.simpleName }
 
     init {
         TableUtils.setSpacingDefaults(table)
