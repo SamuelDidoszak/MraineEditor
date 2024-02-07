@@ -12,7 +12,7 @@ import com.neutrino.ui.elements.VisTableNested
 
 class InteractionAttributeView: AttributeView(VisTable()) {
 
-    override val attributeName: String = "InteractionAttribute"
+    override val attributeName: String = "Interaction"
     private val interactionTable = VisTableNested()
     private val interactionList = InteractionType::class.nestedClasses.map { it.simpleName }
 

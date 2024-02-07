@@ -119,7 +119,7 @@ class TextureAttributeBuilder {
             }
         }
 
-        builder.append("TextureAttribute { position, random, textures -> run {")
+        builder.append("Texture { position, random, textures -> run {")
 
         var block = false
         var chained = false

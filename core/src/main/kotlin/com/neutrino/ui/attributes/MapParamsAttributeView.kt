@@ -7,7 +7,7 @@ import com.kotcrab.vis.ui.widget.VisTable
 
 class MapParamsAttributeView: AttributeView(VisTable()) {
 
-    override val attributeName: String = "MapParamsAttribute"
+    override val attributeName: String = "MapParams"
     private val allowOnTopCheckbox = VisCheckBox("")
     private val allowCharacterOnTopCheckbox = VisCheckBox("")
 
@@ -26,6 +26,6 @@ class MapParamsAttributeView: AttributeView(VisTable()) {
     }
 
     override fun generateString(): String {
-        return "MapParamsAttribute(${allowOnTopCheckbox.isChecked}, ${allowCharacterOnTopCheckbox.isChecked})"
+        return "MapParams(${allowOnTopCheckbox.isChecked}, ${allowCharacterOnTopCheckbox.isChecked})"
     }
 }

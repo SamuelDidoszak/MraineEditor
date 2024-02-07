@@ -23,7 +23,7 @@ import java.lang.reflect.Field
 
 class StatsAttributeView: AttributeView(VisTable()) {
 
-    override val attributeName: String = "StatsAttribute"
+    override val attributeName: String = "Stats"
     override fun generateString(): String {
         val builder = StringBuilder(50)
         fun addStat(stat: Field) {
@@ -43,7 +43,7 @@ class StatsAttributeView: AttributeView(VisTable()) {
                 else -> "$statValue,\n"
             })
         }
-        builder.append("StatsAttribute(\n")
+        builder.append("Stats(\n")
         val defaultStats = Stats()
         for (stat in Stats::class.java.declaredFields) {
             stat.trySetAccessible()

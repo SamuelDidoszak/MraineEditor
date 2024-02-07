@@ -32,7 +32,7 @@ import com.neutrino.util.*
 
 class TextureAttributeView: AttributeView(VisTable()) {
 
-    override val attributeName = "TextureAttribute"
+    override val attributeName = "Texture"
     private val ATLAS_NAME = "entities.atlas"
     private val textureTables = ArrayList<TextureTable>()
     private val texturesToAtlas = ArrayList<FileHandle>()
