@@ -27,6 +27,7 @@ class TextureBuilder {
         for (name in names) {
             stringBuilder.append("\"$name\", ")
         }
+        stringBuilder.delete(stringBuilder.length - 2, stringBuilder.length)
         stringBuilder.append("), $looping, ${speed}f")
         if (lightSources != null)
             stringBuilder.append(", $lightSources")

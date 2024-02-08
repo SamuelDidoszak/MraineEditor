@@ -2,7 +2,7 @@ package com.neutrino.ui.attributes
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.files.FileHandle
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureAtlas.AtlasRegion
@@ -25,7 +25,11 @@ import com.kotcrab.vis.ui.widget.spinner.Spinner.SpinnerStyle
 import com.neutrino.builders.TextureAttributeBuilder
 import com.neutrino.builders.TextureBuilder
 import com.neutrino.generation.NameOrIdentity
-import com.neutrino.textures.*
+import com.neutrino.textures.AnimatedTextureSprite
+import com.neutrino.textures.LightSources
+import com.neutrino.textures.TextureSprite
+import com.neutrino.textures.Textures
+import com.neutrino.ui.attributes.util.PictureEditable
 import com.neutrino.ui.elements.*
 import com.neutrino.ui.views.AddRulesView
 import com.neutrino.util.*
@@ -607,27 +611,6 @@ class TextureAttributeView: AttributeView(VisTable()) {
             }
         }
 
-        private fun getLightSources(texture: Texture): LightSources? {
-            val pixelData = PixelData(texture)
-            var pixel: Pixel
-            val lights: ArrayList<Light> = ArrayList()
-
-            for (y in 0 until texture.height) {
-                for (x in 0 until texture.width) {
-                    pixel = pixelData.getPixel(x, y)
-                    if (pixel.a() in 100..250)
-                        lights.add(Light(x.toFloat(), (texture.height - y - 1).toFloat(), pixel.color()))
-                }
-            }
-
-            if (lights.isEmpty())
-                return null
-            if (lights.size == 1)
-                return LightSources(lights[0])
-            else
-                return LightSources(lights)
-        }
-
         // Helper classes
         private fun getTextureContainer(table: VisTable): Container<Actor> {
             return table.findActor("textureContainer")
@@ -681,13 +664,15 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
                     for (file in files) {
                         val newFile = FileHandle(file.file())
-                        val texture = Texture(newFile)
+                        val picture = PictureEditable(newFile)
+                        picture.edit()
+                        val texture = picture.getEditedTexture()
                         val region = AtlasRegion(texture, 0, 0, texture.width, texture.height)
-                        val textureSprite = TextureSprite(region, x, y, z)
-                        textureSprite.lights = getLightSources(texture)
+                        val textureSprite = TextureSprite(region, x + picture.getXOffset(), y + picture.getYOffset(), z)
+                        textureSprite.lights = picture.getLightSources()
 
                         textures[newFile.nameWithoutExtension()] = textureSprite
-                        texturesToAtlas.add(file)
+                        texturesToAtlas.add(picture.getTempFile())
                         val innerTable = addInnerTable(newFile.nameWithoutExtension(), textureSprite)
                         innerTables.add(innerTable)
 
@@ -696,6 +681,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
                     if (textures.size == 1) {
                         textureView.texture = textures.values.first()
+                        (getFromPositionTable("x", table).model as IntSpinnerModel).setValue(textureView.texture.x.toInt(), false)
+                        (getFromPositionTable("y", table).model as IntSpinnerModel).setValue(textureView.texture.y.toInt(), false)
                         fillLightsTable(textureView.texture, table)
                         return
                     }
@@ -721,7 +708,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             textureSprite.lights?.getLights()?.forEach {
                 val image = Image(VisUI.getSkin().getDrawable("white"))
                 image.setSize(32f, 32f)
-                image.color = it.color
+                image.color = Color(it.color.r, it.color.g, it.color.b, 1f)
                 lightsTable.addNested(image).size(32f).left()
             }
         }

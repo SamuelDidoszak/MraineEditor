@@ -74,6 +74,12 @@ class Main: ApplicationAdapter() {
     }
 
     override fun dispose() {
+        deleteTemporaryFiles()
         uiManager.dispose()
+    }
+
+    private fun deleteTemporaryFiles() {
+        val folder = Gdx.files.local("textureSources/temp")
+        folder.deleteDirectory()
     }
 }
