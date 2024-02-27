@@ -29,7 +29,14 @@ class PictureEditable(val file: FileHandle) {
     }
 
     fun crop() {
-        image = image.autocrop()
+        val x1 = AutocropOps.scanright(Colors.Transparent.awt(), image.height, image.width, 0, pixelExtractor(), 0)
+        val x2 = AutocropOps.scanleft(Colors.Transparent.awt(), image.height, image.width - 1, pixelExtractor(), 0)
+        val y1 = AutocropOps.scandown(Colors.Transparent.awt(), image.height, image.width, 0, pixelExtractor(), 0)
+        val y2 = AutocropOps.scanup(Colors.Transparent.awt(), image.width, image.height - 1, pixelExtractor(), 0)
+
+        if (x1 == 0 && y1 == 0 && x2 == image.width - 1 && y2 == image.height - 1)
+            return
+        image = image.subimage(x1, y1, x2 - x1 + 1, y2 - y1 + 1)
     }
 
     fun saveAsTemporary() {

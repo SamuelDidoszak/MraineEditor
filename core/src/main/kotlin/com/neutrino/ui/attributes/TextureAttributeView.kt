@@ -665,10 +665,12 @@ class TextureAttributeView: AttributeView(VisTable()) {
                     for (file in files) {
                         val newFile = FileHandle(file.file())
                         val picture = PictureEditable(newFile)
+                        val xOffset = picture.getXOffset()
+                        val yOffset = picture.getYOffset()
                         picture.edit()
                         val texture = picture.getEditedTexture()
                         val region = AtlasRegion(texture, 0, 0, texture.width, texture.height)
-                        val textureSprite = TextureSprite(region, x + picture.getXOffset(), y + picture.getYOffset(), z)
+                        val textureSprite = TextureSprite(region, x + xOffset, y + yOffset, z)
                         textureSprite.lights = picture.getLightSources()
 
                         textures[newFile.nameWithoutExtension()] = textureSprite

@@ -1,0 +1,82 @@
+items.png
+	size: 256, 32
+basicFireWand
+	bounds: 230, 20, 10, 10
+basicPoisonWand
+	bounds: 160, 9, 8, 8
+bigBow
+	bounds: 20, 16, 14, 14
+book
+	bounds: 84, 14, 12, 16
+brokenSword
+	bounds: 149, 9, 9, 8
+cuffedLinenPants
+	bounds: 118, 2, 9, 10
+curvedBow
+	bounds: 75, 2, 7, 12
+dagger
+	bounds: 170, 9, 8, 8
+extinguishedFireWand
+	bounds: 180, 10, 8, 8
+fireStaff
+	bounds: 36, 16, 14, 14
+gold1
+	bounds: 158, 2, 5, 5
+gold2
+	bounds: 242, 13, 11, 8
+gold3
+	bounds: 33, 2, 12, 12
+gold4
+	bounds: 47, 2, 12, 12
+gold5
+	bounds: 149, 2, 7, 5
+gold6
+	bounds: 242, 23, 12, 7
+gold7
+	bounds: 188, 22, 13, 8
+gold8
+	bounds: 17, 2, 14, 12
+knife
+	bounds: 2, 2, 13, 13
+leatherBoots
+	bounds: 114, 21, 16, 9
+leatherCap
+	bounds: 217, 21, 11, 9
+leatherJacket
+	bounds: 147, 19, 12, 11
+leatherSocks
+	bounds: 114, 14, 14, 5
+linenShirt
+	bounds: 84, 2, 12, 10
+meat
+	bounds: 132, 19, 13, 11
+pocketKnife
+	bounds: 200, 11, 7, 8
+reinforcedLeatherBoots
+	bounds: 2, 17, 16, 13
+reinforcedLeatherCap
+	bounds: 106, 2, 10, 10
+rippedPants
+	bounds: 190, 12, 8, 8
+rockWand
+	bounds: 190, 2, 8, 8
+scrollOfDefence
+	bounds: 52, 16, 14, 14
+scrollOfFireball
+	bounds: 68, 16, 14, 14
+scrollOfTeleportation
+	bounds: 98, 16, 14, 14
+smallBackpack
+	bounds: 129, 2, 8, 9
+smallBag
+	bounds: 161, 19, 11, 11
+smallBow
+	bounds: 98, 2, 6, 12
+smallHealingPotion
+	bounds: 139, 4, 8, 13
+sword
+	bounds: 61, 2, 12, 12
+tornShirt
+	bounds: 174, 20, 12, 10
+woodenFlipFlops
+	bounds: 203, 21, 12, 9
