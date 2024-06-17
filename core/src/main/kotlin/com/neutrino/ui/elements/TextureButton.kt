@@ -15,7 +15,7 @@ import com.neutrino.util.Constants
 
 open class TextureButton(initTexture: TextureSprite, var canBeActivated: Boolean = false): Actor() {
 
-    private var scalableTexture: ScalableTexture = ScalableTexture(initTexture, width, height)
+    protected var scalableTexture: ScalableTexture = ScalableTexture(initTexture, width, height)
 
     var texture: TextureSprite
         set(value) {scalableTexture.texture = value}
@@ -90,6 +90,13 @@ open class TextureButton(initTexture: TextureSprite, var canBeActivated: Boolean
     }
 
     override fun draw(batch: Batch?, parentAlpha: Float) {
+        drawBackgroundColor(batch)
+        drawTexture(batch)
+        additionalDrawCalls(batch, parentAlpha)
+        batch?.color = Color.WHITE
+    }
+
+    protected fun drawBackgroundColor(batch: Batch?) {
         if (backgroundColor != null) {
             val overlayColor = Color(getOverlayingColor())
             batch?.color =
@@ -100,13 +107,14 @@ open class TextureButton(initTexture: TextureSprite, var canBeActivated: Boolean
             batch?.draw(Constants.whitePixel, x, y, width, height)
         }
         batch?.color = getOverlayingColor()
+    }
+
+    protected fun drawTexture(batch: Batch?) {
         batch?.draw(texture.texture,
             x + scalableTexture.offsetX + texture.x.positiveOrZero(scalableTexture.offsetX) * scalableTexture.scale,
             y + scalableTexture.offsetY + texture.y.positiveOrZero(scalableTexture.offsetY) * scalableTexture.scale,
-            scalableTexture.width, scalableTexture.height)
-//        scalableTexture.draw(batch, parentAlpha, x, y)
-        additionalDrawCalls(batch, parentAlpha)
-        batch?.color = Color.WHITE
+            scalableTexture.texture.width() * scalableTexture.scale,
+            scalableTexture.texture.height() * scalableTexture.scale)
     }
 
     open fun additionalDrawCalls(batch: Batch?, parentAlpha: Float) {}

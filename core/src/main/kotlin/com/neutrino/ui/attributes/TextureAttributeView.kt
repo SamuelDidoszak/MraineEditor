@@ -269,7 +269,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 addButton.addListener(AddListener(table))
                 textureContainer.actor = addButton
             } else {
-                val textureView = TextureButton(textureSprite)
+                val textureView = TextureButtonWithBackground(textureSprite)
                 textureView.setSize(128f, 128f)
                 textureView.setBackgroundColor()
                 textureView.centered = false
@@ -514,7 +514,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             super.act(delta)
         }
 
-        private fun setMainAnimationState(animationState: Int, textureView: TextureButton? = null) {
+        private fun setMainAnimationState(animationState: Int, textureView: TextureButtonWithBackground? = null) {
             tableAnimation?.restoreMainTable()
             if (animationState == 0) {
                 tableAnimation = TableAnimation()
@@ -536,7 +536,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 textures.forEach {
                     regions.add(it.value.texture)
                     lightSources.add(it.value.lights?.getLights())
-                    if (it.value.lights?.getLight() != null)
+                    if ((it.value.lights?.isSingleLight == true && it.value.lights?.getLight() != null) ||
+                        it.value.lights?.getLights() != null)
                         hasLights = true
                 }
                 animatedTextureSprite = if (hasLights)
@@ -555,10 +556,9 @@ class TextureAttributeView: AttributeView(VisTable()) {
                         x, y, z
                     )
 
-                if (textureView != null)
-                    textureView.texture = animatedTextureSprite!!
-                else
-                    getTextureButton(table).texture = animatedTextureSprite!!
+                val textureButton = textureView ?: getTextureButton(table)
+                textureButton.texture = animatedTextureSprite!!
+
                 tableAnimation = TableAnimation(getFps(table), false, false, false)
             }
         }
@@ -615,8 +615,8 @@ class TextureAttributeView: AttributeView(VisTable()) {
         private fun getTextureContainer(table: VisTable): Container<Actor> {
             return table.findActor("textureContainer")
         }
-        private fun getTextureButton(table: VisTable): TextureButton {
-            return (table.findActor("textureContainer") as Container<Actor>).actor as TextureButton
+        private fun getTextureButton(table: VisTable): TextureButtonWithBackground {
+            return (table.findActor("textureContainer") as Container<Actor>).actor as TextureButtonWithBackground
         }
         fun getFromPositionTable(positionName: String, table: VisTable): Spinner {
             return table.findActor<VisTable>("positionTable").findActor(positionName)!!
@@ -655,7 +655,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
             return true
         }
 
-        private fun getFile(table: VisTable, textureView: TextureButton) {
+        private fun getFile(table: VisTable, textureView: TextureButtonWithBackground) {
             Constants.fileChooser.getFile(object: FileChooserCallback() {
                 override fun fileChosen(files: List<FileHandle>) {
                     val x = getFromPositionTable("x", table).textField.text.toFloat()
@@ -667,7 +667,11 @@ class TextureAttributeView: AttributeView(VisTable()) {
                         val picture = PictureEditable(newFile)
                         val xOffset = picture.getXOffset()
                         val yOffset = picture.getYOffset()
-                        picture.edit()
+                        if (textures.keys.any { it.contains('#') } || files.any { it.name().contains('#') }) {
+                            picture.saveAsTemporary()
+                            picture.readLightsFromAlphaRemoveTransparency()
+                        } else
+                            picture.edit()
                         val texture = picture.getEditedTexture()
                         val region = AtlasRegion(texture, 0, 0, texture.width, texture.height)
                         val textureSprite = TextureSprite(region, x + xOffset, y + yOffset, z)
@@ -717,7 +721,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
         private inner class AddListener(val table: VisTable): ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                val textureView = TextureButton(Textures.get("addButtonTexture"))
+                val textureView = TextureButtonWithBackground(Textures.get("addButtonTexture"))
                 textureView.setSize(128f, 128f)
                 textureView.setBackgroundColor()
                 textureView.centered = false

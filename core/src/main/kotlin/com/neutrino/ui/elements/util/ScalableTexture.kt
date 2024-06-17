@@ -1,6 +1,7 @@
 package com.neutrino.ui.elements.util
 
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.neutrino.textures.AnimatedTextureSprite
 import com.neutrino.textures.TextureSprite
 import kotlin.math.abs
 import kotlin.math.min
@@ -33,8 +34,23 @@ class ScalableTexture(
         if (height != maxHeight)
             maxHeight = height
 
-        val wScale: Float = maxWidth / (texture.texture.regionWidth + abs(texture.x) * if(centered) 2 else 1)
-        val hScale: Float = maxHeight / (texture.texture.regionHeight + abs(texture.y) * if(centered) 2 else 1)
+        var textWidth = texture.texture.regionWidth.toFloat()
+        var textHeight = texture.texture.regionHeight.toFloat()
+
+        if (texture is AnimatedTextureSprite) {
+            val textureSizes = (texture as AnimatedTextureSprite).getTextureList()
+                .map { Pair(it.regionWidth.toFloat(), it.regionHeight.toFloat()) }
+
+            textureSizes.forEach {
+                if (textWidth < it.first)
+                    textWidth = it.first
+                if (textHeight < it.second)
+                    textHeight = it.second
+            }
+        }
+
+        val wScale: Float = maxWidth / (textWidth + abs(texture.x) * if(centered) 2 else 1)
+        val hScale: Float = maxHeight / (textHeight + abs(texture.y) * if(centered) 2 else 1)
         val scale = min(wScale, hScale)
         this.scale = scale
         this.width = texture.width() * scale
@@ -54,7 +70,8 @@ class ScalableTexture(
         batch?.draw(texture.texture,
             x + offsetX + texture.x.positiveOrZero(offsetX) * scale,
             y + offsetY + texture.y.positiveOrZero(offsetY) * scale,
-            width, height)
+            texture.width() * scale,
+            texture.height() * scale)
     }
 
     private fun Float.positiveOrZero(offset: Float): Float = if (this + offset >= 0f) this else 0f

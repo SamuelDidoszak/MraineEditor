@@ -46,6 +46,8 @@ Textures add TextureSprite(get("icons", "notActiveTexture"))
 Textures add TextureSprite(get("identities", "wallIdentity"))
 Textures add TextureSprite(get("identities", "floorIdentity"))
 Textures add TextureSprite(get("identities", "anyIdentity"))
+Textures add TextureSprite(get("icons", "textureBg16"))
+Textures add TextureSprite(get("icons", "textureBg32"))
 
 
 
