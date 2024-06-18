@@ -12,11 +12,14 @@ import com.neutrino.textures.Textures
 import com.neutrino.ui.elements.TextureButton
 import com.neutrino.util.Constants
 
-class EntityButton(entity: Entity, val showName: Boolean = true, private val x1Size: Boolean = false): Group() {
+class EntityButton(entity: Entity, val showName: Boolean = true, private val x1Size: Boolean = false, val changeName: Boolean = true): Group() {
 
     private var entityDrawer = SingleEntityDrawer(entity)
     private var entityNameLabel = VisLabel(
-        addSpaceBeforeUppercase(entity.name),
+        if (changeName)
+            addSpaceBeforeUppercase(entity.name)
+        else
+            entity.name,
         if (x1Size)
             Constants.VisUIX1Skin.get(LabelStyle::class.java)
         else

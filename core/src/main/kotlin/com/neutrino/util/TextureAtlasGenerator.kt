@@ -12,6 +12,8 @@ class TextureAtlasGenerator(private var atlasName: String) {
     init {
         settings.legacyOutput = false
         settings.silent = true
+        settings.paddingX = 2
+        settings.paddingY = 2
     }
 
     fun generate(files: List<FileHandle>, name: String = atlasName) {
@@ -36,7 +38,6 @@ class TextureAtlasGenerator(private var atlasName: String) {
     }
 
     private fun copyFiles(files: List<FileHandle>) {
-        files.forEach { println(it.name()) }
         for (file in files) {
             file.copyTo(textureFolder)
         }

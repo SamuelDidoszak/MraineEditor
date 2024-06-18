@@ -4,5 +4,6 @@ enum class UiTab {
     EntitiesTab,
     TagsTab,
     ItemsTab,
-    CharactersTab
+    CharactersTab,
+    TexturesTab
 }

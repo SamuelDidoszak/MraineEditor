@@ -11,10 +11,14 @@ class Entity() {
             addAttribute(attribute)
     }
 
+    private var nameSet = false
     var id by Delegates.notNull<Int>()
-
-    val name: String
-        get() {return Entities.getName(id)}
+    var name: String = ""
+        get() {return if (nameSet) field else Entities.getName(id)}
+        set(value) {
+            nameSet = true
+            field = value
+        }
 
 
     private val attributes: HashMap<KClass<out Attribute>, Attribute> = HashMap()

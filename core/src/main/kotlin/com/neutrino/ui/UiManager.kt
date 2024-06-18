@@ -3,8 +3,14 @@ package com.neutrino.ui
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputMultiplexer
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.scenes.scene2d.Actor
+import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.badlogic.gdx.utils.viewport.FitViewport
+import com.kotcrab.vis.ui.widget.MenuItem
+import com.kotcrab.vis.ui.widget.PopupMenu
 import com.kotcrab.vis.ui.widget.VisTable
 import com.kotcrab.vis.ui.widget.VisTextButton
 import com.neutrino.textures.Shaders
@@ -12,8 +18,10 @@ import com.neutrino.ui.editor.Editor
 import com.neutrino.ui.editor.EditorGeneration
 import com.neutrino.ui.views.EntitiesView
 import com.neutrino.ui.views.TagsView
+import com.neutrino.ui.views.TexturesView
 import com.neutrino.ui.views.util.UiTab
 import ktx.actors.onClick
+import ktx.actors.onEnter
 import ktx.scene2d.scene2d
 import ktx.scene2d.vis.visTextButton
 import java.util.*
@@ -30,18 +38,18 @@ class UiManager() {
         UiTab.EntitiesTab to EntitiesView(true, true) {},
         UiTab.TagsTab to TagsView(),
         UiTab.ItemsTab to VisTable(),
-        UiTab.CharactersTab to VisTable()
+        UiTab.CharactersTab to VisTable(),
+        UiTab.TexturesTab to TexturesView()
     ))
+    private var entitiesTabHoverLength = 0f
 
     init {
         uiStage.addActor(tabs)
         tabs.setPosition(258f, uiStage.height - 20)
-        println(tabs.height)
         uiStage.addActor(leftTable)
         leftTable.setSize(LeftTable.WIDTH, uiStage.height - 42)
         editor.setPosition(leftTable.width, 0f)
         setLeftPanel(defaultTabWindows[UiTab.EntitiesTab]!!, UiTab.EntitiesTab)
-        println(leftTable.x)
         setInputMultiplexer()
     }
 
@@ -58,9 +66,25 @@ class UiManager() {
         val tabTable = VisTable()
         tabTable.add(scene2d.visTextButton("Entities", "toggle") {
             addListener(onClick { setActiveTab(UiTab.EntitiesTab) })
+            addListener(object : ClickListener() {
+                override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
+                    entitiesTabHoverLength += Gdx.graphics.deltaTime
+                    if (entitiesTabHoverLength > 0.16f) {
+                        showTexturesTab(it)
+                        entitiesTabHoverLength = -500f
+                    }
+                    return super.mouseMoved(event, x, y)
+                }
+
+                override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
+                    entitiesTabHoverLength = 0f
+                    super.exit(event, x, y, pointer, toActor)
+                }
+            })
         }).width(tabWidth).fillX()
         tabTable.add(scene2d.visTextButton("Tags", "toggle") {
             addListener(onClick { setActiveTab(UiTab.TagsTab) })
+            addListener(onEnter { hideTexturesTab() })
         }).width(tabWidth).left().expandX()
         tabTable.add(scene2d.visTextButton("Items", "toggle") {
             addListener(onClick { setActiveTab(UiTab.ItemsTab) })
@@ -79,11 +103,10 @@ class UiManager() {
     }
 
     private fun changeTabToggle(tab: UiTab) {
-        println(activeTab)
-        println(tab)
-        println()
-        (tabs.getChild(activeTab.ordinal) as VisTextButton).isChecked = false
-        (tabs.getChild(tab.ordinal) as VisTextButton).isChecked = true
+        if (activeTab != UiTab.TexturesTab)
+            (tabs.getChild(activeTab.ordinal) as VisTextButton).isChecked = false
+        if (tab != UiTab.TexturesTab)
+            (tabs.getChild(tab.ordinal) as VisTextButton).isChecked = true
     }
 
     fun setLeftPanel(window: VisTable, tab: UiTab) {
@@ -128,6 +151,30 @@ class UiManager() {
     fun dispose() {
         uiStage.batch.dispose()
         editor.editorStage.batch.dispose()
+    }
+
+    private fun showTexturesTab(actor: Actor) {
+        val menu = PopupMenu()
+        menu.name = "TexturesTab"
+        val menuItem = MenuItem("Textures", object : ChangeListener() {
+            override fun changed(p0: ChangeEvent?, p1: Actor?) {
+                setActiveTab(UiTab.TexturesTab)
+            }
+        })
+        menuItem.addListener(object : ClickListener() {
+            override fun exit(event: InputEvent?, x: Float, y: Float, pointer: Int, toActor: Actor?) {
+                super.exit(event, x, y, pointer, toActor)
+                hideTexturesTab()
+            }
+        })
+        menu.addItem(menuItem)
+        menu.showMenu(uiStage, actor)
+    }
+
+    private fun hideTexturesTab() {
+        val menu = uiStage.actors.find { it.name == "TexturesTab" } ?: return
+        uiStage.actors.removeValue(menu as PopupMenu, true)
+        entitiesTabHoverLength = 0f
     }
 
 //    init {
