@@ -34,4 +34,8 @@ class Search<T>(
 
         onSearch.invoke(data.filter { regex.matches(it.second) }.map { it.first })
     }
+
+    fun refresh() {
+        searchThroughData(searchPane.text)
+    }
 }

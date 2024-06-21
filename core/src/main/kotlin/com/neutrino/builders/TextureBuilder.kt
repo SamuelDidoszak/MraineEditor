@@ -1,6 +1,7 @@
 package com.neutrino.builders
 
 import com.badlogic.gdx.Gdx
+import com.neutrino.textures.AnimatedTextureSprite
 import com.neutrino.textures.LightSources
 import com.neutrino.textures.Textures
 
@@ -51,19 +52,25 @@ class TextureBuilder {
     }
 
     private fun writeToFile(textureName: String, string: String) {
-        if (Textures.getOrNull(textureName) == null)
+        val texture = Textures.getOrNull(textureName)
+        if (texture == null)
             addToFile(string)
         else
-            replaceInFile(textureName, string)
+            replaceInFile(textureName, string, texture is AnimatedTextureSprite)
     }
 
     private fun addToFile(string: String) {
         texturesFile.writeString(string, true)
     }
 
-    private fun replaceInFile(textureName: String, string: String) {
+    fun removeTexture(textureName: String) {
+        replaceInFile(textureName, "", Textures.get(textureName) is AnimatedTextureSprite)
+    }
+
+    private fun replaceInFile(textureName: String, string: String, animated: Boolean) {
         val fileContents = texturesFile.readString()
-        val oldTexturePosition = fileContents.indexOf(textureName)
+        val textureNameString = "\"$textureName" + (if (animated) "#" else "\"")
+        val oldTexturePosition = fileContents.indexOf(textureNameString)
         val start = fileContents.lastIndexOf("Textures", oldTexturePosition)
         var end = fileContents.indexOf("Textures", oldTexturePosition)
         if (end == -1)

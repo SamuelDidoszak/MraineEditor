@@ -34,12 +34,14 @@ import com.neutrino.ui.elements.*
 import com.neutrino.ui.views.AddRulesView
 import com.neutrino.util.*
 
-class TextureAttributeView: AttributeView(VisTable()) {
+class TextureAttributeView(
+    private val ATLAS_NAME: String = "entities.atlas"
+): AttributeView(VisTable()) {
 
     override val attributeName = "Texture"
-    private val ATLAS_NAME = "entities.atlas"
     private val textureTables = ArrayList<TextureTable>()
     private val texturesToAtlas = ArrayList<FileHandle>()
+    private val characters = ATLAS_NAME.substringBefore('.') == "characters"
 
     init {
         TableUtils.setSpacingDefaults(table)
@@ -113,6 +115,15 @@ class TextureAttributeView: AttributeView(VisTable()) {
         if (textureTables.size == 1)
             return false
         return true
+    }
+
+    fun texturesExist(): Boolean {
+        for (textureTable in textureTables) {
+            val textureName = textureTable.textures.keys.firstOrNull()?.substringBefore('#')
+            if (Textures.getOrNull(textureName) != null)
+                return true
+        }
+        return false
     }
 
     inner class TextureTable(): VisTable() {
@@ -269,7 +280,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
                 addButton.addListener(AddListener(table))
                 textureContainer.actor = addButton
             } else {
-                val textureView = TextureButtonWithBackground(textureSprite)
+                val textureView = TextureButtonWithBackground(textureSprite, characters)
                 textureView.setSize(128f, 128f)
                 textureView.setBackgroundColor()
                 textureView.centered = false
@@ -667,10 +678,9 @@ class TextureAttributeView: AttributeView(VisTable()) {
                         val picture = PictureEditable(newFile)
                         val xOffset = picture.getXOffset()
                         val yOffset = picture.getYOffset()
-                        if (textures.keys.any { it.contains('#') } || files.any { it.name().contains('#') }) {
-                            picture.saveAsTemporary()
-                            picture.readLightsFromAlphaRemoveTransparency()
-                        } else
+                        if (textures.keys.any { it.contains('#') } || files.any { it.name().contains('#') })
+                            picture.editAnimation()
+                        else
                             picture.edit()
                         val texture = picture.getEditedTexture()
                         val region = AtlasRegion(texture, 0, 0, texture.width, texture.height)
@@ -721,7 +731,7 @@ class TextureAttributeView: AttributeView(VisTable()) {
 
         private inner class AddListener(val table: VisTable): ChangeListener() {
             override fun changed(event: ChangeEvent?, actor: Actor?) {
-                val textureView = TextureButtonWithBackground(Textures.get("addButtonTexture"))
+                val textureView = TextureButtonWithBackground(Textures.get("addButtonTexture"), characters)
                 textureView.setSize(128f, 128f)
                 textureView.setBackgroundColor()
                 textureView.centered = false

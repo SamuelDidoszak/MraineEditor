@@ -71,6 +71,12 @@ object Textures {
         return null
     }
 
+    fun getAllTextures(): List<TextureSprite> = textures.values.toList()
+
+    fun deleteTexture(name: String) {
+        textures.remove(name)
+    }
+
     /**
      * Picks one texture name from provided with and equal probability
      * Returns null if $to value was higher than value

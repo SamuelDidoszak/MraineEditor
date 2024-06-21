@@ -33,8 +33,8 @@ class TextureButtonWithBackground(
             return
 
         batch?.draw(backgroundImage.texture,
-            x + texture.x.negativeOrZero(),
-            y + texture.y.negativeOrZero(),
+            x + texture.x.negativeOrZero() * scalableTexture.scale,
+            y + texture.y.negativeOrZero() * scalableTexture.scale,
             backgroundImage.texture.regionWidth.toFloat() * scalableTexture.scale,
             backgroundImage.texture.regionHeight.toFloat() * scalableTexture.scale)
     }

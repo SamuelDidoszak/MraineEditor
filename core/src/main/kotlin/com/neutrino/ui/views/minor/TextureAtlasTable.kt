@@ -9,13 +9,18 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener
 import com.kotcrab.vis.ui.util.dialog.Dialogs
 import com.kotcrab.vis.ui.util.dialog.OptionDialogAdapter
 import com.kotcrab.vis.ui.widget.VisTable
+import com.neutrino.builders.TextureBuilder
 import com.neutrino.entities.Entity
+import com.neutrino.textures.AnimatedTextureSprite
 import com.neutrino.textures.TextureSprite
 import com.neutrino.textures.Textures
 import com.neutrino.ui.elements.TextureButton
+import com.neutrino.ui.views.AddNewTextureView
 import com.neutrino.ui.views.util.EntityButton
 import com.neutrino.ui.views.util.Search
+import com.neutrino.ui.views.util.UiTab
 import com.neutrino.util.TextureAtlasGenerator
+import com.neutrino.util.UiManagerFactory
 import ktx.actors.onClick
 import ktx.scene2d.scene2d
 import ktx.scene2d.vis.menuItem
@@ -28,6 +33,7 @@ class TextureAtlasTable(
     private val folder = Gdx.files.absolute("${Gdx.files.localStoragePath}/textureSources/$atlasName/")
     private var atlas = TextureAtlas(Gdx.files.absolute("${Gdx.files.localStoragePath}/assets/textures/$atlasName.atlas"))
 
+    private val textureList = ArrayList<TextureSprite>()
     private val textureButtonList = ArrayList<EntityButton>()
 
     private val nameX1Size = true
@@ -38,9 +44,18 @@ class TextureAtlasTable(
     init {
         this.setFillParent(false)
         clip(true)
+        fillTextureList()
         initializeTable()
         initializeTextures()
         fillTextureTable()
+    }
+
+    private fun fillTextureList() {
+        for (texture in Textures.getAllTextures()) {
+            if (atlas.findRegion(texture.texture.name) == null)
+                continue
+            textureList.add(texture)
+        }
     }
 
     private fun initializeTable(containerCount: Int = folder.list().size) {
@@ -80,14 +95,18 @@ class TextureAtlasTable(
         layout()
     }
 
-    fun addNewTexture() {
-        println(":D")
+    private fun addNewTexture() {
+        UiManagerFactory.getUI().setLeftPanel(AddNewTextureView(atlasName) {
+            if (it) {
+                atlas = TextureAtlas(Gdx.files.absolute("${Gdx.files.localStoragePath}/assets/textures/$atlasName.atlas"))
+                refreshTable()
+            }
+        }, UiTab.TexturesTab)
     }
 
     private fun initializeTextures() {
-        val list = folder.list()
-        for (i in list.indices) {
-            addTextureButton(list[i].nameWithoutExtension())
+        for (i in textureList.indices) {
+            addTextureButton(textureList[i])
         }
     }
 
@@ -100,10 +119,9 @@ class TextureAtlasTable(
         }
     }
 
-    private fun addTextureButton(textureName: String, index: Int? = null): EntityButton {
-        val textureSprite = TextureSprite(atlas.findRegion(textureName))
+    private fun addTextureButton(textureSprite: TextureSprite, index: Int? = null): EntityButton {
         val entity = Entity()
-        entity.name = textureName
+        entity.name = textureSprite.texture.name.substringBefore('#')
         entity.addAttribute(com.neutrino.entities.attributes.Texture { _, _, textures ->
             textures.add(textureSprite)
         })
@@ -114,7 +132,7 @@ class TextureAtlasTable(
             override fun changed(event: ChangeEvent?, actor: Actor?) {
                 val menu = scene2d.popupMenu {
                     addItem(menuItem("delete") {
-                        onClick { deleteTexturePopup(textureName) }
+                        onClick { deleteTexturePopup(entity.name) }
                     })
                 }
                 menu.showMenu(stage, entityButton)
@@ -136,10 +154,14 @@ class TextureAtlasTable(
 
     private fun refreshTable() {
         clearChildren()
+        textureList.clear()
         textureButtonList.clear()
+        search?.data?.clear()
+        fillTextureList()
         initializeTable()
         initializeTextures()
         fillTextureTable()
+        search?.refresh()
     }
 
     private fun deleteTexturePopup(name: String) {
@@ -149,9 +171,15 @@ class TextureAtlasTable(
             Dialogs.OptionDialogType.YES_NO,
             object : OptionDialogAdapter() {
                 override fun yes() {
-                    val file = folder.child("$name.png")
-                    file.delete()
+                    val texture = Textures.get(name)
+                    val files = ArrayList<FileHandle>()
+                    if (texture is AnimatedTextureSprite) {
+                        texture.getTextureList().forEach { files.add(folder.child("${it.name}.png")) }
+                    } else files.add(folder.child("$name.png"))
+                    files.forEach { it.delete() }
+                    TextureBuilder().removeTexture(name)
                     generateAtlas(listOf())
+                    Textures.deleteTexture(name)
                     refreshTable()
                 }
         })

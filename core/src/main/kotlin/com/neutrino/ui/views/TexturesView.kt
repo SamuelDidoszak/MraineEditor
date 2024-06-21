@@ -31,7 +31,7 @@ class TexturesView(): VisTable() {
         val folder = Gdx.files.absolute("${Gdx.files.localStoragePath}/textureSources/")
         val tabsPane = TabbedPane()
 
-        folder.list().forEach {
+        folder.list().filterNot { it.name() == "temp" }.forEach {
             tabsPane.add(TextureTab(it.name()))
         }
 
@@ -48,6 +48,7 @@ class TexturesView(): VisTable() {
     fun setActiveTab(name: String) {
         if (findActor<VisTable>("atlasTable") != null)
             removeActor(findActor("atlasTable"))
+        search.data.clear()
         val table = TextureAtlasTable(name, search)
         table.name = "atlasTable"
         add(table).growX().left().row()
